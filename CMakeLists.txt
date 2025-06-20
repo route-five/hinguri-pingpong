@@ -4,7 +4,7 @@ project(hinguri_pingpong)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(hinguri_pingpong
-    main.cpp
+        src/main.cpp
 )
 
 # Boost
