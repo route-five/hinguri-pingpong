@@ -2,9 +2,9 @@
 #include <NumCpp.hpp>
 
 int main() {
-    const auto a = nc::random::randInt({4, 4}, 10, 100);
+    auto a = nc::random::randInt({3, 3}, 1, 10);
 
-    std::cout << a << std::endl;
+    std::cout << a(2, 10) << std::endl;
 
     return 0;
 }
