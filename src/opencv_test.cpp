@@ -6,7 +6,7 @@ int main() {
     std::cout << "OpenCV Version: " << cv::getVersionString() << std::endl;
 
     cv::namedWindow(WINDOW_NAME, cv::WINDOW_AUTOSIZE);
-    cv::Mat img = cv::imread("/Users/rhseung/Programming/GitHub/hinguri-pingpong/src/OpenCV_logo.png");
+    cv::Mat img = cv::imread("OpenCV_logo.png");
 
     if (img.empty()) {
         std::cerr << "Failed to load image" << std::endl;
