@@ -4,7 +4,8 @@ project(hinguri_pingpong)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(hinguri_pingpong
-        src/opencv_test.cpp
+#        src/opencv_test.cpp
+        src/object_detection.cpp
 )
 
 # Boost
