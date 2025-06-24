@@ -8,15 +8,6 @@ add_executable(hinguri_pingpong
         src/object_detection.cpp
 )
 
-# Boost
-find_package(Boost 1.88 COMPONENTS system filesystem REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
-target_link_libraries(hinguri_pingpong ${Boost_LIBRARIES})
-
-# NumCpp
-add_subdirectory(lib/NumCpp)
-target_link_libraries(hinguri_pingpong NumCpp::NumCpp)
-
 # OpenCV
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
