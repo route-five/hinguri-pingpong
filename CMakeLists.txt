@@ -12,6 +12,9 @@ add_executable(hinguri_pingpong
 #        src/dynamixel/macros.h
 #        src/dynamixel/dynamixel.h
 #        src/dynamixel/mx28_p2.h
+        src/2d_predictor.cpp
+        src/random/Random.hpp
+        src/simulator/Simulator2D.hpp
 )
 
 # OpenCV
