@@ -6,7 +6,11 @@ find_path(DynamixelSDK_INCLUDE_DIR dynamixel_sdk.h
         include)
 
 find_library(DynamixelSDK_LIBRARY
-        NAMES dxl_x64_cpp
+        NAMES 
+            dxl_x64_cpp      # x64 Windows/Linux
+            dxl_x86_cpp      # x86
+            dxl_mac_cpp      # macOS
+            dynamixel_sdk    # Generic name
         PATHS
         ENV DYNAMIXEL_SDK_DIR
         ${DynamixelSDK_DIR}
