@@ -15,6 +15,7 @@ add_executable(hinguri_pingpong
         src/2d_predictor.cpp
         src/random/Random.hpp
         src/simulator/Simulator2D.hpp
+        src/predictor/predictor.hpp
 )
 
 # OpenCV
