@@ -16,7 +16,8 @@ int main() {
 
     imshow("source", source);
     cv::Mat mask;
-    cv::Scalar lowerb = cv::Scalar(33, 120, 200); //BGR, needs to be changed hueristically
+    // TODO: Change to fit real conditions
+    cv::Scalar lowerb = cv::Scalar(33, 120, 200); //BGR
     cv::Scalar upperb = cv::Scalar(90, 180, 280); //BGR
     cv::inRange(source, lowerb, upperb, mask);
 
