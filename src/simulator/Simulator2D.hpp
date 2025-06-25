@@ -18,8 +18,6 @@ private:
     const float scale;
     const int border;
 
-    Random<float> random;
-
     cv::Mat img;
     cv::Vec2f vertices[4] = {
         {0, TABLE_HEIGHT}, {0, 0}, {TABLE_WIDTH, 0}, {TABLE_WIDTH, TABLE_HEIGHT}
