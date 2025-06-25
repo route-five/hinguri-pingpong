@@ -24,4 +24,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake-mod
 find_package(DynamixelSDK REQUIRED)
 
 # Library Linking
-target_link_libraries(hinguri_pingpong ${OpenCV_LIBS})
+target_link_libraries(hinguri_pingpong
+        ${OpenCV_LIBS}
+        dynamixel_sdk::dynamixel_sdk
+)

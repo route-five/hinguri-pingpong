@@ -36,8 +36,7 @@ public:
   virtual void setProfileVelocity(unsigned int velocity) = 0;
   virtual void setProfileAcceleration(unsigned int acceleration) = 0;
   virtual void setAngle(double angle) = 0;
-  virtual const unsigned char // NOLINT(*-const-return-type)
-  readHardwareErrorStatus() = 0;
+  virtual const unsigned char readHardwareErrorStatus() = 0;
   virtual bool reboot() = 0;
 };
 
