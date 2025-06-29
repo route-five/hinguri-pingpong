@@ -6,7 +6,7 @@
 #include <opencv2/opencv.hpp>
 #include "../Constants.hpp"
 
-inline cv::Mat capture_frame() {
+cv::Mat capture_frame() {
     cv::VideoCapture cap(0);
     cap.set(cv::CAP_PROP_FRAME_WIDTH, CAMERA_WIDTH);
     cap.set(cv::CAP_PROP_FRAME_HEIGHT, CAMERA_HEIGHT);
