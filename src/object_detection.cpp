@@ -4,6 +4,8 @@
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include "Constants.hpp"
+
 #define WINDOW_NAME "example_window"
 
 int main() {
@@ -17,9 +19,7 @@ int main() {
     imshow("source", source);
     cv::Mat mask;
     // TODO: Change to fit real conditions
-    cv::Scalar lowerb = cv::Scalar(33, 120, 200); //BGR
-    cv::Scalar upperb = cv::Scalar(90, 180, 280); //BGR
-    cv::inRange(source, lowerb, upperb, mask);
+    cv::inRange(source, ORANGE_MIN, ORANGE_MAX, mask);
 
     cv::imshow(WINDOW_NAME, mask);
     cv::waitKey(0);

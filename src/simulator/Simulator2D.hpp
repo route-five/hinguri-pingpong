@@ -8,9 +8,7 @@
 #include <numbers>
 #include <opencv2/opencv.hpp>
 #include "../random/Random.hpp"
-
-constexpr float TABLE_WIDTH = 152.5;
-constexpr float TABLE_HEIGHT = 274;
+#include "../Constants.hpp"
 
 class Simulator2D {
 private:
