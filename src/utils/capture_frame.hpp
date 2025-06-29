@@ -1,6 +1,7 @@
 #ifndef CAPTURE_FRAME_HPP
 #define CAPTURE_FRAME_HPP
 
+#include <iostream>
 #include <opencv2/videoio.hpp>
 #include <opencv2/opencv.hpp>
 #include "../Constants.hpp"

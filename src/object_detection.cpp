@@ -6,7 +6,6 @@
 #include <opencv2/opencv.hpp>
 #include "Constants.hpp"
 #include "utils/capture_frame.hpp"
-
 #define WINDOW_NAME "example_window"
 
 int main() {
