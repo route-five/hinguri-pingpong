@@ -5,7 +5,8 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(hinguri_pingpong
         src/object_detection.cpp
-#        src/opencv_test.cpp
+        src/utils/capture_frame.hpp
+        #        src/opencv_test.cpp
 #        src/dynamixel/dynamixel.cpp
 #        src/dynamixel/mx64_p2.h
 #        src/dynamixel/protocol2.h

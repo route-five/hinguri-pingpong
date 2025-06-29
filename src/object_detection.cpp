@@ -5,11 +5,13 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include "Constants.hpp"
+#include "utils/capture_frame.hpp"
 
 #define WINDOW_NAME "example_window"
 
 int main() {
-    cv::Mat source = cv::imread("pingpong.jpg");
+    // cv::Mat source = cv::imread("pingpong.jpg");
+    cv::Mat source = capture_frame();
 
     if (source.empty()) {
         std::cerr << "Failed to load image" << std::endl;
