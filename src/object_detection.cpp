@@ -13,7 +13,7 @@ int main() {
     cv::Mat source = capture_frame();
 
     if (source.empty()) {
-        std::cerr << "Failed to load image" << std::endl;
+        std::cerr << "Failed to capture frame" << std::endl;
         return -1;
     }
 
