@@ -9,7 +9,7 @@
 
 constexpr float TABLE_WIDTH = 152.5;
 constexpr float TABLE_HEIGHT = 274;
-constexpr cv::Scalar ORANGE_MIN = cv::Scalar(33, 120, 200); //BGR
-constexpr cv::Scalar ORANGE_MAX = cv::Scalar(90, 180, 280); //BGR
+const cv::Scalar ORANGE_MIN = cv::Scalar(33, 120, 200); //BGR
+const cv::Scalar ORANGE_MAX = cv::Scalar(90, 180, 280); //BGR
 
 #endif //CONSTANTS_HPP
