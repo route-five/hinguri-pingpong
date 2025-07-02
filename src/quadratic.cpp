@@ -54,7 +54,7 @@ vector<double> quadraticFit(const vector<double>& xs, const vector<double>& ys) 
     Mat A = (Mat_<double>(3,3) << n, sumX, sumX2,
                                   sumX, sumX2, sumX3,
                                   sumX2, sumX3, sumX4);
-    Mat B = (Mat_<double>(3,1) << sumY, sumXY, sumX2Y);
+    Matx31d B(sumY, sumXY, sumX2Y);
 
     Mat coeffs;
     solve(A, B, coeffs, DECOMP_SVD);
