@@ -76,7 +76,7 @@ int main() {
 
     // 카메라 외부 파라미터 설정 (이것도 걍 아무 값이나 넣어둔거임)
     Mat R = Mat::eye(3,3,CV_64F);  // 회전 matrix
-    Mat t = (Mat_<double>(3,1) << 0,0,2);  // 카메라가 z=2m 위에 있다고 가정
+    Matx31d t({ 0, 0, 2 });  // 카메라가 z=2m 위에 있다고 가정
 
     // 테스트용 픽셀 좌표 (측면 카메라에서 본거임) -> 걍 암거나 넣어둠
     vector<Point2f> detected_pixels = { Point2f(310,200), Point2f(315,180), Point2f(320,160) };
