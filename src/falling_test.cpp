@@ -19,8 +19,9 @@ int main() {
     cap.set(cv::CAP_PROP_FPS, 120);
 
     cv::Mat frame, display;
-    auto lastTime = std::chrono::high_resolution_clock::now();
-    double fps = 0.0;
+    auto last_time = std::chrono::high_resolution_clock::now();
+    int frame_count = 0;
+    int fps = 0;
 
     while (true) {
         cap >> frame;
@@ -30,11 +31,14 @@ int main() {
         }
 
         // calculate fps
-        auto currentTime = std::chrono::high_resolution_clock::now();
-        double elapsed =
-            std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastTime).count();
-        lastTime = currentTime;
-        fps = 1000.0 / elapsed;
+        frame_count++;
+        auto current_time = std::chrono::high_resolution_clock::now();
+        auto time_since_last_update = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - last_time).count();
+        if (time_since_last_update >= 1000) {
+            fps = frame_count * 1000 / time_since_last_update;
+            last_time = current_time;
+            frame_count = 0;
+        }
 
         // color detection
         cv::Mat mask, hsv;
@@ -100,7 +104,7 @@ int main() {
 #endif
 
         // window
-        std::string fpsText = "FPS: " + std::to_string(static_cast<int>(fps));
+        std::string fpsText = "FPS: " + std::to_string(fps);
         cv::putText(display, fpsText, cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX,
                     1.0, cv::Scalar(0, 255, 0), 2);
 
