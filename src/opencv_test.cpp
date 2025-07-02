@@ -1,5 +1,6 @@
-#include <bits/stdc++.h>
+#include <iostream>
 #include <opencv2/opencv.hpp>
+#include <string>
 #define WINDOW_NAME "example_window"
 using namespace std;
 
