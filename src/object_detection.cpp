@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include "Constants.hpp"
+#include "constants.hpp"
 #include "utils/capture_frame.hpp"
 #define WINDOW_NAME "example_window"
 

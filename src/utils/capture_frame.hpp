@@ -4,7 +4,7 @@
 #include <iostream>
 #include <opencv2/videoio.hpp>
 #include <opencv2/opencv.hpp>
-#include "../Constants.hpp"
+#include "../constants.hpp"
 
 cv::Mat capture_frame() {
     cv::VideoCapture cap(0);
