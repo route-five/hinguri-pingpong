@@ -1,156 +1,106 @@
+#include <opencv2/opencv.hpp>
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include <chrono>
-#include <opencv2/opencv.hpp>
 using namespace std;
+using namespace cv;
 
-// 2차 다항 회귀 함수
-vector<double> quadraticFit(const vector<double>& times, const vector<double>& coords) {
-    int n = times.size();
-    double sumT = 0, sumT2 = 0, sumT3 = 0, sumT4 = 0;
-    double sumY = 0, sumTY = 0, sumT2Y = 0;
+Vec3d pixelToCameraRay(Point2f uv, Mat cameraMatrix) {
+    double fx = cameraMatrix.at<double>(0, 0);
+    double fy = cameraMatrix.at<double>(1, 1);
+    double cx = cameraMatrix.at<double>(0, 2);
+    double cy = cameraMatrix.at<double>(1, 2);
+
+    double x = (uv.x - cx) / fx;
+    double y = (uv.y - cy) / fy;
+
+    Vec3d ray(x, y, 1.0);
+    return normalize(ray);
+}
+
+// z=0 평면 & 교점
+Point3d intersectRayWithGround(Vec3d rayDir, Vec3d camPos) {
+    double t = -camPos[2] / rayDir[2];
+    double x = camPos[0] + t * rayDir[0];
+    double y = camPos[1] + t * rayDir[1];
+    return Point3d(x, y, 0.0);
+}
+
+Vec3d transformToWorld(Vec3d camPoint, Mat R, Mat t) {
+    Mat camMat = (Mat_<double>(3,1) << camPoint[0], camPoint[1], camPoint[2]);
+    Mat worldMat = R.t() * (camMat - t);
+    return Vec3d(worldMat);
+}
+
+// 2차 다항 회귀
+vector<double> quadraticFit(const vector<double>& xs, const vector<double>& ys) {
+    int n = xs.size();
+    double sumX = 0, sumX2 = 0, sumX3 = 0, sumX4 = 0;
+    double sumY = 0, sumXY = 0, sumX2Y = 0;
 
     for (int i = 0; i < n; i++) {
-        double t = times[i];
-        double y = coords[i];
-        sumT += t;
-        sumT2 += t * t;
-        sumT3 += t * t * t;
-        sumT4 += t * t * t * t;
+        double x = xs[i];
+        double y = ys[i];
+        sumX += x;
+        sumX2 += x * x;
+        sumX3 += x * x * x;
+        sumX4 += x * x * x * x;
 
         sumY += y;
-        sumTY += t * y;
-        sumT2Y += t * t * y;
+        sumXY += x * y;
+        sumX2Y += x * x * y;
     }
 
-    double A[3][3] = {
-        {double(n), sumT, sumT2},
-        {sumT, sumT2, sumT3},
-        {sumT2, sumT3, sumT4}
-    };
+    Mat A = (Mat_<double>(3,3) << n, sumX, sumX2,
+                                  sumX, sumX2, sumX3,
+                                  sumX2, sumX3, sumX4);
+    Mat B = (Mat_<double>(3,1) << sumY, sumXY, sumX2Y);
 
-    double B[3] = {sumY, sumTY, sumT2Y};
+    Mat coeffs;
+    solve(A, B, coeffs, DECOMP_SVD);
 
-    // 가우스 소거법
-    for (int i = 0; i < 3; i++) {
-        if (A[i][i] == 0) {
-            for (int j = i + 1; j < 3; j++) {
-                if (A[j][i] != 0) {
-                    swap(A[i], A[j]);
-                    swap(B[i], B[j]);
-                    break;
-                }
-            }
-        }
-        double pivot = A[i][i];
-        for (int j = 0; j < 3; j++) A[i][j] /= pivot;
-        B[i] /= pivot;
-
-        for (int j = 0; j < 3; j++) {
-            if (i != j) {
-                double factor = A[j][i];
-                for (int k = 0; k < 3; k++) A[j][k] -= factor * A[i][k];
-                B[j] -= factor * B[i];
-            }
-        }
-    }
-
-    return {B[2], B[1], B[0]};  // [a, b, c] 형태로 반환
+    return {coeffs.at<double>(2), coeffs.at<double>(1), coeffs.at<double>(0)};  // a,b,c
 }
 
-double evaluateQuadratic(const vector<double>& coeffs, double t) {
-    return coeffs[0]*t*t + coeffs[1]*t + coeffs[2];
-}
-
-// z(t)=0 되는 시간 추정
-double estimateLandingTime(const vector<double>& z_coeff, const vector<double>& time_points) {
-    double a = z_coeff[0];
-    double b = z_coeff[1];
-    double c = z_coeff[2];
-
-    double discriminant = b*b - 4*a*c;
-    double result_time = -1;
-
-    if (discriminant >= 0) {
-        double t1 = (-b + sqrt(discriminant)) / (2*a);
-        double t2 = (-b - sqrt(discriminant)) / (2*a);
-        double t_start = time_points.front();
-
-        if (t1 > t_start && t2 > t_start)
-            result_time = min(t1, t2);
-        else if (t1 > t_start)
-            result_time = t1;
-        else if (t2 > t_start)
-            result_time = t2;
-    }
-
-    if (result_time < 0) {
-        double t_min = -b / (2*a);
-        if (t_min > time_points.back())
-            result_time = t_min;
-    }
-
-    return result_time;
-}
-
-// 테스트용 공 위치 시뮬레이션
-cv::Vec3d getSimulatedBallPosition(double t) {
-    double x = 0.3 + 2.0 * t;
-    double y = 1.0;
-    double z = 2.0 - 4.9 * t * t;
-    if (z < 0) z = 0;
-    return {x, y, z};
-}
-
-// 예측 함수
-void predictBallLanding(double& out_t_hit, double& out_x_hit, double& out_y_hit, double& out_z_hit) {
-    vector<double> time_points;
-    vector<double> x_points, y_points, z_points;
-
-    auto start_time = chrono::steady_clock::now();
-    bool predicted = false;
-
-    while (true) {
-        double elapsed_time = chrono::duration<double>(chrono::steady_clock::now() - start_time).count();
-        cv::Vec3d pos = getSimulatedBallPosition(elapsed_time);
-
-        time_points.push_back(elapsed_time);
-        x_points.push_back(pos[0]);
-        y_points.push_back(pos[1]);
-        z_points.push_back(pos[2]);
-
-        if (!predicted && time_points.size() >= 3) {
-            auto x_fit = quadraticFit(time_points, x_points);
-            auto y_fit = quadraticFit(time_points, y_points);
-            auto z_fit = quadraticFit(time_points, z_points);
-
-            double t_hit = estimateLandingTime(z_fit, time_points);
-
-            if (t_hit > 0) {
-                out_t_hit = t_hit;
-                out_x_hit = evaluateQuadratic(x_fit, t_hit);
-                out_y_hit = evaluateQuadratic(y_fit, t_hit);
-                out_z_hit = evaluateQuadratic(z_fit, t_hit);
-                predicted = true;
-            }
-        }
-
-        // 공이 지면 도달했으면 종료
-        if (pos[2] <= 0 && predicted) break;
-
-        cv::waitKey(50);
-    }
+double evaluateQuadratic(const vector<double>& coeffs, double x) {
+    return coeffs[0]*x*x + coeffs[1]*x + coeffs[2];
 }
 
 int main() {
-    double t_hit = -1;
-    double x_hit = 0, y_hit = 0, z_hit = 0;
+    // 카메라 내부 파라미터 설정 (걍 아무 값이나 넣어둔거임)
+    Mat cameraMatrix = (Mat_<double>(3,3) << 800, 0, 320,
+                                             0, 800, 240,
+                                             0,   0,   1);
 
-    predictBallLanding(t_hit, x_hit, y_hit, z_hit);
+    // 카메라 외부 파라미터 설정 (이것도 걍 아무 값이나 넣어둔거임)
+    Mat R = Mat::eye(3,3,CV_64F);  // 회전 matrix
+    Mat t = (Mat_<double>(3,1) << 0,0,2);  // 카메라가 z=2m 위에 있다고 가정
 
-    cout << "예측 도착시간: " << t_hit << "초" << endl;
-    cout << "예측 위치: x=" << x_hit << ", y=" << y_hit << ", z=" << z_hit << endl;
+    // 테스트용 픽셀 좌표 (측면 카메라에서 본거임) -> 걍 암거나 넣어둠
+    vector<Point2f> detected_pixels = { Point2f(310,200), Point2f(315,180), Point2f(320,160) };
+
+    vector<double> x_points, z_points;
+
+    for (auto& uv : detected_pixels) {
+        Vec3d rayDir = pixelToCameraRay(uv, cameraMatrix);
+        Vec3d camPos = Vec3d(t.at<double>(0), t.at<double>(1), t.at<double>(2));
+        Point3d groundPoint = intersectRayWithGround(rayDir, camPos);
+
+        cout << "3D 지면 교점: (" << groundPoint.x << ", " << groundPoint.y << ", " << groundPoint.z << ")" << endl;
+
+        // 좌표계 변환
+        Vec3d worldPoint = transformToWorld(Vec3d(groundPoint.x, groundPoint.y, groundPoint.z), R, t);
+        x_points.push_back(worldPoint[0]);
+        z_points.push_back(worldPoint[2]);  // 높이
+    }
+
+    // 2차 회귀로 z(x) 궤적 근사
+    auto coeffs = quadraticFit(x_points, z_points);
+    cout << "회귀식: z = " << coeffs[0] << " * x^2 + " << coeffs[1] << " * x + " << coeffs[2] << endl;
+
+    double x_test = 2.0;
+    double z_test = evaluateQuadratic(coeffs, x_test);
+    cout << "x=" << x_test << "일 때 예측 높이 z=" << z_test << endl;
 
     return 0;
 }
