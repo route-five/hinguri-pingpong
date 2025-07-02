@@ -68,9 +68,11 @@ double evaluateQuadratic(const vector<double>& coeffs, double x) {
 
 int main() {
     // 카메라 내부 파라미터 설정 (걍 아무 값이나 넣어둔거임)
-    Mat cameraMatrix = (Mat_<double>(3,3) << 800, 0, 320,
-                                             0, 800, 240,
-                                             0,   0,   1);
+    Matx33d cameraMatrix({
+        800, 0, 320,
+        0, 800, 240 ,
+        0, 0, 1,
+    });
 
     // 카메라 외부 파라미터 설정 (이것도 걍 아무 값이나 넣어둔거임)
     Mat R = Mat::eye(3,3,CV_64F);  // 회전 matrix
