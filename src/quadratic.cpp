@@ -27,7 +27,7 @@ Point3d intersectRayWithGround(Vec3d rayDir, Vec3d camPos) {
 }
 
 Vec3d transformToWorld(Vec3d camPoint, Mat R, Mat t) {
-    Mat camMat = (Mat_<double>(3,1) << camPoint[0], camPoint[1], camPoint[2]);
+    Matx31d camMat({ camPoint[0], camPoint[1], camPoint[2] });
     Mat worldMat = R.t() * (camMat - t);
     return Vec3d(worldMat);
 }
