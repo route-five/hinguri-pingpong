@@ -126,8 +126,9 @@ int main() {
 
         tm.stop();
         auto ms = tm.getTimeMilli();
-        //std::cout << "Elapsed time: " << ms << "ms." << std::endl;
-
+#ifdef DEBUG
+        std::cout << "Elapsed time: " << ms << "ms." << std::endl;
+#endif
         cv::imshow("Low-Res Webcam with FPS", display);
         cv::imshow("Orange Detection", mask);
 
