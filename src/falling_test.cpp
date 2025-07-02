@@ -1,10 +1,8 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <chrono>
-
 #include "constants.hpp"
-
-#define PRINT
 
 int main() {
     cv::VideoCapture cap(0);
@@ -14,14 +12,16 @@ int main() {
     }
 
     // cap prop
-    cap.set(cv::CAP_PROP_FRAME_WIDTH, 32);
-    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 32);
+    // cap.set(cv::CAP_PROP_FRAME_WIDTH, 1280);
+    // cap.set(cv::CAP_PROP_FRAME_HEIGHT, 720);
     cap.set(cv::CAP_PROP_FPS, 120);
 
     cv::Mat frame, display;
     auto last_time = std::chrono::high_resolution_clock::now();
     int frame_count = 0;
     int fps = 0;
+    cv::TickMeter tm;
+    std::deque<cv::Point2f> trails;
 
     while (true) {
         cap >> frame;
@@ -31,7 +31,10 @@ int main() {
         }
 
         // calculate fps
+        tm.reset();
+        tm.start();
         frame_count++;
+
         auto current_time = std::chrono::high_resolution_clock::now();
         auto time_since_last_update = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - last_time).count();
         if (time_since_last_update >= 1000) {
@@ -64,15 +67,24 @@ int main() {
             float radius;
             cv::minEnclosingCircle(contour, center, radius);
 
-            if (radius > 10) {  // 네트에 닿아있을 때 radius = 10.6~7쯤 나옴
+            if (radius > 7) {
                 is_detected = true;
+
+                trails.push_back(center);
+                if (trails.size() > 30)
+                    trails.pop_front();
+                
                 cv::circle(display, center, static_cast<int>(radius), cv::Scalar(0, 0, 255), 2);
                 cv::circle(display, center, 2, cv::Scalar(255, 0, 0), -1);
+
+                for (int i = 0; i < trails.size() - 1; ++i) {
+                    cv::line(display, trails[i], trails[i + 1], cv::Scalar(255, 0, 0), 1 + 4 * ((double)i / trails.size()));
+                }
 #ifdef PRINT
                 std::cout << "Ball (radius=" << radius << ", x=" << center.x << ", y=" << center.y << ")" << std::endl;
 #endif
 
-                if (210 < center.y && center.y < 230) {
+                if (225 < center.y && center.y < 243) {
                     is_touched = true;
 #ifdef PRINT
                     std::cout << "Ball touched the ground at y=" << center.y << std::endl;
@@ -98,15 +110,23 @@ int main() {
         std::strftime(time_buffer, sizeof(time_buffer), "%Y%m%d_%H%M%S", &now_tm);
         std::string filename = std::string(time_buffer) + "_" + std::to_string(duration) + (is_detected ? "_detected" : "") + (is_touched ? "_touch" : "") + ".png";
 
-        cv::imwrite("img/test2/original/" + filename, frame);
-        cv::imwrite("img/test2/detect/" + filename, display);
+        cv::imwrite("img/test/original/" + filename, frame);
+        cv::imwrite("img/test/detect/" + filename, display);
         // std::cout << filename << " saved!" << std::endl;
 #endif
 
         // window
-        std::string fpsText = "FPS: " + std::to_string(fps);
-        cv::putText(display, fpsText, cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX,
-                    1.0, cv::Scalar(0, 255, 0), 2);
+        std::string fps_text = "FPS: " + std::to_string(fps) + "/" + std::to_string(static_cast<int>(cap.get(cv::CAP_PROP_FPS)));
+        std::string resolution_text = std::to_string(static_cast<int>(cap.get(cv::CAP_PROP_FRAME_WIDTH))) + "x" + std::to_string(static_cast<int>(cap.get(cv::CAP_PROP_FRAME_HEIGHT)));
+
+        cv::putText(display, resolution_text, cv::Point(10, 25), cv::FONT_HERSHEY_SIMPLEX,
+            0.7, cv::Scalar(0, 0, 255), 2);
+        cv::putText(display, fps_text, cv::Point(10, 50), cv::FONT_HERSHEY_SIMPLEX,
+            0.7, cv::Scalar(0, 0, 255), 2);
+
+        tm.stop();
+        auto ms = tm.getTimeMilli();
+        //std::cout << "Elapsed time: " << ms << "ms." << std::endl;
 
         cv::imshow("Low-Res Webcam with FPS", display);
         cv::imshow("Orange Detection", mask);
