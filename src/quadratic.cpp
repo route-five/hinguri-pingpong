@@ -51,9 +51,11 @@ vector<double> quadraticFit(const vector<double>& xs, const vector<double>& ys) 
         sumX2Y += x * x * y;
     }
 
-    Mat A = (Mat_<double>(3,3) << n, sumX, sumX2,
-                                  sumX, sumX2, sumX3,
-                                  sumX2, sumX3, sumX4);
+    Matx33d A({
+    	n, sumX, sumX2,
+	sumX, sumX2, sumX3,
+	sumX2, sumX3, sumX4
+    });
     Matx31d B(sumY, sumXY, sumX2Y);
 
     Mat coeffs;
