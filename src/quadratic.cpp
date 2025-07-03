@@ -47,9 +47,11 @@ std::vector<double> quadratic_fit(const std::vector<double>& xs, const std::vect
         sum_x2y += x * x * y;
     }
 
-    cv::Mat A = (cv::Mat_<double>(3,3) << n, sum_x, sum_x2,
-                                          sum_x, sum_x2, sum_x3,
-                                          sum_x2, sum_x3, sum_x4);
+    cv::Matx33d A({
+        n, sum_x, sum_x2,
+        sum_x, sum_x2, sum_x3,
+        sum_x2, sum_x3, sum_x4
+    });
     cv::Mat B = (cv::Mat_<double>(3,1) << sum_y, sum_xy, sum_x2y);
 
     cv::Mat coeffs;
