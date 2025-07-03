@@ -24,7 +24,7 @@ cv::Point3d intersect_ray_with_plane(const cv::Vec3d& ray_direction, const cv::V
 }
 
 cv::Vec3d camera_to_world(const cv::Vec3d& point_in_camera, const cv::Mat& rotation, const cv::Mat& translation) {
-    cv::Mat cam_point = (cv::Mat_<double>(3,1) << point_in_camera[0], point_in_camera[1], point_in_camera[2]);
+    cv::Matx31d cam_point({point_in_camera[0], point_in_camera[1], point_in_camera[2]});
     cv::Mat world_point = rotation.t() * (cam_point - translation);
     return cv::Vec3d(world_point);
 }
