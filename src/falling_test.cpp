@@ -15,7 +15,7 @@ int main() {
     // cap props
     // cap.set(cv::CAP_PROP_FRAME_WIDTH, TARGET_FRAME_WIDTH);
     // cap.set(cv::CAP_PROP_FRAME_HEIGHT, TARGET_FRAME_HEIGHT);
-    // cap.set(cv::CAP_PROP_FPS, TARGET_FPS);
+    cap.set(cv::CAP_PROP_FPS, TARGET_FPS);
 
     cv::Mat frame, display;
     auto last_time = std::chrono::high_resolution_clock::now();
@@ -57,12 +57,12 @@ int main() {
         bool is_touched = false, is_detected = false;
 
         for (const auto& contour : contours) {
-            if (cv::contourArea(contour) < CONTOUR_AREA_MAX) continue; // ignore small areas
+            if (cv::contourArea(contour) < CONTOUR_AREA_MIN) continue; // ignore small areas
 
             double area = cv::contourArea(contour);
             double perimeter = cv::arcLength(contour, true);
             double circularity = 4 * CV_PI * area / (perimeter * perimeter);
-            if (circularity < CIRCULARITY_MAX) continue;
+            if (circularity < CIRCULARITY_MIN) continue;
 
             cv::Point2f center;
             float radius;
