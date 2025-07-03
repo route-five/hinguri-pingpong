@@ -48,7 +48,7 @@ std::vector<double> quadratic_fit(const std::vector<double>& xs, const std::vect
     }
 
     cv::Matx33d A({
-        n, sum_x, sum_x2,
+        static_cast<double>(n), sum_x, sum_x2,
         sum_x, sum_x2, sum_x3,
         sum_x2, sum_x3, sum_x4
     });
