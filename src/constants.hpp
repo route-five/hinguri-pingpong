@@ -33,5 +33,15 @@ const cv::Mat CAMERA_TRANSLATION = (cv::Mat_<double>(3, 1) << 0, 0, 2);
 // Target Plane Height (예: 지면은 0m)
 constexpr double TARGET_PLANE_Z = 0.0;
 
+// Falling Test Params
+constexpr double TARGET_FRAME_WIDTH = 640;
+constexpr double TARGET_FRAME_HEIGHT = 480;
+constexpr double TARGET_FPS = 120;
+constexpr double CONTOUR_AREA_MIN = 100;
+constexpr double CIRCULARITY_MIN = 0.5;
+constexpr double RADIUS_MIN = 7;
+constexpr double TOUCHED_MIN = 225;
+constexpr double TOUCHED_MAX = 243;
+constexpr int TRAILS_SIZE = 30;
 
 #endif //CONSTANTS_HPP
