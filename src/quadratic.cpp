@@ -96,22 +96,27 @@ void process_ball_trajectory(
         std::vector<double> coeffs = quadratic_fit(x_points, z_points);
         std::cout << "회귀식: z = " << coeffs[0] << " * x^2 + " << coeffs[1] << " * x + " << coeffs[2] << std::endl;
 
-        double x_test = 2.0;
-        double z_test = evaluate_quadratic(coeffs, x_test);
-        std::cout << "x=" << x_test << "일 때 예측 높이 z=" << z_test << std::endl;
+        for (double x_test : {1.0, 2.0, 3.0}) {
+            double z_test = evaluate_quadratic(coeffs, x_test);
+            std::cout << "x=" << x_test << "일 때 예측 높이 z=" << z_test << std::endl;
+        }
     } else {
         std::cout << "데이터 포인트 부족 (최소 3개 필요)" << std::endl;
     }
 }
 
 int main() {
-    std::vector<cv::Point2f> detected_pixels = {
-        cv::Point2f(310,200),
-        cv::Point2f(315,180),
-        cv::Point2f(320,160)
+    std::vector<std::vector<cv::Point2f>> test_cases = {
+        { {310, 200}, {315, 180}, {320, 160} },
+        { {300, 210}, {305, 190}, {310, 170} },
+        { {330, 190}, {335, 170}, {340, 150} },
+        { {290, 220}, {295, 200}, {300, 180} }
     };
 
-    process_ball_trajectory(detected_pixels, CAMERA_MATRIX, CAMERA_ROTATION, CAMERA_TRANSLATION, TARGET_PLANE_Z);
+    for (size_t i = 0; i < test_cases.size(); ++i) {
+        std::cout << "\n[Test Case " << i + 1 << "]" << std::endl;
+        process_ball_trajectory(test_cases[i], CAMERA_MATRIX, CAMERA_ROTATION, CAMERA_TRANSLATION, TARGET_PLANE_Z);
+    }
 
     return 0;
 }
