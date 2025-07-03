@@ -1,4 +1,3 @@
-# hsv_range_finder.py
 import csv
 
 log_file = "hsv_log.txt"
