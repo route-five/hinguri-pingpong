@@ -4,9 +4,10 @@ project(hinguri_pingpong)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(hinguri_pingpong
+        src/falling_test.cpp
 #        src/opencv_test.cpp
 #        src/object_detection.cpp
-        src/quadratic.cpp
+#        src/quadratic.cpp
         #        src/opencv_test.cpp
 #        src/dynamixel/dynamixel.cpp
 #        src/dynamixel/mx64_p2.h
