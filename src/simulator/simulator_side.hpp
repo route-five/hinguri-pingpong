@@ -130,7 +130,7 @@ class SimulatorSide {
     constexpr float z_table = TABLE_Z_SIZE;
 
     do {
-      // 각도는 -45도 초과 ~ 45도 미만
+      // 각도는 -45도 이상 ~ 45도 미만
       init_angle = random.generate() * (angle_max - angle_min) + angle_min;
 
       init_pos =
