@@ -18,6 +18,8 @@
 
 // TODO: 튕겼을 때 pos, vel, angle 다시 계산해서 z(x)도 다시 바꿔야 함
 
+// TODO: min_speed, max_speed 계산 다시 하기
+
 class SimulatorSide {
  private:
   std::string window_name;
