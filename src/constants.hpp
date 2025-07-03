@@ -20,9 +20,11 @@ constexpr int CAMERA_WIDTH = 1920;
 constexpr int CAMERA_HEIGHT = 1080;
 
 // Camera Matrix
-const cv::Mat CAMERA_MATRIX = (cv::Mat_<double>(3,3) << 800, 0, 320,
-                                                      0, 800, 240,
-                                                      0,   0,   1);
+const cv::Matx33d CAMERA_MATRIX({
+    800, 0, 320,
+    0, 800, 240,
+    0, 0, 1
+});
 
 // Camera Extrinsic Parameters
 const cv::Mat CAMERA_ROTATION = cv::Mat::eye(3, 3, CV_64F);
