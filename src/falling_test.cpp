@@ -3,6 +3,7 @@
 #include <iostream>
 #include <chrono>
 #include "constants.hpp"
+#define PRINT
 
 int main() {
     cv::VideoCapture cap(0);
@@ -11,10 +12,10 @@ int main() {
         return -1;
     }
 
-    // cap prop
-    // cap.set(cv::CAP_PROP_FRAME_WIDTH, 1280);
-    // cap.set(cv::CAP_PROP_FRAME_HEIGHT, 720);
-    cap.set(cv::CAP_PROP_FPS, 120);
+    // cap props
+    // cap.set(cv::CAP_PROP_FRAME_WIDTH, TARGET_FRAME_WIDTH);
+    // cap.set(cv::CAP_PROP_FRAME_HEIGHT, TARGET_FRAME_HEIGHT);
+    // cap.set(cv::CAP_PROP_FPS, TARGET_FPS);
 
     cv::Mat frame, display;
     auto last_time = std::chrono::high_resolution_clock::now();
@@ -56,22 +57,22 @@ int main() {
         bool is_touched = false, is_detected = false;
 
         for (const auto& contour : contours) {
-            if (cv::contourArea(contour) < 100) continue; // ignore small areas
+            if (cv::contourArea(contour) < CONTOUR_AREA_MAX) continue; // ignore small areas
 
             double area = cv::contourArea(contour);
             double perimeter = cv::arcLength(contour, true);
             double circularity = 4 * CV_PI * area / (perimeter * perimeter);
-            if (circularity < 0.5) continue;
+            if (circularity < CIRCULARITY_MAX) continue;
 
             cv::Point2f center;
             float radius;
             cv::minEnclosingCircle(contour, center, radius);
 
-            if (radius > 7) {
+            if (radius > RADIUS_MIN) {
                 is_detected = true;
 
                 trails.push_back(center);
-                if (trails.size() > 30)
+                if (trails.size() > TRAILS_SIZE)
                     trails.pop_front();
                 
                 cv::circle(display, center, static_cast<int>(radius), cv::Scalar(0, 0, 255), 2);
@@ -84,7 +85,7 @@ int main() {
                 std::cout << "Ball (radius=" << radius << ", x=" << center.x << ", y=" << center.y << ")" << std::endl;
 #endif
 
-                if (225 < center.y && center.y < 243) {
+                if (TOUCHED_MIN < center.y && center.y < TOUCHED_MAX) {
                     is_touched = true;
 #ifdef PRINT
                     std::cout << "Ball touched the ground at y=" << center.y << std::endl;
