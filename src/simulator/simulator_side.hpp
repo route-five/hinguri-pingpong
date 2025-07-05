@@ -5,20 +5,17 @@
 #ifndef SIMULATOR_SIDE_HPP
 #define SIMULATOR_SIDE_HPP
 
-#include <csetjmp>
 #include <numbers>
 #include <opencv2/opencv.hpp>
 
 #include "../constants.hpp"
-#include "../random/Random.hpp"
+#include "../random/random.hpp"
 #include "simulator_property.hpp"
 
 // TODO: init_pos, init_vel, init_angle 없이 점 3개로 quadratic regression을
 //  하는 것도 구현하기
 
 // TODO: 튕겼을 때 pos, vel, angle 다시 계산해서 z(x)도 다시 바꿔야 함
-
-// TODO: min_speed, max_speed 계산 다시 하기
 
 class SimulatorSide {
  private:
@@ -88,25 +85,30 @@ class SimulatorSide {
 
   void render_trajectory() {
     // 속도 영역 그리기
-    cv::Mat overlay = img.clone();
     constexpr double alpha = 0.1;
+    cv::Mat overlay = img.clone();
     std::vector<cv::Point> polygon_points;
-    for (float x = 0; x <= TABLE_X_SIZE; ++x) {
-      polygon_points.push_back(to_pixel({x, z(x, init_min_vel)}));
+
+    for (float x = 0; x <= TABLE_X_SIZE; x += 1.0f) {
+      polygon_points.push_back(
+          to_pixel({x, std::max(0.0f, z(x, init_min_vel))}));
     }
     for (float x = TABLE_X_SIZE; x >= 0; x -= 1.0f) {
-      polygon_points.push_back(to_pixel({x, z(x, init_max_vel)}));
+      polygon_points.push_back(
+          to_pixel({x, std::max(0.0f, z(x, init_max_vel))}));
     }
+
     cv::fillPoly(overlay, {polygon_points}, color(0, 0, 255));
     cv::addWeighted(overlay, alpha, img, 1.0 - alpha, 0, img);
 
     // 포물선 궤적
-    for (float x = 0; x <= TABLE_X_SIZE; ++x) {
-      cv::circle(img, to_pixel({x, z(x)}), 2, color(0, 0, 255), -1);
-      cv::circle(img, to_pixel({x, z(x, init_min_vel)}), 1, color(0, 0, 255),
+    for (float x = 0; x <= TABLE_X_SIZE; x += 1.0f) {
+      cv::circle(img, to_pixel({x, std::max(0.0f, z(x))}), 2, color(0, 0, 255),
                  -1);
-      cv::circle(img, to_pixel({x, z(x, init_max_vel)}), 1, color(0, 0, 255),
-                 -1);
+      cv::circle(img, to_pixel({x, std::max(0.0f, z(x, init_min_vel))}), 1,
+                 color(0, 0, 255), -1);
+      cv::circle(img, to_pixel({x, std::max(0.0f, z(x, init_max_vel))}), 1,
+                 color(0, 0, 255), -1);
     }
     // 시작점
     cv::circle(img, to_pixel(init_pos), 6, color(255, 0, 0), -1);
@@ -133,39 +135,35 @@ class SimulatorSide {
 
     do {
       // 각도는 -45도 이상 ~ 45도 미만
-      init_angle = random.generate() * (angle_max - angle_min) + angle_min;
+      init_angle = random.generate(angle_min, angle_max);
+      init_pos = {0, random.generate(0, TABLE_Z_SIZE)};
 
-      init_pos =
-          random.generate() * (vertices[0] / 2 - vertices[1]) + vertices[1];
+      const float H = init_pos[1];
+      const float h = TABLE_NET_HEIGHT;
+      const float L = TABLE_X_SIZE;
+      const float g = GRAVITY;
+      const float theta = init_angle;
+      const float cos_theta = std::cos(theta);
+      const float tan_theta = std::tan(theta);
 
-      // 최소 속력 = 네트를 넘는 데 필요한 속력
-      const float tan_theta = std::tan(init_angle);
-      const float cos_theta = std::cos(init_angle);
+      const float common = g * cv::pow(L / cos_theta, 2);
 
-      const float dz_net = init_pos[1] - z_net;
-      const float dz_table = init_pos[1] - z_table;
+      const float net_speed_sq = common / (2 * (H + L * tan_theta));
+      const float end_speed_sq = common / (4 * L * tan_theta + 8 * (H - h));
 
-      const float min_speed_sq =
-          GRAVITY * x_table * x_table /
-          (2 * std::pow(cos_theta, 2) * (x_table * tan_theta + dz_net));
+      const float min_speed_sq = std::min(net_speed_sq, end_speed_sq);
+      const float max_speed_sq = std::max(net_speed_sq, end_speed_sq);
 
-      // 최대 속력 = 탁구대에 아웃되기 직전의 속력
-      const float max_speed_sq =
-          GRAVITY * x_table * x_table /
-          (2 * std::pow(cos_theta, 2) * (x_table * tan_theta + dz_table));
-
-      if (min_speed_sq > 0 && max_speed_sq > min_speed_sq) {
+      if (min_speed_sq >= 0 && max_speed_sq >= 0) {
         const float min_speed = std::sqrt(min_speed_sq);
         const float max_speed = std::sqrt(max_speed_sq);
 
-        const float speed =
-            random.generate() * (max_speed - min_speed) + min_speed;
+        const float init_speed = random.generate(min_speed, max_speed);
+        const cv::Vec2f dir = {std::cos(init_angle), std::sin(init_angle)};
 
-        init_vel = {speed * std::cos(init_angle), speed * std::sin(init_angle)};
-        init_max_vel = {max_speed * std::cos(init_angle),
-                        max_speed * std::sin(init_angle)};
-        init_min_vel = {min_speed * std::cos(init_angle),
-                        min_speed * std::sin(init_angle)};
+        init_vel = dir * init_speed;
+        init_min_vel = dir * min_speed;
+        init_max_vel = dir * max_speed;
         break;
       }
     } while (true);
