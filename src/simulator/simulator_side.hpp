@@ -43,6 +43,12 @@ class SimulatorSide {
            GRAVITY * x * x / (2 * cv::pow(vel[0], 2));
   }
 
+  static float z(const float x, const cv::Vec2f &pos, const cv::Vec2f &vel,
+                 const float angle) {
+    return pos[1] + x * std::tan(angle) -
+           GRAVITY * x * x / (2 * cv::pow(vel[0], 2));
+  }
+
   [[nodiscard]] cv::Point2i to_pixel(const cv::Vec2f &pt) const {
     return property.to_pixel(pt, TABLE_Z_SIZE);
   }
@@ -84,32 +90,62 @@ class SimulatorSide {
   }
 
   void render_trajectory() {
+    cv::Vec2f pos = init_pos;
+    cv::Vec2f before_pos = {0, 0};
+    cv::Vec2f vel = init_vel;
+    float angle = init_angle;
+
+    const float dx = 0.1f;
+    for (float x = 0; x <= TABLE_X_SIZE; x += dx) {
+      const float z =
+          SimulatorSide::z(x - before_pos[0], pos - before_pos, vel, angle);
+      const float next_z = SimulatorSide::z(x - before_pos[0] + dx,
+                                            pos - before_pos, vel, angle);
+
+      // 바닥에 닿을 때
+      if (z > 0 && next_z < 0) {
+        const cv::Vec2f d_pos = {dx, next_z - z};
+        const cv::Vec2f bounce_dir = d_pos.mul({1, -1}) / cv::norm(d_pos);
+        const float bounced_pos = x + z / (z - next_z);
+
+        angle = std::atan2(bounce_dir[1], bounce_dir[0]);
+        before_pos = {bounced_pos, 0};
+        pos = {bounced_pos, 0};
+        vel = {vel[0], std::sqrt(2 * GRAVITY * pos[1] + vel[1] * vel[1]) *
+                           TABLE_BOUNCE_COEFFICIENT};
+      }
+
+      cv::circle(img, to_pixel({x, z}), 1, color(0, 0, 255));
+    }
+
     // 속도 영역 그리기
-    constexpr double alpha = 0.1;
-    cv::Mat overlay = img.clone();
-    std::vector<cv::Point> polygon_points;
-
-    for (float x = 0; x <= TABLE_X_SIZE; x += 1.0f) {
-      polygon_points.push_back(
-          to_pixel({x, std::max(0.0f, z(x, init_min_vel))}));
-    }
-    for (float x = TABLE_X_SIZE; x >= 0; x -= 1.0f) {
-      polygon_points.push_back(
-          to_pixel({x, std::max(0.0f, z(x, init_max_vel))}));
-    }
-
-    cv::fillPoly(overlay, {polygon_points}, color(0, 0, 255));
-    cv::addWeighted(overlay, alpha, img, 1.0 - alpha, 0, img);
+    // constexpr double alpha = 0.1;
+    // cv::Mat overlay = img.clone();
+    // std::vector<cv::Point> polygon_points;
+    //
+    // for (float x = 0; x <= TABLE_X_SIZE; x += 1.0f) {
+    //   polygon_points.push_back(
+    //       to_pixel({x, std::max(0.0f, z(x, init_min_vel))}));
+    // }
+    // for (float x = TABLE_X_SIZE; x >= 0; x -= 1.0f) {
+    //   polygon_points.push_back(
+    //       to_pixel({x, std::max(0.0f, z(x, init_max_vel))}));
+    // }
+    //
+    // cv::fillPoly(overlay, {polygon_points}, color(0, 0, 255));
+    // cv::addWeighted(overlay, alpha, img, 1.0 - alpha, 0, img);
 
     // 포물선 궤적
-    for (float x = 0; x <= TABLE_X_SIZE; x += 1.0f) {
-      cv::circle(img, to_pixel({x, std::max(0.0f, z(x))}), 2, color(0, 0, 255),
-                 -1);
-      cv::circle(img, to_pixel({x, std::max(0.0f, z(x, init_min_vel))}), 1,
-                 color(0, 0, 255), -1);
-      cv::circle(img, to_pixel({x, std::max(0.0f, z(x, init_max_vel))}), 1,
-                 color(0, 0, 255), -1);
-    }
+    // for (float x = 0; x <= TABLE_X_SIZE; x += 1.0f) {
+    //   cv::circle(img, to_pixel({x, std::max(0.0f, z(x))}), 2, color(0, 0,
+    //   255),
+    //              -1);
+    //   cv::circle(img, to_pixel({x, std::max(0.0f, z(x, init_min_vel))}), 1,
+    //              color(0, 0, 255), -1);
+    //   cv::circle(img, to_pixel({x, std::max(0.0f, z(x, init_max_vel))}), 1,
+    //              color(0, 0, 255), -1);
+    // }
+
     // 시작점
     cv::circle(img, to_pixel(init_pos), 6, color(255, 0, 0), -1);
 

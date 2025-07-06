@@ -7,11 +7,15 @@
 
 #include <opencv2/opencv.hpp>
 
-// Table Size (cm)
+// Environment
+constexpr float GRAVITY = 981;  // 중력 가속도 (cm/s^2)
+
+// Table Constants (cm)
 constexpr float TABLE_X_SIZE = 152.5;
 constexpr float TABLE_Y_SIZE = 274;
 constexpr float TABLE_Z_SIZE = 100;
 constexpr float TABLE_NET_HEIGHT = 15.25;
+constexpr float TABLE_BOUNCE_COEFFICIENT = 0.2;
 
 // Orange Ball Colors
 const cv::Scalar ORANGE_MIN = cv::Scalar(12, 140, 160);  // HSV
@@ -31,9 +35,6 @@ const cv::Mat CAMERA_TRANSLATION = (cv::Mat_<double>(3, 1) << 0, 0, 2);
 
 // Target Plane Height (예: 지면은 0m)
 constexpr double TARGET_PLANE_Z = 0.0;
-
-// Environment
-constexpr float GRAVITY = 981;  // 중력 가속도 (cm/s^2)
 
 // Falling Test Params
 constexpr double TARGET_FRAME_WIDTH = 640;
