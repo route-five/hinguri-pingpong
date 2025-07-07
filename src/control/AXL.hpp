@@ -40,7 +40,7 @@
 #ifndef __AXT_AXL_H__
 #define __AXT_AXL_H__
 
-#include "AXHS.h"
+#include "AXHS.hpp"
 // #include "AXA.h"
 //#include "AXD.h"
 //#include "AXM.h"
