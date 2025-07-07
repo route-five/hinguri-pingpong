@@ -5,7 +5,6 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(hinguri_pingpong
         test/opencv/thread_fps.cpp
-        #        test/opencv/default_fps.cpp
 )
 
 #set(OpenCV_DIR "C:/OpenCV/x64/mingw/lib")
