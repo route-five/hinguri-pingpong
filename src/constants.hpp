@@ -44,4 +44,8 @@ constexpr double TOUCHED_MIN = 225;
 constexpr double TOUCHED_MAX = 243;
 constexpr int TRAILS_SIZE = 30;
 
+// Linear Motor
+constexpr int LINEAR_MOTOR_VEL = 700;
+constexpr int LINEAR_MOTOR_ACCEL = 200;
+
 #endif //CONSTANTS_HPP
