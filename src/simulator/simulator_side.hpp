@@ -15,12 +15,11 @@
 // TODO: init_pos, init_vel, init_angle 없이 점 3개로 quadratic regression을
 //  하는 것도 구현하기
 
-// TODO: 튕겼을 때 pos, vel, angle 다시 계산해서 z(x)도 다시 바꿔야 함
-
-class SimulatorSide {
+namespace Simulator {
+class Side {
  private:
   std::string window_name;
-  const SimulatorProperty property;
+  const Property property;
 
   cv::Mat img;
   cv::Vec2f vertices[4] = {{0, TABLE_Z_SIZE},
@@ -33,20 +32,11 @@ class SimulatorSide {
   cv::Vec2f init_min_vel;
   float init_angle;
 
-  float z(const float x) {
-    return init_pos[1] + x * std::tan(init_angle) -
-           GRAVITY * x * x / (2 * cv::pow(init_vel[0], 2));
-  }
-
-  float z(const float x, const cv::Vec2f &vel) {
-    return init_pos[1] + x * std::tan(init_angle) -
-           GRAVITY * x * x / (2 * cv::pow(vel[0], 2));
-  }
-
-  static float z(const float x, const cv::Vec2f &pos, const cv::Vec2f &vel,
-                 const float angle) {
-    return pos[1] + x * std::tan(angle) -
-           GRAVITY * x * x / (2 * cv::pow(vel[0], 2));
+  static float z(const float x, const cv::Vec2f &start_pos,
+                 const cv::Vec2f &vel, const float angle) {
+    return start_pos[1] + (x - start_pos[0]) * std::tan(angle) -
+           GRAVITY * (x - start_pos[0]) * (x - start_pos[0]) /
+               (2 * cv::pow(vel[0], 2));
   }
 
   [[nodiscard]] cv::Point2i to_pixel(const cv::Vec2f &pt) const {
@@ -63,7 +53,7 @@ class SimulatorSide {
   void render_pingpong_table() const {
     // 탁구대 그리기
     cv::line(img, to_pixel(vertices[1]), to_pixel(vertices[2]), color(0, 0, 0),
-             2);
+             1, cv::LINE_AA);
 
     // 중앙 네트 라인 그리기
     const cv::Vec2f mid_top = {TABLE_X_SIZE / 2, TABLE_NET_HEIGHT};
@@ -75,47 +65,42 @@ class SimulatorSide {
   void render_axis(const int arrow_size) {
     cv::arrowedLine(img, {property.margin, img.rows - property.margin},
                     {property.margin + arrow_size, img.rows - property.margin},
-                    color(0, 0, 0), 2);
+                    color(0, 0, 0), 1, cv::LINE_AA);
     cv::arrowedLine(img, {property.margin, img.rows - property.margin},
                     {property.margin, img.rows - property.margin - arrow_size},
-                    color(0, 0, 0), 2);
+                    color(0, 0, 0), 1, cv::LINE_AA);
     cv::putText(
         img, "x",
         {property.margin + arrow_size + 5, img.rows - property.margin - 5},
-        cv::FONT_HERSHEY_SIMPLEX, 0.5, color(0, 0, 0), 1);
+        cv::FONT_HERSHEY_SIMPLEX, 0.5, color(0, 0, 0), 1, cv::LINE_AA);
     cv::putText(
         img, "z",
         {property.margin - 15, img.rows - property.margin - arrow_size - 5},
-        cv::FONT_HERSHEY_SIMPLEX, 0.5, color(0, 0, 0), 1);
+        cv::FONT_HERSHEY_SIMPLEX, 0.5, color(0, 0, 0), 1, cv::LINE_AA);
   }
 
   void render_trajectory() {
-    cv::Vec2f pos = init_pos;
-    cv::Vec2f before_pos = {0, 0};
+    // cv::Vec2f pos = init_pos;
+    cv::Vec2f start_pos = init_pos;
     cv::Vec2f vel = init_vel;
     float angle = init_angle;
 
-    const float dx = 0.1f;
+    constexpr float dx = 0.1f;
     for (float x = 0; x <= TABLE_X_SIZE; x += dx) {
-      const float z =
-          SimulatorSide::z(x - before_pos[0], pos - before_pos, vel, angle);
-      const float next_z = SimulatorSide::z(x - before_pos[0] + dx,
-                                            pos - before_pos, vel, angle);
+      const float z = Side::z(x, start_pos, vel, angle);
+      const float next_z = Side::z(x + dx, start_pos, vel, angle);
 
       // 바닥에 닿을 때
       if (z > 0 && next_z < 0) {
-        const cv::Vec2f d_pos = {dx, next_z - z};
-        const cv::Vec2f bounce_dir = d_pos.mul({1, -1}) / cv::norm(d_pos);
         const float bounced_pos = x + z / (z - next_z);
 
-        angle = std::atan2(bounce_dir[1], bounce_dir[0]);
-        before_pos = {bounced_pos, 0};
-        pos = {bounced_pos, 0};
-        vel = {vel[0], std::sqrt(2 * GRAVITY * pos[1] + vel[1] * vel[1]) *
+        vel = {vel[0], std::sqrt(2 * GRAVITY * start_pos[1] + vel[1] * vel[1]) *
                            TABLE_BOUNCE_COEFFICIENT};
+        start_pos = {bounced_pos, 0};
+        angle = std::atan2(vel[1], vel[0]);
       }
 
-      cv::circle(img, to_pixel({x, z}), 1, color(0, 0, 255));
+      cv::circle(img, to_pixel({x, z}), 1, color(0, 0, 255), 1, cv::LINE_AA);
     }
 
     // 속도 영역 그리기
@@ -147,7 +132,7 @@ class SimulatorSide {
     // }
 
     // 시작점
-    cv::circle(img, to_pixel(init_pos), 6, color(255, 0, 0), -1);
+    cv::circle(img, to_pixel(init_pos), 6, color(255, 0, 0), 1, cv::LINE_AA);
 
     // 초기 각도 화살표 그리기
     constexpr float arrow_length = 20.0f;
@@ -155,7 +140,7 @@ class SimulatorSide {
                                  std::sin(init_angle) * arrow_length};
     const cv::Point2i arrow_start = to_pixel(init_pos);
     const cv::Point2i arrow_end = to_pixel(init_pos + arrow_dir);
-    cv::arrowedLine(img, arrow_start, arrow_end, color(0, 200, 0), 2,
+    cv::arrowedLine(img, arrow_start, arrow_end, color(0, 200, 0), 1,
                     cv::LINE_AA);
   }
 
@@ -205,10 +190,9 @@ class SimulatorSide {
     } while (true);
   }
 
-  explicit SimulatorSide(
-      const std::string &window_name, const cv::Vec2f &init_pos,
-      const cv::Vec2f &init_vel, const float init_angle,
-      const SimulatorProperty &property = SimulatorProperty())
+  explicit Side(const std::string &window_name, const cv::Vec2f &init_pos,
+                const cv::Vec2f &init_vel, const float init_angle,
+                const Property &property = Property())
       : window_name{window_name},
         property{property},
         init_pos{init_pos},
@@ -221,9 +205,8 @@ class SimulatorSide {
     img = cv::Mat(img_h, img_w, CV_8UC3);
   }
 
-  explicit SimulatorSide(
-      const std::string &window_name,
-      const SimulatorProperty &property = SimulatorProperty())
+  explicit Side(const std::string &window_name,
+                const Property &property = Property())
       : window_name{window_name}, property{property} {
     const int img_w =
         static_cast<int>(TABLE_X_SIZE * property.scale) + 2 * property.margin;
@@ -243,5 +226,6 @@ class SimulatorSide {
     cv::imshow(window_name, img);
   }
 };
+}  // namespace Simulator
 
 #endif  // SIMULATOR_SIDE_HPP

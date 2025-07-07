@@ -15,7 +15,7 @@ constexpr float TABLE_X_SIZE = 152.5;
 constexpr float TABLE_Y_SIZE = 274;
 constexpr float TABLE_Z_SIZE = 100;
 constexpr float TABLE_NET_HEIGHT = 15.25;
-constexpr float TABLE_BOUNCE_COEFFICIENT = 0.2;
+constexpr float TABLE_BOUNCE_COEFFICIENT = 0.8;
 
 // Orange Ball Colors
 const cv::Scalar ORANGE_MIN = cv::Scalar(12, 140, 160);  // HSV

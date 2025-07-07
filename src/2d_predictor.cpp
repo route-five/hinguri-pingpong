@@ -2,8 +2,8 @@
 #include "simulator/simulator_top.hpp"
 
 int main() {
-  SimulatorTop top("Top View");
-  SimulatorSide side("Side View");
+  Simulator::Top top("Top View");
+  Simulator::Side side("Side View");
 
   std::cout << "Press 'r' to rerun or 'q' to exit." << std::endl;
 

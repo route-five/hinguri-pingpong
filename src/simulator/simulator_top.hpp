@@ -12,10 +12,11 @@
 #include "../random/Random.hpp"
 #include "simulator_property.hpp"
 
-class SimulatorTop {
+namespace Simulator {
+class Top {
  private:
   std::string window_name;
-  const SimulatorProperty property;
+  const Property property;
 
   cv::Mat img;
   cv::Vec2f vertices[4] = {{0, TABLE_Y_SIZE},
@@ -155,9 +156,8 @@ class SimulatorTop {
     init_angle = random.generate() * (angle_max - angle_min) + angle_min;
   }
 
-  explicit SimulatorTop(const std::string &window_name,
-                        const cv::Vec2f &init_pos, const float init_angle,
-                        const SimulatorProperty &property = SimulatorProperty())
+  explicit Top(const std::string &window_name, const cv::Vec2f &init_pos,
+               const float init_angle, const Property &property = Property())
       : window_name{window_name},
         property{property},
         init_pos{init_pos},
@@ -169,8 +169,8 @@ class SimulatorTop {
     img = cv::Mat(img_h, img_w, CV_8UC3);
   }
 
-  explicit SimulatorTop(const std::string &window_name,
-                        const SimulatorProperty &property = SimulatorProperty())
+  explicit Top(const std::string &window_name,
+               const Property &property = Property())
       : window_name{window_name}, property{property} {
     const int img_w =
         static_cast<int>(TABLE_X_SIZE * property.scale) + 2 * property.margin;
@@ -191,5 +191,6 @@ class SimulatorTop {
     cv::imshow(window_name, img);
   }
 };
+}  // namespace Simulator
 
 #endif  // INC_SIMULATOR_2D_HPP

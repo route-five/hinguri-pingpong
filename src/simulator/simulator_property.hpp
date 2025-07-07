@@ -7,15 +7,16 @@
 
 #include <opencv2/opencv.hpp>
 
-class SimulatorProperty {
+namespace Simulator {
+class Property {
  public:
   float scale = 3.0f;
   int margin = 50;
 
-  SimulatorProperty() = default;
-  explicit SimulatorProperty(const float scale) : scale{scale} {}
-  explicit SimulatorProperty(const int border) : margin{border} {}
-  SimulatorProperty(const float scale, const int border)
+  Property() = default;
+  explicit Property(const float scale) : scale{scale} {}
+  explicit Property(const int border) : margin{border} {}
+  Property(const float scale, const int border)
       : scale{scale}, margin{border} {}
 
   [[nodiscard]] cv::Point2i to_pixel(const cv::Vec2f &pt,
@@ -24,5 +25,6 @@ class SimulatorProperty {
             static_cast<int>((max_y - pt[1]) * scale) + margin};
   }
 };
+}  // namespace Simulator
 
 #endif  // SIMULATOR_PROPERTY_HPP
