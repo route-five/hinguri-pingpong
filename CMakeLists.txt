@@ -4,20 +4,8 @@ project(hinguri_pingpong)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(hinguri_pingpong
-        src/falling_test.cpp
-#        src/opencv_test.cpp
-#        src/object_detection.cpp
-#        src/quadratic.cpp
-        #        src/opencv_test.cpp
-#        src/dynamixel/dynamixel.cpp
-#        src/dynamixel/mx64_p2.h
-#        src/dynamixel/protocol2.h
-#        src/dynamixel/macros.h
-#        src/dynamixel/dynamixel.h
-#        src/dynamixel/mx28_p2.h
-#        src/2d_predictor.cpp
-#        src/random/Random.hpp
-#        src/simulator/Simulator2D.hpp
+        test/opencv/thread_fps.cpp
+        #        test/opencv/default_fps.cpp
 )
 
 #set(OpenCV_DIR "C:/OpenCV/x64/mingw/lib")
@@ -37,5 +25,5 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake-mod
 # Library Linking
 target_link_libraries(hinguri_pingpong
         ${OpenCV_LIBS}
-#        dynamixel_sdk::dynamixel_sdk
+        #        dynamixel_sdk::dynamixel_sdk
 )
