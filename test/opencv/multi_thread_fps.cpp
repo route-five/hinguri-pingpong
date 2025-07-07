@@ -22,10 +22,11 @@ class FramePipeline {
   std::thread process_thread;
 
   int fps_target;
-  std::atomic<double> capture_fps{0.0}; // ✅ 실제 fps 저장
+  std::atomic<double> capture_fps{0.0};
 
 public:
-  FramePipeline(int device = 0, int fps = 120) : fps_target(fps) {
+  explicit FramePipeline(const int device = 0, const int fps = 120)
+      : fps_target(fps) {
     cap.open(device);
     if (!cap.isOpened())
       throw std::runtime_error("카메라 열기 실패");
@@ -35,7 +36,6 @@ public:
   void start() {
     running = true;
 
-    // ✅ 캡처 스레드에서 FPS 계산
     capture_thread = std::thread([&]() {
       int frame_count = 0;
       auto last_time = std::chrono::high_resolution_clock::now();
@@ -53,9 +53,10 @@ public:
         }
 
         auto now = std::chrono::high_resolution_clock::now();
-        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
-                           now - last_time)
-                           .count();
+        const auto elapsed =
+            std::chrono::duration_cast<std::chrono::milliseconds>(now -
+                                                                  last_time)
+                .count();
         if (elapsed >= 1000) {
           capture_fps = frame_count * 1000.0 / elapsed;
           frame_count = 0;
