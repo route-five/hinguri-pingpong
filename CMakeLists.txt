@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(hinguri_pingpong
         test/opencv/thread_fps.cpp
-        src/control/linear_motor.hpp
+        src/control/CLinear_actu.hpp
         src/control/AXL.hpp
         src/control/AXM.hpp
 )

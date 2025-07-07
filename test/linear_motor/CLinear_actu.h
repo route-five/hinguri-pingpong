@@ -5,10 +5,10 @@
 #include <conio.h>
 #include <iostream>
 
-class linear_motor
+class CLinear_actu
 {
 public:
-	linear_motor();
-	~linear_motor();
+	CLinear_actu();
+	~CLinear_actu();
 	void move_actu(int pos);
 };

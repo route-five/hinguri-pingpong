@@ -2,6 +2,9 @@
 // Created by 임정훈 on 25. 7. 7.
 //
 
+#ifndef CLINEAR_ACTU_HPP
+#define CLINEAR_ACTU_HPP
+
 #pragma once
 #include "AXL.hpp"
 #include "AXM.hpp"
@@ -14,10 +17,10 @@ char mot_file[] = "hingrui.mot"; // *.mot file Path
 int vel = LINEAR_MOTOR_VEL;
 int accel = LINEAR_MOTOR_ACCEL;
 
-class linear_motor
+class CLinear_actu
 {
 public:
-    linear_motor()
+    CLinear_actu()
     {
         DWORD Code = AxlOpen(7);
         if (Code == AXT_RT_SUCCESS) {
@@ -45,7 +48,7 @@ public:
             }
         }
     };
-    ~linear_motor()
+    ~CLinear_actu()
     {
         AxmSignalServoOn(0, 0);
         AxlClose();
@@ -62,7 +65,9 @@ public:
 };
 
 int move_linear(int x) {
-    linear_motor actuator;
+    CLinear_actu actuator;
     printf("Move Actu. \n");
     actuator.move_actu(x);
 }
+
+#endif //CLINEAR_ACTU_HPP
