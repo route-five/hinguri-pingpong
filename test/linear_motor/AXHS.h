@@ -49,7 +49,7 @@ typedef int                                 BOOL;
 typedef void                                *HANDLE;
 #endif
 
-// º£ÀÌ½ºº¸µå Á¤ÀÇ
+// ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 #ifndef __AXT_BASE_BOARD__
 #define __AXT_BASE_BOARD__
 typedef enum _AXT_BASE_BOARD
@@ -67,12 +67,12 @@ typedef enum _AXT_BASE_BOARD
     AXT_BEFR                                                = 0x0A,    // PCIe bus, Full size
     AXT_BEHD                                                = 0x0B,    // PCIe bus, Half size, DB-32T
     AXT_FMNSH4D                                             = 0x52,    // ISA bus, Full size, DB-32T, SIO-2V03 * 2
-    AXT_PCI_DI64R                                           = 0x43,    // PCI bus, Digital IN 64Á¡
-    AXT_PCIE_DI64R                                          = 0x44,    // PCIe bus, Digital IN 64Á¡
-    AXT_PCI_DO64R                                           = 0x53,    // PCI bus, Digital OUT 64Á¡
-    AXT_PCIE_DO64R                                          = 0x54,    // PCIe bus, Digital OUT 64Á¡
-    AXT_PCI_DB64R                                           = 0x63,    // PCI bus, Digital IN 32Á¡, OUT 32Á¡
-    AXT_PCIE_DB64R                                          = 0x64,    // PCIe bus, Digital IN 32Á¡, OUT 32Á¡
+    AXT_PCI_DI64R                                           = 0x43,    // PCI bus, Digital IN 64ï¿½ï¿½
+    AXT_PCIE_DI64R                                          = 0x44,    // PCIe bus, Digital IN 64ï¿½ï¿½
+    AXT_PCI_DO64R                                           = 0x53,    // PCI bus, Digital OUT 64ï¿½ï¿½
+    AXT_PCIE_DO64R                                          = 0x54,    // PCIe bus, Digital OUT 64ï¿½ï¿½
+    AXT_PCI_DB64R                                           = 0x63,    // PCI bus, Digital IN 32ï¿½ï¿½, OUT 32ï¿½ï¿½
+    AXT_PCIE_DB64R                                          = 0x64,    // PCIe bus, Digital IN 32ï¿½ï¿½, OUT 32ï¿½ï¿½
     AXT_BPFR_COM                                            = 0x70,    // PCI bus, Full size, For serial function modules.
     AXT_PCIN204                                             = 0x82,    // PCI bus, Half size On-Board 2 Axis controller.
     AXT_BPHD                                                = 0x83,    // PCI bus, Half size, DB-32T
@@ -115,7 +115,7 @@ typedef enum _AXT_BASE_BOARD
 } AXT_BASE_BOARD;                                                      
 #endif                                                                 
                                                                        
-// ¸ðµâ Á¤ÀÇ                                                           
+// ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½                                                           
 #ifndef __AXT_FUNC_MODULE__                                            
 #define __AXT_FUNC_MODULE__
 typedef enum _AXT_FUNC_MODULE
@@ -184,32 +184,32 @@ typedef enum _AXT_FUNC_MODULE
     AXT_SIO_RDO32MLIIISFA                                   = 0x7B,    // DO slave module, MechatroLink III AXT(SFA), OUT 32-Channel  NPN
     AXT_SIO_RDB32MLIIISFA                                   = 0x7C,    // DB slave module, MechatroLink III AXT(SFA), IN 16-Channel, OUT 16-Channel  NPN
     AXT_SIO_RDB128MLIIIAI                                   = 0x7D,    // Intelligent I/O (Product by IAI), For MLII only
-    AXT_SIO_RSIMPLEIOMLII                                   = 0x7E,    // Digital IN/Out xxÁ¡, Simple I/O series, MLII Àü¿ë.
+    AXT_SIO_RSIMPLEIOMLII                                   = 0x7E,    // Digital IN/Out xxï¿½ï¿½, Simple I/O series, MLII ï¿½ï¿½ï¿½ï¿½.
     AXT_SIO_RDO16AMLIII                                     = 0x7F,    // DO slave module, MechatroLink III M-SYSTEM, OUT 16-Channel, NPN
     AXT_SIO_RDI16MLII                                       = 0x80,    // DISCRETE INPUT MODULE, 16 points (Product by M-SYSTEM), For MLII only
     AXT_SIO_RDO16AMLII                                      = 0x81,    // NPN TRANSISTOR OUTPUT MODULE, 16 points (Product by M-SYSTEM), For MLII only
     AXT_SIO_RDO16BMLII                                      = 0x82,    // PNP TRANSISTOR OUTPUT MODULE, 16 points (Product by M-SYSTEM), For MLII only 
     AXT_SIO_RDB96MLII                                       = 0x83,    // Digital IN/OUT(Selectable), MAX 96 points, For MLII only
-    AXT_SIO_RDO32RTEX                                       = 0x84,    // Digital OUT  32Á¡
-    AXT_SIO_RDI32RTEX                                       = 0x85,    // Digital IN  32Á¡
-    AXT_SIO_RDB32RTEX                                       = 0x86,    // Digital IN/OUT  32Á¡
-    AXT_SIO_RDO32RTEXNT1_D1                                 = 0x87,    // Digital OUT 32Á¡ IntekPlus Àü¿ë
-    AXT_SIO_RDI32RTEXNT1_D1                                 = 0x88,    // Digital IN 32Á¡ IntekPlus Àü¿ë
-    AXT_SIO_RDB32RTEXNT1_D1                                 = 0x89,    // Digital IN/OUT 32Á¡ IntekPlus Àü¿ë
+    AXT_SIO_RDO32RTEX                                       = 0x84,    // Digital OUT  32ï¿½ï¿½
+    AXT_SIO_RDI32RTEX                                       = 0x85,    // Digital IN  32ï¿½ï¿½
+    AXT_SIO_RDB32RTEX                                       = 0x86,    // Digital IN/OUT  32ï¿½ï¿½
+    AXT_SIO_RDO32RTEXNT1_D1                                 = 0x87,    // Digital OUT 32ï¿½ï¿½ IntekPlus ï¿½ï¿½ï¿½ï¿½
+    AXT_SIO_RDI32RTEXNT1_D1                                 = 0x88,    // Digital IN 32ï¿½ï¿½ IntekPlus ï¿½ï¿½ï¿½ï¿½
+    AXT_SIO_RDB32RTEXNT1_D1                                 = 0x89,    // Digital IN/OUT 32ï¿½ï¿½ IntekPlus ï¿½ï¿½ï¿½ï¿½
     AXT_SIO_RDO16BMLIII                                     = 0x8A,    // DO slave module, MechatroLink III M-SYSTEM, OUT 16-Channel, PNP
     AXT_SIO_RDB32ML2NT1                                     = 0x8B,    // DB slave module, MechatroLink2 AJINEXTEK NT1 Series
     AXT_SIO_RDB128YSMLIII                                   = 0x8C,    // IO slave module, MechatroLink III Any, Max. IN 480-Channel, Max. OUT 480-Channel
-    AXT_SIO_DI32_P                                          = 0x92,    // Digital IN  32Á¡, PNP type(source type)
-    AXT_SIO_DO32T_P                                         = 0x93,    // Digital OUT 32Á¡, Power TR, PNT type(source type)
-    AXT_SIO_RDB128MLII                                      = 0x94,    // Digital IN 64Á¡ / OUT 64Á¡, MLII Àü¿ë(JEPMC-IO2310)
-    AXT_SIO_RDI32                                           = 0x95,    // Digital IN  32Á¡, For RTEX only
-    AXT_SIO_RDO32                                           = 0x96,    // Digital OUT 32Á¡, For RTEX only
-    AXT_SIO_DI32                                            = 0x97,    // Digital IN  32Á¡
-    AXT_SIO_DO32P                                           = 0x98,    // Digital OUT 32Á¡
-    AXT_SIO_DB32P                                           = 0x99,    // Digital IN 16Á¡ / OUT 16Á¡
-    AXT_SIO_RDB32T                                          = 0x9A,    // Digital IN 16Á¡ / OUT 16Á¡, For RTEX only
-    AXT_SIO_DO32T                                           = 0x9E,    // Digital OUT 16Á¡, Power TR OUTPUT
-    AXT_SIO_DB32T                                           = 0x9F,    // Digital IN 16Á¡ / OUT 16Á¡, Power TR OUTPUT
+    AXT_SIO_DI32_P                                          = 0x92,    // Digital IN  32ï¿½ï¿½, PNP type(source type)
+    AXT_SIO_DO32T_P                                         = 0x93,    // Digital OUT 32ï¿½ï¿½, Power TR, PNT type(source type)
+    AXT_SIO_RDB128MLII                                      = 0x94,    // Digital IN 64ï¿½ï¿½ / OUT 64ï¿½ï¿½, MLII ï¿½ï¿½ï¿½ï¿½(JEPMC-IO2310)
+    AXT_SIO_RDI32                                           = 0x95,    // Digital IN  32ï¿½ï¿½, For RTEX only
+    AXT_SIO_RDO32                                           = 0x96,    // Digital OUT 32ï¿½ï¿½, For RTEX only
+    AXT_SIO_DI32                                            = 0x97,    // Digital IN  32ï¿½ï¿½
+    AXT_SIO_DO32P                                           = 0x98,    // Digital OUT 32ï¿½ï¿½
+    AXT_SIO_DB32P                                           = 0x99,    // Digital IN 16ï¿½ï¿½ / OUT 16ï¿½ï¿½
+    AXT_SIO_RDB32T                                          = 0x9A,    // Digital IN 16ï¿½ï¿½ / OUT 16ï¿½ï¿½, For RTEX only
+    AXT_SIO_DO32T                                           = 0x9E,    // Digital OUT 16ï¿½ï¿½, Power TR OUTPUT
+    AXT_SIO_DB32T                                           = 0x9F,    // Digital IN 16ï¿½ï¿½ / OUT 16ï¿½ï¿½, Power TR OUTPUT
     AXT_SIO_RAI16RB                                         = 0xA0,    // A0h(160) : AI 16Ch, 16 bit, For RTEX only
     AXT_SIO_AI4RB                                           = 0xA1,    // A1h(161) : AI 4Ch, 12 bit
     AXT_SIO_AO4RB                                           = 0xA2,    // A2h(162) : AO 4Ch, 12 bit
@@ -279,280 +279,280 @@ typedef enum _AXT_FUNC_MODULE
 #define __AXT_FUNC_RESULT__
 typedef enum _AXT_FUNC_RESULT
 {
-    AXT_RT_SUCCESS                                          = 0,       // API ÇÔ¼ö ¼öÇà ¼º°ø
-    AXT_RT_OPEN_ERROR                                       = 1001,    // ¶óÀÌºê·¯¸® ¿ÀÇÂ µÇÁö¾ÊÀ½
-    AXT_RT_OPEN_ALREADY                                     = 1002,    // ¶óÀÌºê·¯¸® ¿ÀÇÂ µÇ¾îÀÖ°í »ç¿ë ÁßÀÓ
-    AXT_RT_NOT_INITIAL                                      = 1052,    // Serial moduleÀÌ ÃÊ±âÈ­µÇ¾îÀÖÁö ¾ÊÀ½
-    AXT_RT_NOT_OPEN                                         = 1053,    // ¶óÀÌºê·¯¸® ÃÊ±âÈ­ ½ÇÆÐ
-    AXT_RT_NOT_SUPPORT_VERSION                              = 1054,    // Áö¿øÇÏÁö¾Ê´Â ÇÏµå¿þ¾î
-    AXT_RT_LOCK_FILE_MISMATCH                               = 1055,    // LockÆÄÀÏ°ú ÇöÀç ScanÁ¤º¸°¡ ÀÏÄ¡ÇÏÁö ¾ÊÀ½ 
-    AXT_RT_MASTER_VERSION_MISMATCH                          = 1056,    // Library¿Í EtherCAT Master ¹öÁ¯ÀÌ ÀÏÄ¡ÇÏÁö ¾ÊÀ½
-    AXT_RT_NOT_RUN_EZMANAGER                                = 1057,    // EzManager°¡ ½ÇÇàµÇÁö¾ÊÀ½
-    AXT_RT_NOT_FIND_BIN_FILE                                = 1058,    // BIN ÆÄÀÏÀ» Ã£À» ¼ö ¾øÀ½
-    AXT_RT_NOT_FIND_ENI_FILE                                = 1059,    // ENI ÆÄÀÏÀ» Ã£À» ¼ö ¾øÀ½
-    AXT_RT_NOT_FIND_CONFIG_FILE                             = 1060,    // Config ÆÄÀÏÀ» Ã£À» ¼ö ¾øÀ½
-    AXT_RT_RTOS_OPEN_ERROR                                  = 1061,    // RTOS Open ½ÇÆÐ    
-    AXT_RT_SLAVE_CONFIG_ERROR                               = 1062,    // RTOS Slave Config ½ÇÆÐ     
-    AXT_RT_SLAVE_OP_TIMEOUT_WARNING                         = 1063,    // SlaveµéÀÌ OP ¸ðµå°¡ µÉ ¶§±îÁö ´ë±âÁß TimeoutÀÌ ¹ß»ý
-    AXT_RT_SLAVE_NOT_OP                                     = 1064,    // OP ¸ðµå°¡ ¾Æ´Ñ Slave°¡ Á¸ÀçÇÔ
+    AXT_RT_SUCCESS                                          = 0,       // API ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_OPEN_ERROR                                       = 1001,    // ï¿½ï¿½ï¿½Ìºê·¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_OPEN_ALREADY                                     = 1002,    // ï¿½ï¿½ï¿½Ìºê·¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¾ï¿½ï¿½Ö°ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_NOT_INITIAL                                      = 1052,    // Serial moduleï¿½ï¿½ ï¿½Ê±ï¿½È­ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_NOT_OPEN                                         = 1053,    // ï¿½ï¿½ï¿½Ìºê·¯ï¿½ï¿½ ï¿½Ê±ï¿½È­ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_NOT_SUPPORT_VERSION                              = 1054,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ ï¿½Ïµï¿½ï¿½ï¿½ï¿½
+    AXT_RT_LOCK_FILE_MISMATCH                               = 1055,    // Lockï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ Scanï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
+    AXT_RT_MASTER_VERSION_MISMATCH                          = 1056,    // Libraryï¿½ï¿½ EtherCAT Master ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_NOT_RUN_EZMANAGER                                = 1057,    // EzManagerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_NOT_FIND_BIN_FILE                                = 1058,    // BIN ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_NOT_FIND_ENI_FILE                                = 1059,    // ENI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_NOT_FIND_CONFIG_FILE                             = 1060,    // Config ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_RTOS_OPEN_ERROR                                  = 1061,    // RTOS Open ï¿½ï¿½ï¿½ï¿½    
+    AXT_RT_SLAVE_CONFIG_ERROR                               = 1062,    // RTOS Slave Config ï¿½ï¿½ï¿½ï¿½     
+    AXT_RT_SLAVE_OP_TIMEOUT_WARNING                         = 1063,    // Slaveï¿½ï¿½ï¿½ï¿½ OP ï¿½ï¿½å°¡ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ Timeoutï¿½ï¿½ ï¿½ß»ï¿½
+    AXT_RT_SLAVE_NOT_OP                                     = 1064,    // OP ï¿½ï¿½å°¡ ï¿½Æ´ï¿½ Slaveï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-    AXT_RT_RESCAN_NOT_EXIST_BOARD                           = 1060,    // º¸µå°¡ Á¸ÀçÇÏÁö ¾ÊÀ½
-    AXT_RT_RESCAN_TIMEOUT                                   = 1061,    // Rescan ¸í·É ÈÄ ´ë±â ½Ã°£ ÃÊ°ú
+    AXT_RT_RESCAN_NOT_EXIST_BOARD                           = 1060,    // ï¿½ï¿½ï¿½å°¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_RESCAN_TIMEOUT                                   = 1061,    // Rescan ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½Ê°ï¿½
 
-    AXT_RT_BAD_PARAMETER                                    = 1070,    // »ç¿ëÀÚ°¡ ÀÔ·ÂÇÑ ÆÄ¶ó¹ÌÅÍ°¡ ÀûÀýÇÏÁö ¾ÊÀ½
+    AXT_RT_BAD_PARAMETER                                    = 1070,    // ï¿½ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½Ä¶ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-    AXT_RT_INVALID_HARDWARE                                 = 1100,    // À¯È¿ÇÏÁö ¾Ê´Â º¸µå
-    AXT_RT_INVALID_BOARD_NO                                 = 1101,    // À¯È¿ÇÏÁö ¾Ê´Â º¸µå ¹øÈ£
-    AXT_RT_INVALID_MODULE_POS                               = 1102,    // À¯È¿ÇÏÁö ¾Ê´Â ¸ðµâ À§Ä¡
-    AXT_RT_INVALID_LEVEL                                    = 1103,    // À¯È¿ÇÏÁö ¾Ê´Â ·¹º§
-    AXT_RT_INVALID_VARIABLE                                 = 1104,    // À¯È¿ÇÏÁö ¾Ê´Â º¯¼ö
-    AXT_RT_INVALID_MODULE_NO                                = 1105,    // À¯È¿ÇÏÁö ¾Ê´Â ¸ðµâ
-    AXT_RT_INVALID_NO                                       = 1106,    // À¯È¿ÇÏÁö ¾Ê´Â ¹øÈ£
+    AXT_RT_INVALID_HARDWARE                                 = 1100,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_INVALID_BOARD_NO                                 = 1101,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£
+    AXT_RT_INVALID_MODULE_POS                               = 1102,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡
+    AXT_RT_INVALID_LEVEL                                    = 1103,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_INVALID_VARIABLE                                 = 1104,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_INVALID_MODULE_NO                                = 1105,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½ ï¿½ï¿½ï¿½
+    AXT_RT_INVALID_NO                                       = 1106,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½ ï¿½ï¿½È£
 
-    AXT_RT_ERROR_VERSION_READ                               = 1151,    // ¶óÀÌºê·¯¸® ¹öÀüÀ» ÀÐÀ»¼ö ¾øÀ½
-    AXT_RT_NETWORK_ERROR                                    = 1152,    // ÇÏµå¿þ¾î ³×Æ®¿öÅ© ¿¡·¯
-    AXT_RT_NETWORK_LOCK_MISMATCH                            = 1153,    // º¸µå LockÁ¤º¸¿Í ÇöÀç ScanÁ¤º¸°¡ ÀÏÄ¡ÇÏÁö ¾ÊÀ½
+    AXT_RT_ERROR_VERSION_READ                               = 1151,    // ï¿½ï¿½ï¿½Ìºê·¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_NETWORK_ERROR                                    = 1152,    // ï¿½Ïµï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½Å© ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_NETWORK_LOCK_MISMATCH                            = 1153,    // ï¿½ï¿½ï¿½ï¿½ Lockï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Scanï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-    AXT_RT_1ST_BELOW_MIN_VALUE                              = 1160,    // Ã¹¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ¼Ò°ªº¸´Ù ´õ ÀÛÀ½
-    AXT_RT_1ST_ABOVE_MAX_VALUE                              = 1161,    // Ã¹¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ´ë°ªº¸´Ù ´õ Å­
-    AXT_RT_2ND_BELOW_MIN_VALUE                              = 1170,    // µÎ¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ¼Ò°ªº¸´Ù ´õ ÀÛÀ½
-    AXT_RT_2ND_ABOVE_MAX_VALUE                              = 1171,    // µÎ¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ´ë°ªº¸´Ù ´õ Å­
-    AXT_RT_3RD_BELOW_MIN_VALUE                              = 1180,    // ¼¼¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ¼Ò°ªº¸´Ù ´õ ÀÛÀ½
-    AXT_RT_3RD_ABOVE_MAX_VALUE                              = 1181,    // ¼¼¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ´ë°ªº¸´Ù ´õ Å­
-    AXT_RT_4TH_BELOW_MIN_VALUE                              = 1190,    // ³×¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ¼Ò°ªº¸´Ù ´õ ÀÛÀ½
-    AXT_RT_4TH_ABOVE_MAX_VALUE                              = 1191,    // ³×¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ´ë°ªº¸´Ù ´õ Å­
-    AXT_RT_5TH_BELOW_MIN_VALUE                              = 1200,    // ´Ù¼¸¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ¼Ò°ªº¸´Ù ´õ ÀÛÀ½
-    AXT_RT_5TH_ABOVE_MAX_VALUE                              = 1201,    // ´Ù¼¸¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ´ë°ªº¸´Ù ´õ Å­
-    AXT_RT_6TH_BELOW_MIN_VALUE                              = 1210,    // ¿©¼¸¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ¼Ò°ªº¸´Ù ´õ ÀÛÀ½
-    AXT_RT_6TH_ABOVE_MAX_VALUE                              = 1211,    // ¿©¼¸¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ´ë°ªº¸´Ù ´õ Å­
-    AXT_RT_7TH_BELOW_MIN_VALUE                              = 1220,    // ÀÏ°ö¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ¼Ò°ªº¸´Ù ´õ ÀÛÀ½
-    AXT_RT_7TH_ABOVE_MAX_VALUE                              = 1221,    // ÀÏ°ö¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ´ë°ªº¸´Ù ´õ Å­
-    AXT_RT_8TH_BELOW_MIN_VALUE                              = 1230,    // ¿©´ü¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ¼Ò°ªº¸´Ù ´õ ÀÛÀ½
-    AXT_RT_8TH_ABOVE_MAX_VALUE                              = 1231,    // ¿©´ü¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ´ë°ªº¸´Ù ´õ Å­
-    AXT_RT_9TH_BELOW_MIN_VALUE                              = 1240,    // ¾ÆÈ©¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ¼Ò°ªº¸´Ù ´õ ÀÛÀ½
-    AXT_RT_9TH_ABOVE_MAX_VALUE                              = 1241,    // ¾ÆÈ©¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ´ë°ªº¸´Ù ´õ Å­
-    AXT_RT_10TH_BELOW_MIN_VALUE                             = 1250,    // ¿­¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ¼Ò°ªº¸´Ù ´õ ÀÛÀ½
-    AXT_RT_10TH_ABOVE_MAX_VALUE                             = 1251,    // ¿­¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ´ë°ªº¸´Ù ´õ Å­
-    AXT_RT_11TH_BELOW_MIN_VALUE                             = 1252,    // ¿­ÇÑ¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ¼Ò°ªº¸´Ù ´õ ÀÛÀ½
-    AXT_RT_11TH_ABOVE_MAX_VALUE                             = 1253,    // ¿­ÇÑ¹øÂ° ÀÎÀÚ°ªÀÌ ÃÖ´ë°ªº¸´Ù ´õ Å­
+    AXT_RT_1ST_BELOW_MIN_VALUE                              = 1160,    // Ã¹ï¿½ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö¼Ò°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_1ST_ABOVE_MAX_VALUE                              = 1161,    // Ã¹ï¿½ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö´ë°ªï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Å­
+    AXT_RT_2ND_BELOW_MIN_VALUE                              = 1170,    // ï¿½Î¹ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö¼Ò°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_2ND_ABOVE_MAX_VALUE                              = 1171,    // ï¿½Î¹ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö´ë°ªï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Å­
+    AXT_RT_3RD_BELOW_MIN_VALUE                              = 1180,    // ï¿½ï¿½ï¿½ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö¼Ò°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_3RD_ABOVE_MAX_VALUE                              = 1181,    // ï¿½ï¿½ï¿½ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö´ë°ªï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Å­
+    AXT_RT_4TH_BELOW_MIN_VALUE                              = 1190,    // ï¿½×¹ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö¼Ò°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_4TH_ABOVE_MAX_VALUE                              = 1191,    // ï¿½×¹ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö´ë°ªï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Å­
+    AXT_RT_5TH_BELOW_MIN_VALUE                              = 1200,    // ï¿½Ù¼ï¿½ï¿½ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö¼Ò°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_5TH_ABOVE_MAX_VALUE                              = 1201,    // ï¿½Ù¼ï¿½ï¿½ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö´ë°ªï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Å­
+    AXT_RT_6TH_BELOW_MIN_VALUE                              = 1210,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö¼Ò°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_6TH_ABOVE_MAX_VALUE                              = 1211,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö´ë°ªï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Å­
+    AXT_RT_7TH_BELOW_MIN_VALUE                              = 1220,    // ï¿½Ï°ï¿½ï¿½ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö¼Ò°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_7TH_ABOVE_MAX_VALUE                              = 1221,    // ï¿½Ï°ï¿½ï¿½ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö´ë°ªï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Å­
+    AXT_RT_8TH_BELOW_MIN_VALUE                              = 1230,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö¼Ò°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_8TH_ABOVE_MAX_VALUE                              = 1231,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö´ë°ªï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Å­
+    AXT_RT_9TH_BELOW_MIN_VALUE                              = 1240,    // ï¿½ï¿½È©ï¿½ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö¼Ò°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_9TH_ABOVE_MAX_VALUE                              = 1241,    // ï¿½ï¿½È©ï¿½ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö´ë°ªï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Å­
+    AXT_RT_10TH_BELOW_MIN_VALUE                             = 1250,    // ï¿½ï¿½ï¿½ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö¼Ò°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_10TH_ABOVE_MAX_VALUE                             = 1251,    // ï¿½ï¿½ï¿½ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö´ë°ªï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Å­
+    AXT_RT_11TH_BELOW_MIN_VALUE                             = 1252,    // ï¿½ï¿½ï¿½Ñ¹ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö¼Ò°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_11TH_ABOVE_MAX_VALUE                             = 1253,    // ï¿½ï¿½ï¿½Ñ¹ï¿½Â° ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½Ö´ë°ªï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Å­
 
-    AXT_RT_AIO_OPEN_ERROR                                   = 2001,    // AIO ¸ðµâ ¿ÀÇÂ½ÇÆÐ
-    AXT_RT_AIO_NOT_MODULE                                   = 2051,    // AIO ¸ðµâ ¾øÀ½
-    AXT_RT_AIO_NOT_EVENT                                    = 2052,    // AIO ÀÌº¥Æ® ÀÐÁö ¸øÇÔ
-    AXT_RT_AIO_INVALID_MODULE_NO                            = 2101,    // À¯È¿ÇÏÁö¾ÊÀº AIO¸ðµâ
-    AXT_RT_AIO_INVALID_CHANNEL_NO                           = 2102,    // À¯È¿ÇÏÁö¾ÊÀº AIOÃ¤³Î¹øÈ£
-    AXT_RT_AIO_INVALID_USE                                  = 2106,    // AIO ÇÔ¼ö »ç¿ë¸øÇÔ
-    AXT_RT_AIO_INVALID_TRIGGER_MODE                         = 2107,    // À¯È¿ÇÏÁö¾Ê´Â Æ®¸®°Å ¸ðµå
-    AXT_RT_AIO_EXTERNAL_DATA_EMPTY                          = 2108,    // ¿ÜºÎ µ¥ÀÌÅÍ °ªÀÌ ¾øÀ» °æ¿ì
-    AXT_RT_AIO_INVALID_VALUE                                = 2109,    // À¯È¿ÇÏÁö¾Ê´Â °ª ¼³Á¤
-    AXT_RT_AIO_UPG_ALEADY_ENABLED                           = 2110,    // AO UPG ±â´É »ç¿ëÁß ¼³Á¤µÊ                              
+    AXT_RT_AIO_OPEN_ERROR                                   = 2001,    // AIO ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â½ï¿½ï¿½ï¿½
+    AXT_RT_AIO_NOT_MODULE                                   = 2051,    // AIO ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_AIO_NOT_EVENT                                    = 2052,    // AIO ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_AIO_INVALID_MODULE_NO                            = 2101,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ AIOï¿½ï¿½ï¿½
+    AXT_RT_AIO_INVALID_CHANNEL_NO                           = 2102,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ AIOÃ¤ï¿½Î¹ï¿½È£
+    AXT_RT_AIO_INVALID_USE                                  = 2106,    // AIO ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_AIO_INVALID_TRIGGER_MODE                         = 2107,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+    AXT_RT_AIO_EXTERNAL_DATA_EMPTY                          = 2108,    // ï¿½Üºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+    AXT_RT_AIO_INVALID_VALUE                                = 2109,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_AIO_UPG_ALEADY_ENABLED                           = 2110,    // AO UPG ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½                              
 
-    AXT_RT_DIO_OPEN_ERROR                                   = 3001,    // DIO ¸ðµâ ¿ÀÇÂ½ÇÆÐ
-    AXT_RT_DIO_NOT_MODULE                                   = 3051,    // DIO ¸ðµâ ¾øÀ½
-    AXT_RT_DIO_NOT_INTERRUPT                                = 3052,    // DIO ÀÎÅÍ·´Æ® ¼³Á¤¾ÈµÊ
-    AXT_RT_DIO_INVALID_MODULE_NO                            = 3101,    // À¯È¿ÇÏÁö¾Ê´Â DIO ¸ðµâ ¹øÈ£
-    AXT_RT_DIO_INVALID_OFFSET_NO                            = 3102,    // À¯È¿ÇÏÁö¾Ê´Â DIO OFFSET ¹øÈ£
-    AXT_RT_DIO_INVALID_LEVEL                                = 3103,    // À¯È¿ÇÏÁö¾Ê´Â DIO ·¹º§
-    AXT_RT_DIO_INVALID_MODE                                 = 3104,    // À¯È¿ÇÏÁö¾Ê´Â DIO ¸ðµå
-    AXT_RT_DIO_INVALID_VALUE                                = 3105,    // À¯È¿ÇÏÁö¾Ê´Â °ª ¼³Á¤
-    AXT_RT_DIO_INVALID_USE                                  = 3106,    // DIO ÇÔ¼ö »ç¿ë¸øÇÔ
-    AXT_RT_DIO_INVALID_LINK                                 = 3107,    // DIO Link°¡ À¯È¿ÇÏÁö ¾ÊÀ½
-    AXT_RT_DIO_INTERLOCK_NOT_ENABLED                        = 3108,    // DIO InterLock À¯È¿ÇÏÁö ¾ÊÀ½
-    AXT_RT_DIO_INTERLOCK_NOT_SAME_BOARD                     = 3109,    // Destination Module°ú Source ModuleÀÏ µ¿ÀÏÇÑ º¸µå³»¿¡ ÀÖÁö ¾ÊÀ½
+    AXT_RT_DIO_OPEN_ERROR                                   = 3001,    // DIO ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â½ï¿½ï¿½ï¿½
+    AXT_RT_DIO_NOT_MODULE                                   = 3051,    // DIO ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_DIO_NOT_INTERRUPT                                = 3052,    // DIO ï¿½ï¿½ï¿½Í·ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½Èµï¿½
+    AXT_RT_DIO_INVALID_MODULE_NO                            = 3101,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ DIO ï¿½ï¿½ï¿½ ï¿½ï¿½È£
+    AXT_RT_DIO_INVALID_OFFSET_NO                            = 3102,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ DIO OFFSET ï¿½ï¿½È£
+    AXT_RT_DIO_INVALID_LEVEL                                = 3103,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ DIO ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_DIO_INVALID_MODE                                 = 3104,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ DIO ï¿½ï¿½ï¿½
+    AXT_RT_DIO_INVALID_VALUE                                = 3105,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_DIO_INVALID_USE                                  = 3106,    // DIO ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_DIO_INVALID_LINK                                 = 3107,    // DIO Linkï¿½ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_DIO_INTERLOCK_NOT_ENABLED                        = 3108,    // DIO InterLock ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_DIO_INTERLOCK_NOT_SAME_BOARD                     = 3109,    // Destination Moduleï¿½ï¿½ Source Moduleï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½å³»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-    AXT_RT_CNT_OPEN_ERROR                                   = 3201,    // CNT ¸ðµâ ¿ÀÇÂ½ÇÆÐ
-    AXT_RT_CNT_NOT_MODULE                                   = 3251,    // CNT ¸ðµâ ¾øÀ½
-    AXT_RT_CNT_NOT_INTERRUPT                                = 3252,    // CNT ÀÎÅÍ·´Æ® ¼³Á¤¾ÈµÊ
-    AXT_RT_CNT_NOT_TRIGGER_ENABLE                           = 3253,    // CNT Trigger Ãâ·Â ±â´ÉÀÌ È°¼ºÈ­µÇ¾î ÀÖÁö ¾ÊÀ½
-    AXT_RT_CNT_INVALID_MODULE_NO                            = 3301,    // À¯È¿ÇÏÁö¾Ê´Â CNT ¸ðµâ ¹øÈ£
-    AXT_RT_CNT_INVALID_CHANNEL_NO                           = 3302,    // À¯È¿ÇÏÁö¾Ê´Â Ã¤³Î ¹øÈ£
-    AXT_RT_CNT_INVALID_OFFSET_NO                            = 3303,    // À¯È¿ÇÏÁö¾Ê´Â CNT OFFSET ¹øÈ£
-    AXT_RT_CNT_INVALID_LEVEL                                = 3304,    // À¯È¿ÇÏÁö¾Ê´Â CNT ·¹º§
-    AXT_RT_CNT_INVALID_MODE                                 = 3305,    // À¯È¿ÇÏÁö¾Ê´Â CNT ¸ðµå
-    AXT_RT_CNT_INVALID_VALUE                                = 3306,    // À¯È¿ÇÏÁö¾Ê´Â °ª ¼³Á¤
-    AXT_RT_CNT_INVALID_USE                                  = 3307,    // CNT ÇÔ¼ö »ç¿ë¸øÇÔ
-    AXT_RT_CNT_CMD_EXE_TIMEOUT                              = 3308,    // CNT ¸ðµâ µ¥ÀÌÅÍÀÔ·Â ½Ã°£ÃÊ°ú ÇßÀ»¶§
-    AXT_RT_CNT_INVALID_VELOCITY                             = 3309,    // À¯È¿ÇÏÁö¾Ê´Â CNT ¼Óµµ
-    AXT_RT_PROTECTED_DURING_PWMENABLE                       = 3310,    // PWM Enable µÇ¾î ÀÖ´Â »óÅÂ¿¡¼­ »ç¿ë ¸ø ÇÔ
-    AXT_RT_CNT_INVALID_TABLEPOS                             = 3311,    // À¯È¿ÇÏÁö ¾ÊÀº CNT TABLE ¹øÈ£ 
-    AXT_RT_CNT_DIMENSION_ERROR                              = 3312,    // ÇØ´ç Dimension ¼³Á¤ »óÅÂ¿¡¼­´Â »ç¿ëÇÒ ¼ö ¾øÀ½
-	AXT_RT_CNT_INVALID_RANGE                                = 3313,    // À¯È¿ÇÏÁö¾Ê´Â CNT Range(Lower ~ Upper)
+    AXT_RT_CNT_OPEN_ERROR                                   = 3201,    // CNT ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â½ï¿½ï¿½ï¿½
+    AXT_RT_CNT_NOT_MODULE                                   = 3251,    // CNT ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_CNT_NOT_INTERRUPT                                = 3252,    // CNT ï¿½ï¿½ï¿½Í·ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½Èµï¿½
+    AXT_RT_CNT_NOT_TRIGGER_ENABLE                           = 3253,    // CNT Trigger ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ È°ï¿½ï¿½È­ï¿½Ç¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_CNT_INVALID_MODULE_NO                            = 3301,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ CNT ï¿½ï¿½ï¿½ ï¿½ï¿½È£
+    AXT_RT_CNT_INVALID_CHANNEL_NO                           = 3302,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ Ã¤ï¿½ï¿½ ï¿½ï¿½È£
+    AXT_RT_CNT_INVALID_OFFSET_NO                            = 3303,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ CNT OFFSET ï¿½ï¿½È£
+    AXT_RT_CNT_INVALID_LEVEL                                = 3304,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ CNT ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_CNT_INVALID_MODE                                 = 3305,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ CNT ï¿½ï¿½ï¿½
+    AXT_RT_CNT_INVALID_VALUE                                = 3306,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_CNT_INVALID_USE                                  = 3307,    // CNT ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_CNT_CMD_EXE_TIMEOUT                              = 3308,    // CNT ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô·ï¿½ ï¿½Ã°ï¿½ï¿½Ê°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_CNT_INVALID_VELOCITY                             = 3309,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ CNT ï¿½Óµï¿½
+    AXT_RT_PROTECTED_DURING_PWMENABLE                       = 3310,    // PWM Enable ï¿½Ç¾ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_CNT_INVALID_TABLEPOS                             = 3311,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ CNT TABLE ï¿½ï¿½È£ 
+    AXT_RT_CNT_DIMENSION_ERROR                              = 3312,    // ï¿½Ø´ï¿½ Dimension ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	AXT_RT_CNT_INVALID_RANGE                                = 3313,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ CNT Range(Lower ~ Upper)
 
-    AXT_RT_COM_OPEN_ERROR                                   = 3401,    // COM Æ÷Æ® ¿ÀÇÂ½ÇÆÐ
-    AXT_RT_COM_NOT_OPEN                                     = 3402,    // COM Æ÷Æ® ¿ÀÇÂµÇÁö ¾ÊÀ½
-    AXT_RT_COM_ALREADY_IN_USE                               = 3403,    // COM Æ÷Æ® »ç¿ëÁß
-    AXT_RT_COM_NOT_MODULE                                   = 3451,    // COM Æ÷Æ® ¾øÀ½
-    AXT_RT_COM_NOT_INTERRUPT                                = 3452,    // COM ÀÎÅÍ·´Æ® ¼³Á¤¾ÈµÊ
-    AXT_RT_COM_INVALID_MODULE_NO                            = 3501,    // À¯È¿ÇÏÁö¾Ê´Â COM ¸ðµâ ¹øÈ£
-    AXT_RT_COM_INVALID_PORT_NO                              = 3502,    // À¯È¿ÇÏÁö¾Ê´Â Ã¤³Î ¹øÈ£
-    AXT_RT_COM_INVALID_OFFSET_NO                            = 3503,    // À¯È¿ÇÏÁö¾Ê´Â COM OFFSET ¹øÈ£
-    AXT_RT_COM_INVALID_LEVEL                                = 3504,    // À¯È¿ÇÏÁö¾Ê´Â COM ·¹º§
-    AXT_RT_COM_INVALID_MODE                                 = 3505,    // À¯È¿ÇÏÁö¾Ê´Â COM ¸ðµå
-    AXT_RT_COM_INVALID_VALUE                                = 3506,    // À¯È¿ÇÏÁö¾Ê´Â °ª ¼³Á¤
-    AXT_RT_COM_INVALID_USE                                  = 3507,    // COM ÇÔ¼ö »ç¿ë¸øÇÔ
-    AXT_RT_COM_INVALID_BAUDRATE                             = 3508,    // À¯È¿ÇÏÁö¾Ê´Â °ª ¼³Á¤
+    AXT_RT_COM_OPEN_ERROR                                   = 3401,    // COM ï¿½ï¿½Æ® ï¿½ï¿½ï¿½Â½ï¿½ï¿½ï¿½
+    AXT_RT_COM_NOT_OPEN                                     = 3402,    // COM ï¿½ï¿½Æ® ï¿½ï¿½ï¿½Âµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_COM_ALREADY_IN_USE                               = 3403,    // COM ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_COM_NOT_MODULE                                   = 3451,    // COM ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_COM_NOT_INTERRUPT                                = 3452,    // COM ï¿½ï¿½ï¿½Í·ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½Èµï¿½
+    AXT_RT_COM_INVALID_MODULE_NO                            = 3501,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ COM ï¿½ï¿½ï¿½ ï¿½ï¿½È£
+    AXT_RT_COM_INVALID_PORT_NO                              = 3502,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ Ã¤ï¿½ï¿½ ï¿½ï¿½È£
+    AXT_RT_COM_INVALID_OFFSET_NO                            = 3503,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ COM OFFSET ï¿½ï¿½È£
+    AXT_RT_COM_INVALID_LEVEL                                = 3504,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ COM ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_COM_INVALID_MODE                                 = 3505,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ COM ï¿½ï¿½ï¿½
+    AXT_RT_COM_INVALID_VALUE                                = 3506,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_COM_INVALID_USE                                  = 3507,    // COM ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_COM_INVALID_BAUDRATE                             = 3508,    // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	
-    AXT_RT_MOTION_OPEN_ERROR                                = 4001,    // ¸ð¼Ç ¶óÀÌºê·¯¸® Open ½ÇÆÐ
-    AXT_RT_MOTION_NOT_MODULE                                = 4051,    // ½Ã½ºÅÛ¿¡ ÀåÂøµÈ ¸ð¼Ç ¸ðµâÀÌ ¾øÀ½
-    AXT_RT_MOTION_NOT_INTERRUPT                             = 4052,    // ÀÎÅÍ·´Æ® °á°ú ÀÐ±â ½ÇÆÐ
-    AXT_RT_MOTION_NOT_INITIAL_AXIS_NO                       = 4053,    // ÇØ´ç Ãà ¸ð¼Ç ÃÊ±âÈ­ ½ÇÆÐ
-    AXT_RT_MOTION_NOT_IN_CONT_INTERPOL                      = 4054,    // ¿¬¼Ó º¸°£ ±¸µ¿ ÁßÀÌ ¾Æ´Ñ »óÅÂ¿¡¼­ ¿¬¼Óº¸°£ ÁßÁö ¸í·ÉÀ» ¼öÇà ÇÏ¿´À½
-    AXT_RT_MOTION_NOT_PARA_READ                             = 4055,    // ¿øÁ¡ ±¸µ¿ ¼³Á¤ ÆÄ¶ó¹ÌÅÍ ·Îµå ½ÇÆÐ
-    AXT_RT_MOTION_INVALID_AXIS_NO                           = 4101,    // ÇØ´ç ÃàÀÌ Á¸ÀçÇÏÁö ¾ÊÀ½
-    AXT_RT_MOTION_INVALID_METHOD                            = 4102,    // ÇØ´ç Ãà ±¸µ¿¿¡ ÇÊ¿äÇÑ ¼³Á¤ÀÌ Àß¸øµÊ
-    AXT_RT_MOTION_INVALID_USE                               = 4103,    // 'uUse' ÀÎÀÚ°ªÀÌ Àß¸ø ¼³Á¤µÊ
-    AXT_RT_MOTION_INVALID_LEVEL                             = 4104,    // 'uLevel' ÀÎÀÚ°ªÀÌ Àß¸ø ¼³Á¤µÊ
-    AXT_RT_MOTION_INVALID_BIT_NO                            = 4105,    // ¹ü¿ë ÀÔÃâ·Â ÇØ´ç ºñÆ®°¡ Àß¸ø ¼³Á¤µÊ
-    AXT_RT_MOTION_INVALID_STOP_MODE                         = 4106,    // ¸ð¼Ç Á¤Áö ¸ðµå ¼³Á¤°ªÀÌ Àß¸øµÊ
-    AXT_RT_MOTION_INVALID_TRIGGER_MODE                      = 4107,    // Æ®¸®°Å ¼³Á¤ ¸ðµå°¡ Àß¸ø ¼³Á¤µÊ
-    AXT_RT_MOTION_INVALID_TRIGGER_LEVEL                     = 4108,    // Æ®¸®°Å Ãâ·Â ·¹º§ ¼³Á¤ÀÌ Àß¸øµÊ
-    AXT_RT_MOTION_INVALID_SELECTION                         = 4109,    // 'uSelection' ÀÎÀÚ°¡ COMMAND ¶Ç´Â ACTUAL ÀÌ¿ÜÀÇ °ªÀ¸·Î ¼³Á¤µÇ¾î ÀÖÀ½
-    AXT_RT_MOTION_INVALID_TIME                              = 4110,    // Trigger Ãâ·Â ½Ã°£°ªÀÌ Àß¸ø ¼³Á¤µÇ¾î ÀÖÀ½
-    AXT_RT_MOTION_INVALID_FILE_LOAD                         = 4111,    // ¸ð¼Ç ¼³Á¤°ªÀÌ ÀúÀåµÈ ÆÄÀÏÀÌ ·Îµå°¡ ¾ÈµÊ
-    AXT_RT_MOTION_INVALID_FILE_SAVE                         = 4112,    // ¸ð¼Ç ¼³Á¤°ªÀ» ÀúÀåÇÏ´Â ÆÄÀÏ ÀúÀå¿¡ ½ÇÆÐÇÔ
-    AXT_RT_MOTION_INVALID_VELOCITY                          = 4113,    // ¸ð¼Ç ±¸µ¿ ¼Óµµ°ªÀÌ 0À¸·Î ¼³Á¤µÇ¾î ¸ð¼Ç ¿¡·¯ ¹ß»ý
-    AXT_RT_MOTION_INVALID_ACCELTIME                         = 4114,    // ¸ð¼Ç ±¸µ¿ °¡¼Ó ½Ã°£°ªÀÌ 0À¸·Î ¼³Á¤µÇ¾î ¸ð¼Ç ¿¡·¯ ¹ß»ý
-    AXT_RT_MOTION_INVALID_PULSE_VALUE                       = 4115,    // ¸ð¼Ç ´ÜÀ§ ¼³Á¤ ½Ã ÀÔ·Â ÆÞ½º°ªÀÌ 0º¸´Ù ÀÛÀº°ªÀ¸·Î ¼³Á¤µÊ
-    AXT_RT_MOTION_INVALID_NODE_NUMBER                       = 4116,    // À§Ä¡³ª ¼Óµµ ¿À¹ö¶óÀÌµå ÇÔ¼ö°¡ ¸ð¼Ç Á¤Áö Áß¿¡ ½ÇÇàµÊ
-    AXT_RT_MOTION_INVALID_TARGET                            = 4117,    // ´ÙÃà ¸ð¼Ç Á¤Áö ¿øÀÎ¿¡ °üÇÑ ÇÃ·¡±×¸¦ ¹ÝÈ¯ÇÑ´Ù.
+    AXT_RT_MOTION_OPEN_ERROR                                = 4001,    // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºê·¯ï¿½ï¿½ Open ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_NOT_MODULE                                = 4051,    // ï¿½Ã½ï¿½ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_NOT_INTERRUPT                             = 4052,    // ï¿½ï¿½ï¿½Í·ï¿½Æ® ï¿½ï¿½ï¿½ ï¿½Ð±ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_NOT_INITIAL_AXIS_NO                       = 4053,    // ï¿½Ø´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_NOT_IN_CONT_INTERPOL                      = 4054,    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Óºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï¿ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_NOT_PARA_READ                             = 4055,    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_INVALID_AXIS_NO                           = 4101,    // ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_INVALID_METHOD                            = 4102,    // ï¿½Ø´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¸ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_INVALID_USE                               = 4103,    // 'uUse' ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½ß¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_INVALID_LEVEL                             = 4104,    // 'uLevel' ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ ï¿½ß¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_INVALID_BIT_NO                            = 4105,    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ß¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_INVALID_STOP_MODE                         = 4106,    // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¸ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_INVALID_TRIGGER_MODE                      = 4107,    // Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½å°¡ ï¿½ß¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_INVALID_TRIGGER_LEVEL                     = 4108,    // Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¸ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_INVALID_SELECTION                         = 4109,    // 'uSelection' ï¿½ï¿½ï¿½Ú°ï¿½ COMMAND ï¿½Ç´ï¿½ ACTUAL ï¿½Ì¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_INVALID_TIME                              = 4110,    // Trigger ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_INVALID_FILE_LOAD                         = 4111,    // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îµå°¡ ï¿½Èµï¿½
+    AXT_RT_MOTION_INVALID_FILE_SAVE                         = 4112,    // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½å¿¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_INVALID_VELOCITY                          = 4113,    // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½
+    AXT_RT_MOTION_INVALID_ACCELTIME                         = 4114,    // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½
+    AXT_RT_MOTION_INVALID_PULSE_VALUE                       = 4115,    // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_INVALID_NODE_NUMBER                       = 4116,    // ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìµï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_INVALID_TARGET                            = 4117,    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½×¸ï¿½ ï¿½ï¿½È¯ï¿½Ñ´ï¿½.
 
-	AXT_RT_MOTION_SSTOPCMD_ALREADY_IN_EXECUTION				= 4150,    // Á¤Áö ¸í·ÉÀ¸·Î ÀÎÇÑ °¨¼Ó Áß¿¡ Á¤Áö ¸í·ÉÀÌ Ãß°¡·Î È£ÃâµÊ
-    AXT_RT_MOTION_ERROR_IN_NONMOTION                        = 4151,    // ¸ð¼Ç ±¸µ¿ÁßÀÌ¾î¾ß µÇ´Âµ¥ ¸ð¼Ç ±¸µ¿ÁßÀÌ ¾Æ´Ò ¶§
-    AXT_RT_MOTION_ERROR_IN_MOTION                           = 4152,    // ¸ð¼Ç ±¸µ¿ Áß¿¡ ´Ù¸¥ ¸ð¼Ç ±¸µ¿ ÇÔ¼ö¸¦ ½ÇÇàÇÔ
-    AXT_RT_MOTION_ERROR                                     = 4153,    // ´ÙÃà ±¸µ¿ Á¤Áö ÇÔ¼ö ½ÇÇà Áß ¿¡·¯ ¹ß»ýÇÔ
-    AXT_RT_MOTION_ERROR_GANTRY_ENABLE                       = 4154,    // °ÕÆ®¸® enableÀÌ µÇ¾îÀÖÀ» ¶§
-    AXT_RT_MOTION_ERROR_GANTRY_AXIS                         = 4155,    // °ÕÆ®¸® ÃàÀÌ ¸¶½ºÅÍÃ¤³Î(Ãà) ¹øÈ£(0 ~ (ÃÖ´ëÃà¼ö - 1))°¡ Àß¸ø µé¾î°¬À» ¶§
-    AXT_RT_MOTION_ERROR_MASTER_SERVOON                      = 4156,    // ¸¶½ºÅÍ Ãà ¼­º¸¿ÂÀÌ ¾ÈµÇ¾îÀÖÀ» ¶§
-    AXT_RT_MOTION_ERROR_SLAVE_SERVOON                       = 4157,    // ½½·¹ÀÌºê Ãà ¼­º¸¿ÂÀÌ ¾ÈµÇ¾îÀÖÀ» ¶§
-    AXT_RT_MOTION_INVALID_POSITION                          = 4158,    // À¯È¿ÇÑ À§Ä¡¿¡ ¾øÀ» ¶§
-    AXT_RT_ERROR_NOT_SAME_MODULE                            = 4159,    // ¶È °°Àº ¸ðµâ³»¿¡ ÀÖÁö ¾ÊÀ»°æ¿ì
-    AXT_RT_ERROR_NOT_SAME_BOARD                             = 4160,    // ¶È °°Àº º¸µå³»¿¡ ÀÖÁö ¾Æ´Ò°æ¿ì
-    AXT_RT_ERROR_NOT_SAME_PRODUCT                           = 4161,    // Á¦Ç°ÀÌ ¼­·Î ´Ù¸¦°æ¿ì
-    AXT_RT_NOT_CAPTURED                                     = 4162,    // À§Ä¡°¡ ÀúÀåµÇÁö ¾ÊÀ» ¶§
-    AXT_RT_ERROR_NOT_SAME_IC                                = 4163,    // °°Àº Ä¨³»¿¡ Á¸ÀçÇÏÁö¾ÊÀ» ¶§
-    AXT_RT_ERROR_NOT_GEARMODE                               = 4164,    // ±â¾î¸ðµå·Î º¯È¯ÀÌ ¾ÈµÉ ¶§
-    AXT_ERROR_CONTI_INVALID_AXIS_NO                         = 4165,    // ¿¬¼Óº¸°£ Ãà¸ÊÇÎ ½Ã À¯È¿ÇÑ ÃàÀÌ ¾Æ´Ò ¶§
-    AXT_ERROR_CONTI_INVALID_MAP_NO                          = 4166,    // ¿¬¼Óº¸°£ ¸ÊÇÎ ½Ã À¯È¿ÇÑ ¸ÊÇÎ ¹øÈ£°¡ ¾Æ´Ò ¶§
-    AXT_ERROR_CONTI_EMPTY_MAP_NO                            = 4167,    // ¿¬¼Óº¸°£ ¸ÊÇÎ ¹øÈ£°¡ ºñ¿ö ÀÖÀ» ¶§
-    AXT_RT_MOTION_ERROR_CACULATION                          = 4168,    // °è»ê»óÀÇ ¿ÀÂ÷°¡ ¹ß»ýÇßÀ» ¶§
-    AXT_RT_ERROR_MOVE_SENSOR_CHECK                          = 4169,    // ¿¬¼Óº¸°£ ±¸µ¿Àü ¿¡·¯¼¾¼­°¡(Alarm, EMG, Limitµî) °¨ÁöµÈ°æ¿ì
+	AXT_RT_MOTION_SSTOPCMD_ALREADY_IN_EXECUTION				= 4150,    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_ERROR_IN_NONMOTION                        = 4151,    // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¾ï¿½ï¿½ ï¿½Ç´Âµï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½
+    AXT_RT_MOTION_ERROR_IN_MOTION                           = 4152,    // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß¿ï¿½ ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_ERROR                                     = 4153,    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_ERROR_GANTRY_ENABLE                       = 4154,    // ï¿½ï¿½Æ®ï¿½ï¿½ enableï¿½ï¿½ ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_MOTION_ERROR_GANTRY_AXIS                         = 4155,    // ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¤ï¿½ï¿½(ï¿½ï¿½) ï¿½ï¿½È£(0 ~ (ï¿½Ö´ï¿½ï¿½ï¿½ï¿½ - 1))ï¿½ï¿½ ï¿½ß¸ï¿½ ï¿½ï¿½î°¬ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_MOTION_ERROR_MASTER_SERVOON                      = 4156,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ÈµÇ¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_MOTION_ERROR_SLAVE_SERVOON                       = 4157,    // ï¿½ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ÈµÇ¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_MOTION_INVALID_POSITION                          = 4158,    // ï¿½ï¿½È¿ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_ERROR_NOT_SAME_MODULE                            = 4159,    // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½â³»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_ERROR_NOT_SAME_BOARD                             = 4160,    // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½å³»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´Ò°ï¿½ï¿½
+    AXT_RT_ERROR_NOT_SAME_PRODUCT                           = 4161,    // ï¿½ï¿½Ç°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¸ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_NOT_CAPTURED                                     = 4162,    // ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_ERROR_NOT_SAME_IC                                = 4163,    // ï¿½ï¿½ï¿½ï¿½ Ä¨ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_ERROR_NOT_GEARMODE                               = 4164,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ ï¿½Èµï¿½ ï¿½ï¿½
+    AXT_ERROR_CONTI_INVALID_AXIS_NO                         = 4165,    // ï¿½ï¿½ï¿½Óºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½
+    AXT_ERROR_CONTI_INVALID_MAP_NO                          = 4166,    // ï¿½ï¿½ï¿½Óºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½
+    AXT_ERROR_CONTI_EMPTY_MAP_NO                            = 4167,    // ï¿½ï¿½ï¿½Óºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_MOTION_ERROR_CACULATION                          = 4168,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_ERROR_MOVE_SENSOR_CHECK                          = 4169,    // ï¿½ï¿½ï¿½Óºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(Alarm, EMG, Limitï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ï¿½È°ï¿½ï¿½
                                                                        
-    AXT_ERROR_HELICAL_INVALID_AXIS_NO                       = 4170,    // Çï¸®ÄÃ Ãà ¸ÊÇÎ ½Ã À¯È¿ÇÑ ÃàÀÌ ¾Æ´Ò ¶§
-    AXT_ERROR_HELICAL_INVALID_MAP_NO                        = 4171,    // Çï¸®ÄÃ ¸ÊÇÎ ½Ã À¯È¿ÇÑ ¸ÊÇÎ ¹øÈ£°¡ ¾Æ´Ò ¶§
-    AXT_ERROR_HELICAL_EMPTY_MAP_NO                          = 4172,    // Çï¸®ÄÃ ¸ÊÇÎ ¹øÈ£°¡ ºñ¿ö ÀÖÀ» ¶§
-    AXT_ERROR_HELICAL_ZPOS_DISTANCE_ZERO                    = 4173,    // Çï¸®ÄÃ ¸ÊÇÎµÈ ZÃàÀÇ ÀÌµ¿·®ÀÌ 0ÀÏ ¶§
+    AXT_ERROR_HELICAL_INVALID_AXIS_NO                       = 4170,    // ï¿½ï¸®ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½
+    AXT_ERROR_HELICAL_INVALID_MAP_NO                        = 4171,    // ï¿½ï¸®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½
+    AXT_ERROR_HELICAL_EMPTY_MAP_NO                          = 4172,    // ï¿½ï¸®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_ERROR_HELICAL_ZPOS_DISTANCE_ZERO                    = 4173,    // ï¿½ï¸®ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½ Zï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ ï¿½ï¿½
 
-    AXT_ERROR_SPLINE_INVALID_AXIS_NO                        = 4180,    // ½ºÇÃ¶óÀÎ Ãà ¸ÊÇÎ ½Ã À¯È¿ÇÑ ÃàÀÌ ¾Æ´Ò ¶§
-    AXT_ERROR_SPLINE_INVALID_MAP_NO                         = 4181,    // ½ºÇÃ¶óÀÎ ¸ÊÇÎ ½Ã À¯È¿ÇÑ ¸ÊÇÎ ¹øÈ£°¡ ¾Æ´Ò ¶§
-    AXT_ERROR_SPLINE_EMPTY_MAP_NO                           = 4182,    // ½ºÇÃ¶óÀÎ ¸ÊÇÎ ¹øÈ£°¡ ºñ¿öÀÖÀ» ¶§
-    AXT_ERROR_SPLINE_NUM_ERROR                              = 4183,    // ½ºÇÃ¶óÀÎ Á¡¼ýÀÚ°¡ ºÎÀû´çÇÒ ¶§
-    AXT_RT_MOTION_INTERPOL_VALUE                            = 4184,    // º¸°£ÇÒ ¶§ ÀÔ·Â °ªÀÌ Àß¸ø³Ö¾îÁ³À» ¶§
-    AXT_RT_ERROR_NOT_CONTIBEGIN                             = 4185,    // ¿¬¼Óº¸°£ ÇÒ ¶§ CONTIBEGINÇÔ¼ö¸¦ È£ÃâÇÏÁö ¾ÊÀ» ¶§
-    AXT_RT_ERROR_NOT_CONTIEND                               = 4186,    // ¿¬¼Óº¸°£ ÇÒ ¶§ CONTIENDÇÔ¼ö¸¦ È£ÃâÇÏÁö ¾ÊÀ» ¶§
+    AXT_ERROR_SPLINE_INVALID_AXIS_NO                        = 4180,    // ï¿½ï¿½ï¿½Ã¶ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½
+    AXT_ERROR_SPLINE_INVALID_MAP_NO                         = 4181,    // ï¿½ï¿½ï¿½Ã¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½
+    AXT_ERROR_SPLINE_EMPTY_MAP_NO                           = 4182,    // ï¿½ï¿½ï¿½Ã¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_ERROR_SPLINE_NUM_ERROR                              = 4183,    // ï¿½ï¿½ï¿½Ã¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_MOTION_INTERPOL_VALUE                            = 4184,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß¸ï¿½ï¿½Ö¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_ERROR_NOT_CONTIBEGIN                             = 4185,    // ï¿½ï¿½ï¿½Óºï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ CONTIBEGINï¿½Ô¼ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_ERROR_NOT_CONTIEND                               = 4186,    // ï¿½ï¿½ï¿½Óºï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ CONTIENDï¿½Ô¼ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
                                                                        
-    AXT_RT_MOTION_HOME_SEARCHING                            = 4201,    // È¨À» Ã£°í ÀÖ´Â ÁßÀÏ ¶§ ´Ù¸¥ ¸ð¼Ç ÇÔ¼öµéÀ» »ç¿ëÇÒ ¶§
-    AXT_RT_MOTION_HOME_ERROR_SEARCHING                      = 4202,    // È¨À» Ã£°í ÀÖ´Â ÁßÀÏ ¶§ ¿ÜºÎ¿¡¼­ »ç¿ëÀÚ³ª È¤Àº ¾î¶²°Í¿¡ ÀÇÇÑ  °­Á¦·Î Á¤Áö´çÇÒ ¶§
-    AXT_RT_MOTION_HOME_ERROR_START                          = 4203,    // ÃÊ±âÈ­ ¹®Á¦·Î È¨½ÃÀÛ ºÒ°¡ÇÒ ¶§
-    AXT_RT_MOTION_HOME_ERROR_GANTRY                         = 4204,    // È¨À» Ã£°í ÀÖ´Â ÁßÀÏ ¶§ °ÕÆ®¸® enable ºÒ°¡ÇÒ ¶§
+    AXT_RT_MOTION_HOME_SEARCHING                            = 4201,    // È¨ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_MOTION_HOME_ERROR_SEARCHING                      = 4202,    // È¨ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ÜºÎ¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ú³ï¿½ È¤ï¿½ï¿½ ï¿½î¶²ï¿½Í¿ï¿½ ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_MOTION_HOME_ERROR_START                          = 4203,    // ï¿½Ê±ï¿½È­ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È¨ï¿½ï¿½ï¿½ï¿½ ï¿½Ò°ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_MOTION_HOME_ERROR_GANTRY                         = 4204,    // È¨ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ enable ï¿½Ò°ï¿½ï¿½ï¿½ ï¿½ï¿½
                                                                        
-    AXT_RT_MOTION_READ_ALARM_WAITING                        = 4210,    // ¼­º¸ÆÑÀ¸·ÎºÎÅÍ ¾Ë¶÷ÄÚµå °á°ú¸¦ ±â´Ù¸®´Â Áß
-    AXT_RT_MOTION_READ_ALARM_NO_REQUEST                     = 4211,    // ¼­º¸ÆÑ¿¡ ¾Ë¶÷ÄÚµå ¹ÝÈ¯ ¸í·ÉÀÌ ³»·ÁÁöÁö¾Ê¾ÒÀ» ¶§
-    AXT_RT_MOTION_READ_ALARM_TIMEOUT                        = 4212,    // ¼­º¸ÆÑ ¾Ë¶÷ÀÐ±â ½Ã°£ÃÊ°ú ÇßÀ»¶§(1secÀÌ»ó)
-    AXT_RT_MOTION_READ_ALARM_FAILED                         = 4213,    // ¼­º¸ÆÑ ¾Ë¶÷ÀÐ±â¿¡ ½ÇÆÐ ÇßÀ» ¶§
-    AXT_RT_MOTION_READ_ALARM_UNKNOWN                        = 4220,    // ¾Ë¶÷ÄÚµå°¡ ¾Ë¼ö¾ø´Â ÄÚµåÀÏ ¶§
-    AXT_RT_MOTION_READ_ALARM_FILES                          = 4221,    // ¾Ë¶÷Á¤º¸ ÆÄÀÏÀÌ Á¤ÇØÁøÀ§Ä¡¿¡ Á¸ÀçÇÏÁö ¾ÊÀ» ¶§
-    AXT_RT_MOTION_READ_ALARM_NOT_DETECTED                   = 4222,    // ¾Ë¶÷ÄÚµå Read ½Ã, ¾Ë¶÷ÀÌ ¹ß»ýÇÏÁö ¾Ê¾ÒÀ» ¶§
+    AXT_RT_MOTION_READ_ALARM_WAITING                        = 4210,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îºï¿½ï¿½ï¿½ ï¿½Ë¶ï¿½ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_MOTION_READ_ALARM_NO_REQUEST                     = 4211,    // ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¿ï¿½ ï¿½Ë¶ï¿½ï¿½Úµï¿½ ï¿½ï¿½È¯ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_MOTION_READ_ALARM_TIMEOUT                        = 4212,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¶ï¿½ï¿½Ð±ï¿½ ï¿½Ã°ï¿½ï¿½Ê°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(1secï¿½Ì»ï¿½)
+    AXT_RT_MOTION_READ_ALARM_FAILED                         = 4213,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¶ï¿½ï¿½Ð±â¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_MOTION_READ_ALARM_UNKNOWN                        = 4220,    // ï¿½Ë¶ï¿½ï¿½Úµå°¡ ï¿½Ë¼ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_MOTION_READ_ALARM_FILES                          = 4221,    // ï¿½Ë¶ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_MOTION_READ_ALARM_NOT_DETECTED                   = 4222,    // ï¿½Ë¶ï¿½ï¿½Úµï¿½ Read ï¿½ï¿½, ï¿½Ë¶ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾ï¿½ï¿½ï¿½ ï¿½ï¿½
                                                                        
-    AXT_RT_MOTION_POSITION_OUTOFBOUND                       = 4251,    // ¼³Á¤ÇÑ À§Ä¡°ªÀÌ ¼³Á¤ ÃÖ´ë°ªº¸´Ù Å©°Å³ª ÃÖ¼Ò°ªº¸´Ù ÀÛÀº°ªÀÓ
-    AXT_RT_MOTION_PROFILE_INVALID                           = 4252,    // ±¸µ¿ ¼Óµµ ÇÁ·ÎÆÄÀÏ ¼³Á¤ÀÌ Àß¸øµÊ
-    AXT_RT_MOTION_VELOCITY_OUTOFBOUND                       = 4253,    // ±¸µ¿ ¼Óµµ°ªÀÌ ÃÖ´ë°ªº¸´Ù Å©°Ô ¼³Á¤µÊ
-    AXT_RT_MOTION_MOVE_UNIT_IS_ZERO                         = 4254,    // ±¸µ¿ ´ÜÀ§°ªÀÌ 0À¸·Î ¼³Á¤µÊ
-    AXT_RT_MOTION_SETTING_ERROR                             = 4255,    // ¼Óµµ, °¡¼Óµµ, ÀúÅ©, ÇÁ·ÎÆÄÀÏ ¼³Á¤ÀÌ Àß¸øµÊ
-    AXT_RT_MOTION_IN_CONT_INTERPOL                          = 4256,    // ¿¬¼Ó º¸°£ ±¸µ¿ Áß ±¸µ¿ ½ÃÀÛ ¶Ç´Â Àç½ÃÀÛ ÇÔ¼ö¸¦ ½ÇÇàÇÏ¿´À½ 
-    AXT_RT_MOTION_DISABLE_TRIGGER                           = 4257,    // Æ®¸®°Å Ãâ·ÂÀÌ Disable »óÅÂÀÓ
-    AXT_RT_MOTION_INVALID_CONT_INDEX                        = 4258,    // ¿¬¼Ó º¸°£ Index°ª ¼³Á¤ÀÌ Àß¸øµÊ
-    AXT_RT_MOTION_CONT_QUEUE_FULL                           = 4259,    // ¸ð¼Ç Ä¨ÀÇ ¿¬¼Ó º¸°£ Å¥°¡ Full »óÅÂÀÓ
-    AXT_RT_PROTECTED_DURING_SERVOON                         = 4260,    // ¼­º¸ ¿Â µÇ¾î ÀÖ´Â »óÅÂ¿¡¼­ »ç¿ë ¸ø ÇÔ
-    AXT_RT_HW_ACCESS_ERROR                                  = 4261,    // ¸Þ¸ð¸® Read / Write ½ÇÆÐ
+    AXT_RT_MOTION_POSITION_OUTOFBOUND                       = 4251,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ë°ªï¿½ï¿½ï¿½ï¿½ Å©ï¿½Å³ï¿½ ï¿½Ö¼Ò°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_PROFILE_INVALID                           = 4252,    // ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¸ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_VELOCITY_OUTOFBOUND                       = 4253,    // ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ë°ªï¿½ï¿½ï¿½ï¿½ Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_MOVE_UNIT_IS_ZERO                         = 4254,    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_SETTING_ERROR                             = 4255,    // ï¿½Óµï¿½, ï¿½ï¿½ï¿½Óµï¿½, ï¿½ï¿½Å©, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¸ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_IN_CONT_INTERPOL                          = 4256,    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ 
+    AXT_RT_MOTION_DISABLE_TRIGGER                           = 4257,    // Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ Disable ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_INVALID_CONT_INDEX                        = 4258,    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Indexï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¸ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_CONT_QUEUE_FULL                           = 4259,    // ï¿½ï¿½ï¿½ Ä¨ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å¥ï¿½ï¿½ Full ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_PROTECTED_DURING_SERVOON                         = 4260,    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ç¾ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_HW_ACCESS_ERROR                                  = 4261,    // ï¿½Þ¸ï¿½ Read / Write ï¿½ï¿½ï¿½ï¿½
                                                                        
-    AXT_RT_HW_DPRAM_CMD_WRITE_ERROR_LV1                     = 4262,    // DPRAM Comamnd Write ½ÇÆÐ Level1
-    AXT_RT_HW_DPRAM_CMD_WRITE_ERROR_LV2                     = 4263,    // DPRAM Comamnd Write ½ÇÆÐ Level2
-    AXT_RT_HW_DPRAM_CMD_WRITE_ERROR_LV3                     = 4264,    // DPRAM Comamnd Write ½ÇÆÐ Level3
-    AXT_RT_HW_DPRAM_CMD_READ_ERROR_LV1                      = 4265,    // DPRAM Comamnd Read ½ÇÆÐ Level1
-    AXT_RT_HW_DPRAM_CMD_READ_ERROR_LV2                      = 4266,    // DPRAM Comamnd Read ½ÇÆÐ Level2
-    AXT_RT_HW_DPRAM_CMD_READ_ERROR_LV3                      = 4267,    // DPRAM Comamnd Read ½ÇÆÐ Level3                                     
+    AXT_RT_HW_DPRAM_CMD_WRITE_ERROR_LV1                     = 4262,    // DPRAM Comamnd Write ï¿½ï¿½ï¿½ï¿½ Level1
+    AXT_RT_HW_DPRAM_CMD_WRITE_ERROR_LV2                     = 4263,    // DPRAM Comamnd Write ï¿½ï¿½ï¿½ï¿½ Level2
+    AXT_RT_HW_DPRAM_CMD_WRITE_ERROR_LV3                     = 4264,    // DPRAM Comamnd Write ï¿½ï¿½ï¿½ï¿½ Level3
+    AXT_RT_HW_DPRAM_CMD_READ_ERROR_LV1                      = 4265,    // DPRAM Comamnd Read ï¿½ï¿½ï¿½ï¿½ Level1
+    AXT_RT_HW_DPRAM_CMD_READ_ERROR_LV2                      = 4266,    // DPRAM Comamnd Read ï¿½ï¿½ï¿½ï¿½ Level2
+    AXT_RT_HW_DPRAM_CMD_READ_ERROR_LV3                      = 4267,    // DPRAM Comamnd Read ï¿½ï¿½ï¿½ï¿½ Level3                                     
     
-    AXT_RT_COMPENSATION_SET_PARAM_FIRST                     = 4300,    // º¸Á¤ ÆÄ¶ó¹ÌÅÍ Áß Ã¹¹øÂ° °ªÀÌ Àß¸ø ¼³Á¤µÇ¾úÀ½
-    AXT_RT_COMPENSATION_NOT_INIT                            = 4301,    // º¸Á¤Å×ÀÌºí ±â´É ÃÊ±âÈ­ µÇÁö¾ÊÀ½
-    AXT_RT_COMPENSATION_POS_OUTOFBOUND                      = 4302,    // À§Ä¡ °ªÀÌ ¹üÀ§³»¿¡ Á¸ÀçÇÏÁö ¾ÊÀ½
-    AXT_RT_COMPENSATION_BACKLASH_NOT_INIT                   = 4303,    // ¹é·¢½¬ º¸Á¤±â´É ÃÊ±âÈ­ µÇÁö¾ÊÀ½
-    AXT_RT_COMPENSATION_INVALID_ENTRY                       = 4304,    // º¸Á¤Å×ÀÌºí °³¼ö°¡ Àß¸ø ÀÔ·ÂµÇ¾úÀ½.
+    AXT_RT_COMPENSATION_SET_PARAM_FIRST                     = 4300,    // ï¿½ï¿½ï¿½ï¿½ ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Ã¹ï¿½ï¿½Â° ï¿½ï¿½ï¿½ï¿½ ï¿½ß¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½
+    AXT_RT_COMPENSATION_NOT_INIT                            = 4301,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_COMPENSATION_POS_OUTOFBOUND                      = 4302,    // ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_COMPENSATION_BACKLASH_NOT_INIT                   = 4303,    // ï¿½é·¢ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_COMPENSATION_INVALID_ENTRY                       = 4304,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¸ï¿½ ï¿½Ô·ÂµÇ¾ï¿½ï¿½ï¿½.
                                                                        
-    AXT_RT_SEQ_NOT_IN_SERVICE                               = 4400,    // ¼øÂ÷ ±¸µ¿ ÇÔ¼ö ½ÇÇà Áß ÀÚ¿ø ÇÒ´ç ½ÇÆÐ
-    AXT_ERROR_SEQ_INVALID_MAP_NO                            = 4401,    // ¼øÂ÷ ±¸µ¿ ÇÔ¼ö ½ÇÇà Áß ¸ÊÇÎ ¹øÈ£ ÀÌ»ó.
-    AXT_ERROR_INVALID_AXIS_NO                               = 4402,    // ÇÔ¼ö ¼³Á¤ ÀÎÀÚÁß Ãà¹øÈ£ ÀÌ»ó.
-    AXT_RT_ERROR_NOT_SEQ_NODE_BEGIN                         = 4403,    // ¼øÂ÷ ±¸µ¿ ³ëµå ÀÔ·Â ½ÃÀÛ ÇÔ¼ö¸¦ È£ÃâÇÏÁö ¾ÊÀ½.
-    AXT_RT_ERROR_NOT_SEQ_NODE_END                           = 4404,    // ¼øÂ÷ ±¸µ¿ ³ëµå ÀÔ·Â Á¾·á ÇÔ¼ö¸¦ È£ÃâÇÏÁö ¾ÊÀ½.
-    AXT_RT_ERROR_NO_NODE                                    = 4405,    // ¼øÂ÷ ±¸µ¿ ³ëµå ÀÔ·ÂÀÌ ¾øÀ½.
-    AXT_RT_ERROR_SEQ_STOP_TIMEOUT                           = 4406,    // ¼øÂ÷ ±¸µ¿ ÇÔ¼ö Á¾·á ½Ã TimeOut ¹ß»ý
-    AXT_RT_ERROR_INVALID_SEQ_MASTER_AXIS_NO                 = 4407,    // ¼øÂ÷ ±¸µ¿ Master ÃàÀÌ À¯È¿ÇÏÁö ¾ÊÀ½.
+    AXT_RT_SEQ_NOT_IN_SERVICE                               = 4400,    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ú¿ï¿½ ï¿½Ò´ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_ERROR_SEQ_INVALID_MAP_NO                            = 4401,    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½Ì»ï¿½.
+    AXT_ERROR_INVALID_AXIS_NO                               = 4402,    // ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½È£ ï¿½Ì»ï¿½.
+    AXT_RT_ERROR_NOT_SEQ_NODE_BEGIN                         = 4403,    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    AXT_RT_ERROR_NOT_SEQ_NODE_END                           = 4404,    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    AXT_RT_ERROR_NO_NODE                                    = 4405,    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    AXT_RT_ERROR_SEQ_STOP_TIMEOUT                           = 4406,    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ TimeOut ï¿½ß»ï¿½
+    AXT_RT_ERROR_INVALID_SEQ_MASTER_AXIS_NO                 = 4407,    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Master ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
                                                                        
-    AXT_RT_ERROR_RING_COUNTER_ENABLE                        = 4420,    // Ring Counter ±â´ÉÀÌ »ç¿ë Áß
-    AXT_RT_ERROR_RING_COUNTER_OUT_OF_RANGE                  = 4421,    // Ring Counter »ç¿ë Áß ¹üÀ§ ¹Û ¸í·É À§Ä¡ È£Ãâ(POS_ABS_LONG_MODE or POS_ABS_SHORT_MODE ÀÏ °æ¿ì)
-    AXT_RT_ERROR_SOFT_LIMIT_ENABLE                          = 4430,    // Software Limit ±â´ÉÀÌ »ç¿ë Áß
-    AXT_RT_ERROR_SOFT_LIMIT_NEGATIVE                        = 4431,    // ÀÌµ¿ÇÒ À§Ä¡°¡ Negative Software LimitÀ» ¹þ¾î³²
-    AXT_RT_ERROR_SOFT_LIMIT_POSITIVE                        = 4432,    // ÀÌµ¿ÇÒ À§Ä¡°¡ Positive Software LimitÀ» ¹þ¾î³²
+    AXT_RT_ERROR_RING_COUNTER_ENABLE                        = 4420,    // Ring Counter ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_ERROR_RING_COUNTER_OUT_OF_RANGE                  = 4421,    // Ring Counter ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ È£ï¿½ï¿½(POS_ABS_LONG_MODE or POS_ABS_SHORT_MODE ï¿½ï¿½ ï¿½ï¿½ï¿½)
+    AXT_RT_ERROR_SOFT_LIMIT_ENABLE                          = 4430,    // Software Limit ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_ERROR_SOFT_LIMIT_NEGATIVE                        = 4431,    // ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ Negative Software Limitï¿½ï¿½ ï¿½ï¿½ï¿½î³²
+    AXT_RT_ERROR_SOFT_LIMIT_POSITIVE                        = 4432,    // ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ Positive Software Limitï¿½ï¿½ ï¿½ï¿½ï¿½î³²
 
-    AXT_RT_M3_COMMUNICATION_FAILED                          = 4500,    // ML3 Åë½Å ±âÁØ, Åë½Å ½ÇÆÐ
-    AXT_RT_MOTION_ONE_OF_AXES_IS_NOT_M3                     = 4501,    // ML3 Åë½Å ±âÁØ, ±¸¼ºµÈ ML3 ³ëµå Áß¿¡¼­ ¸ð¼Ç ³ëµå ¾øÀ½ 
-    AXT_RT_MOTION_BIGGER_VEL_THEN_MAX_VEL                   = 4502,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÇ ¼³Á¤µÈ ÃÖ´ë ¼Óµµº¸´Ù Å­
-    AXT_RT_MOTION_SMALLER_VEL_THEN_MAX_VEL                  = 4503,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÇ ¼³Á¤µÈ ÃÖ´ë ¼Óµµº¸´Ù ÀÛÀ½
-    AXT_RT_MOTION_ACCEL_MUST_BIGGER_THEN_ZERO               = 4504,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÇ ¼³Á¤µÈ °¡¼Óµµ°¡ 0º¸´Ù Å­
-    AXT_RT_MOTION_SMALL_ACCEL_WITH_UNIT_PULSE               = 4505,    // ML3 Åë½Å ±âÁØ, UnitPulse°¡ Àû¿ëµÈ °¡¼Óµµ°¡ 0º¸´Ù Å­
-    AXT_RT_MOTION_INVALID_INPUT_ACCEL                       = 4506,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÇ °¡¼Óµµ ÀÔ·ÂÀÌ Àß¸øµÊ
-    AXT_RT_MOTION_SMALL_DECEL_WITH_UNIT_PULSE               = 4507,    // ML3 Åë½Å ±âÁØ, UnitPulse°¡ Àû¿ëµÈ °¨¼Óµµ°¡ 0º¸´Ù Å­
-    AXT_RT_MOTION_INVALID_INPUT_DECEL                       = 4508,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÇ °¨¼Óµµ ÀÔ·ÂÀÌ Àß¸øµÊ
-    AXT_RT_MOTION_SAME_START_AND_CENTER_POS                 = 4509,    // ML3 Åë½Å ±âÁØ, ¿øÈ£º¸°£ÀÇ ½ÃÀÛÁ¡°ú Áß½ÉÁ¡ÀÌ °°À½
-    AXT_RT_MOTION_INVALID_JERK                              = 4510,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÇ ÀúÅ© ÀÔ·ÂÀÌ Àß¸øµÊ
-    AXT_RT_MOTION_INVALID_INPUT_VALUE                       = 4511,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÇ ÀÔ·Â°ªÀÌ Àß¸øµÊ
-    AXT_RT_MOTION_NOT_SUPPORT_PROFILE                       = 4512,    // ML3 Åë½Å ±âÁØ, Á¦°øµÇÁö ¾Ê´Â ¼Óµµ ÇÁ·ÎÆÄÀÏÀÓ
-    AXT_RT_MOTION_INPOS_UNUSED                              = 4513,    // ML3 Åë½Å ±âÁØ, ÀÎÆ÷Áö¼Ç »ç¿ëÇÏÁö ¾ÊÀ½
-    AXT_RT_MOTION_AXIS_IN_SLAVE_STATE                       = 4514,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÌ ½½·¹ÀÌºê »óÅÂ°¡ ¾Æ´Ô
-    AXT_RT_MOTION_AXES_ARE_NOT_SAME_BOARD                   = 4515,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàµéÀÌ °°Àº º¸µå ³»¿¡ ÀÖÁö ¾ÊÀ½
-    AXT_RT_MOTION_ERROR_IN_ALARM                            = 4516,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÌ ¾Ë¶÷ »óÅÂÀÓ
-    AXT_RT_MOTION_ERROR_IN_EMGN                             = 4517,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÌ ºñ»óÁ¤Áö »óÅÂÀÓ
-    AXT_RT_MOTION_CAN_NOT_CHANGE_COORD_NO                   = 4518,    // ML3 Åë½Å ±âÁØ, ÄÚµð³×ÀÌÅÍ ³Ñ¹ö º¯È¯ ºÒ°¡ÀÓ
-    AXT_RT_MOTION_INVALID_INTERNAL_RADIOUS                  = 4519,    // ML3 Åë½Å ±âÁØ, ¿øÈ£º¸°£ÀÇ X, YÃà ¹ÝÁö¸§ ºÒÀÏÄ¡
-    AXT_RT_MOTION_CONTI_QUEUE_FULL                          = 4521,    // ML3 Åë½Å ±âÁØ, º¸°£ÀÇ Å¥°¡ °¡µæ Âü
-    AXT_RT_MOTION_SAME_START_AND_END_POSITION               = 4522,    // ML3 Åë½Å ±âÁØ, ¿øÈ£º¸°£ÀÇ ½ÃÀÛÁ¡°ú Á¾·áÁ¡ÀÌ °°À½
-    AXT_RT_MOTION_INVALID_ANGLE                             = 4523,    // ML3 Åë½Å ±âÁØ, ¿øÈ£º¸°£ÀÇ °¢µµ°¡ 360µµ ÃÊ°úµÊ
-    AXT_RT_MOTION_CONTI_QUEUE_EMPTY                         = 4524,    // ML3 Åë½Å ±âÁØ, º¸°£ÀÇ Å¥°¡ ºñ¾îÀÖÀ½
-    AXT_RT_MOTION_ERROR_GEAR_ENABLE                         = 4525,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÌ ÀÌ¹Ì ¸µÅ© ¼³Á¤ »óÅÂÀÓ
-    AXT_RT_MOTION_ERROR_GEAR_AXIS                           = 4526,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÌ ¸µÅ©ÃàÀÌ ¾Æ´Ô
-    AXT_RT_MOTION_ERROR_NO_GANTRY_ENABLE                    = 4527,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÌ °ÕÆ®¸® ¼³Á¤ »óÅÂ°¡ ¾Æ´Ô
-    AXT_RT_MOTION_ERROR_NO_GEAR_ENABLE                      = 4528,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÌ ¸µÅ© ¼³Á¤ »óÅÂ°¡ ¾Æ´Ô
-    AXT_RT_MOTION_ERROR_GANTRY_ENABLE_FULL                  = 4529,    // ML3 Åë½Å ±âÁØ, °ÕÆ®¸® ¼³Á¤ °¡µæÂü
-    AXT_RT_MOTION_ERROR_GEAR_ENABLE_FULL                    = 4530,    // ML3 Åë½Å ±âÁØ, ¸µÅ© ¼³Á¤ °¡µæÂü
-    AXT_RT_MOTION_ERROR_NO_GANTRY_SLAVE                     = 4531,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÌ °ÕÆ®¸® ½½·¹ÀÌºê ¼³Á¤»óÅÂ°¡ ¾Æ´Ô
-    AXT_RT_MOTION_ERROR_NO_GEAR_SLAVE                       = 4532,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÌ ¸µÅ© ½½·¹ÀÌºê ¼³Á¤»óÅÂ°¡ ¾Æ´Ô
-    AXT_RT_MOTION_ERROR_MASTER_SLAVE_SAME                   = 4533,    // ¸¶½ºÅÍ Ãà°ú ½½·¹ÀÌºê ÃàÀÌ µ¿ÀÏÇÔ
-    AXT_RT_MOTION_NOT_SUPPORT_HOMESIGNAL                    = 4534,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÇ È¨½ÅÈ£´Â Áö¿øµÇÁö ¾ÊÀ½
-    AXT_RT_MOTION_ERROR_NOT_SYNC_CONNECT                    = 4535,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÌ ½ÌÅ© ¿¬°á »óÅÂ°¡ ¾Æ´Ô
-    AXT_RT_MOTION_OVERFLOW_POSITION                         = 4536,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ Ãà¿¡ ´ëÇÑ ±¸µ¿ À§Ä¡°ªÀÌ ¿À¹öÇÃ·Î¿ìÀÓ
-    AXT_RT_MOTION_ERROR_INVALID_CONTIMAPAXIS                = 4537,    // ML3 Åë½Å ±âÁØ, º¸°£ÀÛ¾÷À» À§ÇÑ ÁöÁ¤µÈ ÁÂÇ¥°è Ãà¸ÊÇÎÀÌ ¾øÀ½
-    AXT_RT_MOTION_ERROR_INVALID_CONTIMAPSIZE                = 4538,    // ML3 Åë½Å ±âÁØ, º¸°£ÀÛ¾÷À» À§ÇÑ ÁöÁ¤µÈ ÁÂÇ¥°è Ãà¸ÊÇÎ Ãà»çÀÌÁî°¡ Àß¸øµÊ
-    AXT_RT_MOTION_ERROR_IN_SERVO_OFF                        = 4539,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÌ ¼­º¸ OFFµÇ¾î ÀÖÀ½
-    AXT_RT_MOTION_ERROR_POSITIVE_LIMIT                      = 4540,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÌ (+)¸®¹Ô ONµÇ¾î ÀÖÀ½
-    AXT_RT_MOTION_ERROR_NEGATIVE_LIMIT                      = 4541,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ ÃàÀÌ (-)¸®¹Ô ONµÇ¾î ÀÖÀ½
-    AXT_RT_MOTION_ERROR_OVERFLOW_SWPROFILE_NUM              = 4542,    // ML3 Åë½Å ±âÁØ, ÁöÁ¤µÈ Ãàµé¿¡ ´ëÇÑ Áö¿ø ÇÁ·ÎÆÄÀÏ °³¼ö°¡ ¿À¹öÇÃ·Î¿ìµÊ
-    AXT_RT_PROTECTED_DURING_INMOTION                        = 4543,    // in_motion µÇ¾î ÀÖ´Â »óÅÂ¿¡¼­ »ç¿ë ¸ø ÇÔ
+    AXT_RT_M3_COMMUNICATION_FAILED                          = 4500,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_ONE_OF_AXES_IS_NOT_M3                     = 4501,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ML3 ï¿½ï¿½ï¿½ ï¿½ß¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
+    AXT_RT_MOTION_BIGGER_VEL_THEN_MAX_VEL                   = 4502,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½Óµï¿½ï¿½ï¿½ï¿½ï¿½ Å­
+    AXT_RT_MOTION_SMALLER_VEL_THEN_MAX_VEL                  = 4503,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½Óµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_ACCEL_MUST_BIGGER_THEN_ZERO               = 4504,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ Å­
+    AXT_RT_MOTION_SMALL_ACCEL_WITH_UNIT_PULSE               = 4505,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, UnitPulseï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ Å­
+    AXT_RT_MOTION_INVALID_INPUT_ACCEL                       = 4506,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Óµï¿½ ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½ß¸ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_SMALL_DECEL_WITH_UNIT_PULSE               = 4507,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, UnitPulseï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ Å­
+    AXT_RT_MOTION_INVALID_INPUT_DECEL                       = 4508,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Óµï¿½ ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½ß¸ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_SAME_START_AND_CENTER_POS                 = 4509,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½È£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_INVALID_JERK                              = 4510,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å© ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½ß¸ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_INVALID_INPUT_VALUE                       = 4511,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·Â°ï¿½ï¿½ï¿½ ï¿½ß¸ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_NOT_SUPPORT_PROFILE                       = 4512,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½ ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_INPOS_UNUSED                              = 4513,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_AXIS_IN_SLAVE_STATE                       = 4514,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½Â°ï¿½ ï¿½Æ´ï¿½
+    AXT_RT_MOTION_AXES_ARE_NOT_SAME_BOARD                   = 4515,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_ERROR_IN_ALARM                            = 4516,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_ERROR_IN_EMGN                             = 4517,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_CAN_NOT_CHANGE_COORD_NO                   = 4518,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¹ï¿½ ï¿½ï¿½È¯ ï¿½Ò°ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_INVALID_INTERNAL_RADIOUS                  = 4519,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½È£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ X, Yï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ä¡
+    AXT_RT_MOTION_CONTI_QUEUE_FULL                          = 4521,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    AXT_RT_MOTION_SAME_START_AND_END_POSITION               = 4522,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½È£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_INVALID_ANGLE                             = 4523,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½È£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 360ï¿½ï¿½ ï¿½Ê°ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_CONTI_QUEUE_EMPTY                         = 4524,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_ERROR_GEAR_ENABLE                         = 4525,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¹ï¿½ ï¿½ï¿½Å© ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_ERROR_GEAR_AXIS                           = 4526,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å©ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´ï¿½
+    AXT_RT_MOTION_ERROR_NO_GANTRY_ENABLE                    = 4527,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â°ï¿½ ï¿½Æ´ï¿½
+    AXT_RT_MOTION_ERROR_NO_GEAR_ENABLE                      = 4528,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å© ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â°ï¿½ ï¿½Æ´ï¿½
+    AXT_RT_MOTION_ERROR_GANTRY_ENABLE_FULL                  = 4529,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_ERROR_GEAR_ENABLE_FULL                    = 4530,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½Å© ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_ERROR_NO_GANTRY_SLAVE                     = 4531,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½Æ´ï¿½
+    AXT_RT_MOTION_ERROR_NO_GEAR_SLAVE                       = 4532,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å© ï¿½ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½Æ´ï¿½
+    AXT_RT_MOTION_ERROR_MASTER_SLAVE_SAME                   = 4533,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_NOT_SUPPORT_HOMESIGNAL                    = 4534,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¨ï¿½ï¿½È£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_ERROR_NOT_SYNC_CONNECT                    = 4535,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å© ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â°ï¿½ ï¿½Æ´ï¿½
+    AXT_RT_MOTION_OVERFLOW_POSITION                         = 4536,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½à¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ã·Î¿ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_ERROR_INVALID_CONTIMAPAXIS                = 4537,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½Û¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_ERROR_INVALID_CONTIMAPSIZE                = 4538,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½Û¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½î°¡ ï¿½ß¸ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_ERROR_IN_SERVO_OFF                        = 4539,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ OFFï¿½Ç¾ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_ERROR_POSITIVE_LIMIT                      = 4540,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (+)ï¿½ï¿½ï¿½ï¿½ ONï¿½Ç¾ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_ERROR_NEGATIVE_LIMIT                      = 4541,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (-)ï¿½ï¿½ï¿½ï¿½ ONï¿½Ç¾ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MOTION_ERROR_OVERFLOW_SWPROFILE_NUM              = 4542,    // ML3 ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½é¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ã·Î¿ï¿½ï¿½
+    AXT_RT_PROTECTED_DURING_INMOTION                        = 4543,    // in_motion ï¿½Ç¾ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½
 	
-    AXT_ERROR_SYNC_INVALID_AXIS_NO                          = 4600,    // Sync Ãà¸ÊÇÎ ½Ã À¯È¿ÇÑ ÃàÀÌ ¾Æ´Ò ¶§
-    AXT_ERROR_SYNC_INVALID_MAP_NO                           = 4601,    // Sync ¸ÊÇÎ ½Ã À¯È¿ÇÑ ¸ÊÇÎ ¹øÈ£°¡ ¾Æ´Ò ¶§
-    AXT_ERROR_SYNC_DUPLICATED_TIME                          = 4602,    // Time tableÀÌ Áßº¹µÇ¾úÀ» ¶§
+    AXT_ERROR_SYNC_INVALID_AXIS_NO                          = 4600,    // Sync ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½
+    AXT_ERROR_SYNC_INVALID_MAP_NO                           = 4601,    // Sync ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½
+    AXT_ERROR_SYNC_DUPLICATED_TIME                          = 4602,    // Time tableï¿½ï¿½ ï¿½ßºï¿½ï¿½Ç¾ï¿½ï¿½ï¿½ ï¿½ï¿½
 
-    AXT_RT_DATA_FLASH_NOT_EXIST                             = 5000,    // ÇÃ·¡½Ã ¸Þ¸ð¸®°¡ Á¸ÀçÇÏÁö ¾ÊÀ½
-    AXT_RT_DATA_FLASH_BUSY                                  = 5001,    // ÇÃ·¡½Ã ¸Þ¸ð¸®°¡ »ç¿ë Áß
+    AXT_RT_DATA_FLASH_NOT_EXIST                             = 5000,    // ï¿½Ã·ï¿½ï¿½ï¿½ ï¿½Þ¸ð¸®°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_DATA_FLASH_BUSY                                  = 5001,    // ï¿½Ã·ï¿½ï¿½ï¿½ ï¿½Þ¸ð¸®°ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½
 
     AXT_RT_QUEUE_CMD_ERROR                                  = 5010,
     AXT_RT_QUEUE_CMD_WAIT_ERROR                             = 5011,
@@ -562,19 +562,19 @@ typedef enum _AXT_FUNC_RESULT
     AXT_RT_QUEUE_RSP_WAIT_ERROR                             = 5016,
     AXT_RT_QUEUE_RSP_WAIT_TIMEOUT                           = 5017,
 	
-    AXT_RT_MOTION_STILL_CONTI_MOTION                        = 5018,        // ¿¬¼Óº¸°£ ±¸µ¿ Áß¿¡ WriteClear³ª SetAxisMap µîÀÇ ÇÔ¼ö¸¦ È£ÃâÇÏ¿´À½.
+    AXT_RT_MOTION_STILL_CONTI_MOTION                        = 5018,        // ï¿½ï¿½ï¿½Óºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß¿ï¿½ WriteClearï¿½ï¿½ SetAxisMap ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½.
 	
     AXT_RT_MOTION_INVALD_SET                                = 6000,    
     AXT_RT_MOTION_INVALD_RESET                              = 6001,    
     AXT_RT_MOTION_INVALD_ENABLE                             = 6002,
 	
-    AXT_RT_LICENSE_INVALID                                  = 6500,        // À¯È¿ÇÏÁö¾ÊÀº License
+    AXT_RT_LICENSE_INVALID                                  = 6500,        // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ License
 
-    AXT_RT_MONITOR_IN_OPERATION                             = 6600,        // ÇöÀç Monitor ±â´ÉÀÌ µ¿ÀÛÁß¿¡ ÀÖÀ½
-    AXT_RT_MONITOR_NOT_OPERATION                            = 6601,        // ÇöÀç Monitor ±â´ÉÀÌ µ¿ÀÛÁßÀÌÁö ¾ÊÀ½
-    AXT_RT_MONITOR_EMPTY_QUEUE                              = 6602,        // Monitor data queue°¡ ºñ¾îÀÖÀ½
-    AXT_RT_MONITOR_INVALID_TRIGGER_OPTION                   = 6603,        // Æ®¸®°Å ¼³Á¤ÀÌ À¯È¿ÇÏÁö ¾ÊÀ½
-    AXT_RT_MONITOR_EMPTY_ITEM                               = 6604,        // ItemÀÌ ºñ¾î ÀÖÀ½
+    AXT_RT_MONITOR_IN_OPERATION                             = 6600,        // ï¿½ï¿½ï¿½ï¿½ Monitor ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MONITOR_NOT_OPERATION                            = 6601,        // ï¿½ï¿½ï¿½ï¿½ Monitor ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MONITOR_EMPTY_QUEUE                              = 6602,        // Monitor data queueï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MONITOR_INVALID_TRIGGER_OPTION                   = 6603,        // Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    AXT_RT_MONITOR_EMPTY_ITEM                               = 6604,        // Itemï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
     AXT_RT_MACRO_INVALID_MACRO_NO                           = 6700,
     AXT_RT_MACRO_INVALID_NODE_NO                            = 6701,
@@ -594,7 +594,7 @@ typedef enum _AXT_FUNC_RESULT
     AXT_RT_MACRO_NODE_FULL                                  = 6717,
     AXT_RT_MACRO_NODE_CHECK_ERROR                           = 6720,
     AXT_RT_MACRO_NOT_CHECKED                                = 6721,
-    AXT_RT_MACRO_NOT_PAUSED                                 = 6722,         // Macro°¡ Pause »óÅÂ°¡ ¾Æ´Ò¶§	  
+    AXT_RT_MACRO_NOT_PAUSED                                 = 6722,         // Macroï¿½ï¿½ Pause ï¿½ï¿½ï¿½Â°ï¿½ ï¿½Æ´Ò¶ï¿½	  
 
 	
     AXT_MK_RT_INVALID_AXIS                                  = 7100,
@@ -861,7 +861,7 @@ typedef enum _AXT_AIO_FULL_MODE
 
 #ifndef __AXT_AIO_EVENT_MASK__
 #define __AXT_AIO_EVENT_MASK__
-typedef enum _AXT_AIO_EVENT_MASK             //AIO ÂÊ ÇÏµå¿þ¾î ÀÎÅÍ·´Æ®°¡ Ãß°¡ µÇ¸é¼­ ¸íÄªÀÇ È¥¶õÀ» ¿ì·ÁÇØ¼­ ¼öÁ¤ÇÔ. 
+typedef enum _AXT_AIO_EVENT_MASK             //AIO ï¿½ï¿½ ï¿½Ïµï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í·ï¿½Æ®ï¿½ï¿½ ï¿½ß°ï¿½ ï¿½Ç¸é¼­ ï¿½ï¿½Äªï¿½ï¿½ È¥ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. 
 {
     DATA_EMPTY                                              = 0x01,
     DATA_MANY                                               = 0x02,
@@ -872,7 +872,7 @@ typedef enum _AXT_AIO_EVENT_MASK             //AIO ÂÊ ÇÏµå¿þ¾î ÀÎÅÍ·´Æ®°¡ Ãß°¡ µ
 
 #ifndef __AXT_AIO_INTERRUPT_MASK__
 #define __AXT_AIO_INTERRUPT_MASK__
-typedef enum _AXT_AIO_INTERRUPT_MASK         //AIO ÂÊ ÇÏµå¿þ¾î ÀÎÅÍ·´Æ®°¡ Ãß°¡µÇ¸é¼­ ±âÁ¸ÀÇ ³»¿ëÀ» º¯°æÇÔ. 
+typedef enum _AXT_AIO_INTERRUPT_MASK         //AIO ï¿½ï¿½ ï¿½Ïµï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í·ï¿½Æ®ï¿½ï¿½ ï¿½ß°ï¿½ï¿½Ç¸é¼­ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. 
 {
     ADC_DONE                                                = 0x00,
     SCAN_END                                                = 0x01,
@@ -881,7 +881,7 @@ typedef enum _AXT_AIO_INTERRUPT_MASK         //AIO ÂÊ ÇÏµå¿þ¾î ÀÎÅÍ·´Æ®°¡ Ãß°¡µÇ
 } AXT_AIO_INTERRUPT_MASK;
 #endif
 #ifndef __AXT_AIO_QUEUE_EVENT__
-#define __AXT_AIO_QUEUE_EVENT__              //AIOÂÊ ÀÌº¥Æ® /ÄÝ¹é /À©µµ¿ì ¸Þ½ÃÁöÀÇ ÆÄ¶ó¸ÞÅÍ °ª¿¡ ´ëÇÑ Á¤ÀÇ Ãß°¡ 
+#define __AXT_AIO_QUEUE_EVENT__              //AIOï¿½ï¿½ ï¿½Ìºï¿½Æ® /ï¿½Ý¹ï¿½ /ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ 
 typedef enum  _AXT_AIO_EVENT_MODE  
 {
     AIO_EVENT_DATA_RESET                                    = 0x00, 
@@ -1044,25 +1044,25 @@ typedef enum _AXT_MOTION_SIGNAL_LEVEL
 typedef enum AXT_MOTION_HOME_RESULT
 {
 	HOME_RESERVED                                           = 0x00,    // ML3
-	HOME_SUCCESS                                            = 0x01,    // ¿øÁ¡ °Ë»ö ¿Ï·á
-	HOME_SEARCHING                                          = 0x02,    // ¿øÁ¡ °Ë»ö Áß
-	HOME_ERR_GNT_RANGE                                      = 0x10,    // °µÆ®¸® ¿øÁ¡ °Ë»ö ±âÁØ, µÎ Ãà »çÀÌÀÇ ¼³Á¤ÀÌ»ó ¿ÀÂ÷ ¹ß»ý
-	HOME_ERR_USER_BREAK                                     = 0x11,    // ¿øÁ¡ °Ë»ö »ç¿ëÀÚ ÁßÁö½Ã
-	HOME_ERR_VELOCITY                                       = 0x12,    // ¿øÁ¡ °Ë»ö ¼Óµµ ÀÌ»ó ¿¡·¯ ¹ß»ý
-	HOME_ERR_AMP_FAULT                                      = 0x13,    // ¼­º¸ÆÑ ¾Ë¶÷ ¹ß»ý ¿¡·¯
-	HOME_ERR_NEG_LIMIT                                      = 0x14,    // (-)¹æÇâ ±¸µ¿Áß (+)¸®¹ÌÆ® ¼¾¼­ °¨Áö ¿¡·¯
-	HOME_ERR_POS_LIMIT                                      = 0x15,    // (+)¹æÇâ ±¸µ¿Áß (-)¸®¹ÌÆ® ¼¾¼­ °¨Áö ¿¡·¯
-	HOME_ERR_NOT_DETECT                                     = 0x16,    // ÁöÁ¤ÇÑ ½ÅÈ£ °ËÃâÇÏÁö ¸ø ÇÒ °æ¿ì ¿¡·¯
-	HOME_ERR_SETTING                                        = 0x17,    // »ç¿ëÀÚ ¼³Á¤ ÆÄ¶ó¹ÌÅÍ°¡ ±¸µ¿½Ã Á¦¾à Á¶°Ç ¹ß»ý½Ã
-	HOME_ERR_SERVO_OFF                                      = 0x18,    // ¼­º¸ OffÀÏ°æ¿ì
-	HOME_ERR_INTERLOCK                                      = 0x19,    // Interlock »óÅÂ ¹ß»ý
-	HOME_ERR_TIMEOUT                                        = 0x20,    // ÁöÁ¤µÈ ½Ã°£ ÃÊ°ú ¹ß»ýÀ¸·Î ¿À·ù ¹ß»ý 
-	HOME_ERR_POS_CLEAR										= 0x21,    // 0Á¡¼³Á¤¿À·ù
-	HOME_ERR_FUNCALL                                        = 0x30,    // ÇÔ¼ö È£Ãâ ½ÇÆÐ
-	HOME_ERR_HOME_METHOD                                    = 0x31,    // Áö¿øÇÏÁö¾Ê´Â ¿øÁ¡°Ë»ö ¹æ¹ýÀÓ.
+	HOME_SUCCESS                                            = 0x01,    // ï¿½ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½ ï¿½Ï·ï¿½
+	HOME_SEARCHING                                          = 0x02,    // ï¿½ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½ ï¿½ï¿½
+	HOME_ERR_GNT_RANGE                                      = 0x10,    // ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì»ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½
+	HOME_ERR_USER_BREAK                                     = 0x11,    // ï¿½ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	HOME_ERR_VELOCITY                                       = 0x12,    // ï¿½ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½ ï¿½Óµï¿½ ï¿½Ì»ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½
+	HOME_ERR_AMP_FAULT                                      = 0x13,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¶ï¿½ ï¿½ß»ï¿½ ï¿½ï¿½ï¿½ï¿½
+	HOME_ERR_NEG_LIMIT                                      = 0x14,    // (-)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (+)ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	HOME_ERR_POS_LIMIT                                      = 0x15,    // (+)ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (-)ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	HOME_ERR_NOT_DETECT                                     = 0x16,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	HOME_ERR_SETTING                                        = 0x17,    // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ä¶ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ï¿½
+	HOME_ERR_SERVO_OFF                                      = 0x18,    // ï¿½ï¿½ï¿½ï¿½ Offï¿½Ï°ï¿½ï¿½
+	HOME_ERR_INTERLOCK                                      = 0x19,    // Interlock ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½
+	HOME_ERR_TIMEOUT                                        = 0x20,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½Ê°ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ 
+	HOME_ERR_POS_CLEAR										= 0x21,    // 0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	HOME_ERR_FUNCALL                                        = 0x30,    // ï¿½Ô¼ï¿½ È£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	HOME_ERR_HOME_METHOD                                    = 0x31,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ë»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½.
 	HOME_ERR_COUPLING                                       = 0x40,    // Gantry Master to Slave Over Distance protection
-	HOME_ERR_ESTOP											= 0x41,	   // EStop ¼¾¼­ °¨Áö ¿¡·¯
-	HOME_ERR_UNKNOWN                                        = 0xFF     // ¹ÌÁöÁ¤ ¿¡·¯
+	HOME_ERR_ESTOP											= 0x41,	   // EStop ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	HOME_ERR_UNKNOWN                                        = 0xFF     // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 } AXT_MOTION_HOME_RESULT;
 #endif                                                       
                                                              
@@ -1107,16 +1107,16 @@ typedef enum _AXT_MOTION_DETECT_DOWN_START_POINT
 /* Pulse Output Method                    */
 typedef enum _AXT_MOTION__PULSE_OUTPUT 
 {
-    OneHighLowHigh                                          = 0x0,    // 1ÆÞ½º ¹æ½Ä, PULSE(Active High), Á¤¹æÇâ(DIR=Low)  / ¿ª¹æÇâ(DIR=High)
-    OneHighHighLow                                          = 0x1,    // 1ÆÞ½º ¹æ½Ä, PULSE(Active High), Á¤¹æÇâ(DIR=High) / ¿ª¹æÇâ(DIR=Low)
-    OneLowLowHigh                                           = 0x2,    // 1ÆÞ½º ¹æ½Ä, PULSE(Active Low),  Á¤¹æÇâ(DIR=Low)  / ¿ª¹æÇâ(DIR=High)
-    OneLowHighLow                                           = 0x3,    // 1ÆÞ½º ¹æ½Ä, PULSE(Active Low),  Á¤¹æÇâ(DIR=High) / ¿ª¹æÇâ(DIR=Low)
-    TwoCcwCwHigh                                            = 0x4,    // 2ÆÞ½º ¹æ½Ä, PULSE(CCW:¿ª¹æÇâ),  DIR(CW:Á¤¹æÇâ),  Active High     
-    TwoCcwCwLow                                             = 0x5,    // 2ÆÞ½º ¹æ½Ä, PULSE(CCW:¿ª¹æÇâ),  DIR(CW:Á¤¹æÇâ),  Active Low     
-    TwoCwCcwHigh                                            = 0x6,    // 2ÆÞ½º ¹æ½Ä, PULSE(CW:Á¤¹æÇâ),   DIR(CCW:¿ª¹æÇâ), Active High
-    TwoCwCcwLow                                             = 0x7,    // 2ÆÞ½º ¹æ½Ä, PULSE(CW:Á¤¹æÇâ),   DIR(CCW:¿ª¹æÇâ), Active Low
-    TwoPhase                                                = 0x8,    // 2»ó(90' À§»óÂ÷),  PULSE lead DIR(CW: Á¤¹æÇâ), PULSE lag DIR(CCW:¿ª¹æÇâ)
-    TwoPhaseReverse                                         = 0x9     // 2»ó(90' À§»óÂ÷),  PULSE lead DIR(CCW: Á¤¹æÇâ), PULSE lag DIR(CW:¿ª¹æÇâ)
+    OneHighLowHigh                                          = 0x0,    // 1ï¿½Þ½ï¿½ ï¿½ï¿½ï¿½, PULSE(Active High), ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(DIR=Low)  / ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(DIR=High)
+    OneHighHighLow                                          = 0x1,    // 1ï¿½Þ½ï¿½ ï¿½ï¿½ï¿½, PULSE(Active High), ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(DIR=High) / ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(DIR=Low)
+    OneLowLowHigh                                           = 0x2,    // 1ï¿½Þ½ï¿½ ï¿½ï¿½ï¿½, PULSE(Active Low),  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(DIR=Low)  / ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(DIR=High)
+    OneLowHighLow                                           = 0x3,    // 1ï¿½Þ½ï¿½ ï¿½ï¿½ï¿½, PULSE(Active Low),  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(DIR=High) / ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(DIR=Low)
+    TwoCcwCwHigh                                            = 0x4,    // 2ï¿½Þ½ï¿½ ï¿½ï¿½ï¿½, PULSE(CCW:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½),  DIR(CW:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½),  Active High     
+    TwoCcwCwLow                                             = 0x5,    // 2ï¿½Þ½ï¿½ ï¿½ï¿½ï¿½, PULSE(CCW:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½),  DIR(CW:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½),  Active Low     
+    TwoCwCcwHigh                                            = 0x6,    // 2ï¿½Þ½ï¿½ ï¿½ï¿½ï¿½, PULSE(CW:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½),   DIR(CCW:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½), Active High
+    TwoCwCcwLow                                             = 0x7,    // 2ï¿½Þ½ï¿½ ï¿½ï¿½ï¿½, PULSE(CW:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½),   DIR(CCW:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½), Active Low
+    TwoPhase                                                = 0x8,    // 2ï¿½ï¿½(90' ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½),  PULSE lead DIR(CW: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½), PULSE lag DIR(CCW:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
+    TwoPhaseReverse                                         = 0x9     // 2ï¿½ï¿½(90' ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½),  PULSE lead DIR(CCW: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½), PULSE lag DIR(CW:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 } AXT_MOTION_PULSE_OUTPUT;                                   
 #endif                                                       
                                                              
@@ -1125,14 +1125,14 @@ typedef enum _AXT_MOTION__PULSE_OUTPUT
 /* Mode2 Data   External Counter Input */
 typedef enum _AXT_MOTION__EXTERNAL_COUNTER_INPUT
 {
-    ObverseUpDownMode                                       = 0x0,    // Á¤¹æÇâ Up/Down
-    ObverseSqr1Mode                                         = 0x1,    // Á¤¹æÇâ 1Ã¼¹è
-    ObverseSqr2Mode                                         = 0x2,    // Á¤¹æÇâ 2Ã¼¹è
-    ObverseSqr4Mode                                         = 0x3,    // Á¤¹æÇâ 4Ã¼¹è
-    ReverseUpDownMode                                       = 0x4,    // ¿ª¹æÇâ Up/Down
-    ReverseSqr1Mode                                         = 0x5,    // ¿ª¹æÇâ 1Ã¼¹è
-    ReverseSqr2Mode                                         = 0x6,    // ¿ª¹æÇâ 2Ã¼¹è
-    ReverseSqr4Mode                                         = 0x7     // ¿ª¹æÇâ 4Ã¼¹è
+    ObverseUpDownMode                                       = 0x0,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Up/Down
+    ObverseSqr1Mode                                         = 0x1,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 1Ã¼ï¿½ï¿½
+    ObverseSqr2Mode                                         = 0x2,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 2Ã¼ï¿½ï¿½
+    ObverseSqr4Mode                                         = 0x3,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 4Ã¼ï¿½ï¿½
+    ReverseUpDownMode                                       = 0x4,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Up/Down
+    ReverseSqr1Mode                                         = 0x5,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 1Ã¼ï¿½ï¿½
+    ReverseSqr2Mode                                         = 0x6,    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 2Ã¼ï¿½ï¿½
+    ReverseSqr4Mode                                         = 0x7     // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 4Ã¼ï¿½ï¿½
 } AXT_MOTION_EXTERNAL_COUNTER_INPUT;                        
 #endif                                                      
                                                             
@@ -1149,8 +1149,8 @@ typedef enum _AXT_MOTION_ACC_UNIT
 #define AXT_MOTION_MOVE_DIR_DEF
 typedef enum _AXT_MOTION_MOVE_DIR
 {
-    DIR_CCW                                                 = 0x0,    // ¹Ý½Ã°è¹æÇâ, ¿ª¹æÇâ(Á¶±× ±¸µ¿ ±âÁØ)
-    DIR_CW                                                  = 0x1     // ½Ã°è¹æÇâ, Á¤¹æÇâ(Á¶±× ±¸µ¿ ±âÁØ)
+    DIR_CCW                                                 = 0x0,    // ï¿½Ý½Ã°ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+    DIR_CW                                                  = 0x1     // ï¿½Ã°ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 } AXT_MOTION_MOVE_DIR;
 #endif
 
@@ -1158,8 +1158,8 @@ typedef enum _AXT_MOTION_MOVE_DIR
 #define AXT_MOTION_RADIUS_DISTANCE_DEF
 typedef enum _AXT_MOTION_RADIUS_DISTANCE
 {
-    SHORT_DISTANCE                                          = 0x0,    // ÂªÀº °Å¸®ÀÇ ¿øÈ£ ÀÌµ¿ 
-    LONG_DISTANCE                                           = 0x1     // ±ä °Å¸®ÀÇ ¿øÈ£ ÀÌµ¿ 
+    SHORT_DISTANCE                                          = 0x0,    // Âªï¿½ï¿½ ï¿½Å¸ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½Ìµï¿½ 
+    LONG_DISTANCE                                           = 0x1     // ï¿½ï¿½ ï¿½Å¸ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½Ìµï¿½ 
 } AXT_MOTION_RADIUS_DISTANCE;
 #endif
 
@@ -1167,8 +1167,8 @@ typedef enum _AXT_MOTION_RADIUS_DISTANCE
 #define AXT_MOTION_POS_TYPE_DEF
 typedef enum _AXT_MOTION_POS_TYPE_DEF
 {
-    POSITION_LIMIT                                          = 0x0,    // ÀüÃ¼ ¿µ¿ª»ç¿ë
-    POSITION_BOUND                                          = 0x1     // Pos ÁöÁ¤ »ç¿ë
+    POSITION_LIMIT                                          = 0x0,    // ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    POSITION_BOUND                                          = 0x1     // Pos ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 } AXT_MOTION_POS_TYPE;
 #endif
 
@@ -1176,9 +1176,9 @@ typedef enum _AXT_MOTION_POS_TYPE_DEF
 #define AXT_MOTION_INTERPOLATION_AXIS_DEF
 typedef enum _AXT_MOTION_INTERPOLATION_AXIS
 {
-    INTERPOLATION_AXIS2                                     = 0x2,    // 2ÃàÀ» º¸°£À¸·Î »ç¿ëÇÒ ¶§
-    INTERPOLATION_AXIS3                                     = 0x3,    // 3ÃàÀ» º¸°£À¸·Î »ç¿ëÇÒ ¶§
-    INTERPOLATION_AXIS4                                     = 0x4     // 4ÃàÀ» º¸°£À¸·Î »ç¿ëÇÒ ¶§
+    INTERPOLATION_AXIS2                                     = 0x2,    // 2ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    INTERPOLATION_AXIS3                                     = 0x3,    // 3ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    INTERPOLATION_AXIS4                                     = 0x4     // 4ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
 } AXT_MOTION_INTERPOLATION_AXIS;
 #endif
 
@@ -1186,9 +1186,9 @@ typedef enum _AXT_MOTION_INTERPOLATION_AXIS
 #define AXT_MOTION_CONTISTART_NODE_DEF
 typedef enum _AXT_MOTION_CONTISTART_NODE
 {
-    CONTI_NODE_VELOCITY                                     = 0x0,    // ¼Óµµ ÁöÁ¤ º¸°£ ¸ðµå
-    CONTI_NODE_MANUAL                                       = 0x1,    // ³ëµå °¡°¨¼Ó º¸°£ ¸ðµå
-    CONTI_NODE_AUTO                                         = 0x2     // ÀÚµ¿ °¡°¨¼Ó º¸°£ ¸ðµå
+    CONTI_NODE_VELOCITY                                     = 0x0,    // ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+    CONTI_NODE_MANUAL                                       = 0x1,    // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+    CONTI_NODE_AUTO                                         = 0x2     // ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 } AXT_MOTION_CONTISTART_NODE;
 #endif
 
@@ -1196,9 +1196,9 @@ typedef enum _AXT_MOTION_CONTISTART_NODE
 #define AXT_MOTION_LINE_MOVE_VEL_MODE_DEF
 typedef enum _AXT_MOTION_LINE_MOVE_VEL_MODE
 {
-	LINE_MOVE_VEL_MODE_VECTOR                               = 0x0,    // ¼Óµµ º¤ÅÍ
-	LINE_MOVE_VEL_MODE_MASTER                               = 0x1,    // ¼Óµµ ÁöÁ¤ Ãà ±âÁØ
-	LINE_MOVE_VEL_MODE_LONG_DISTANCE                        = 0x2     // ¼Óµµ ÃÖ´ë ÀÌµ¿ °Å¸®Ãà ±âÁØ
+	LINE_MOVE_VEL_MODE_VECTOR                               = 0x0,    // ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½
+	LINE_MOVE_VEL_MODE_MASTER                               = 0x1,    // ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	LINE_MOVE_VEL_MODE_LONG_DISTANCE                        = 0x2     // ï¿½Óµï¿½ ï¿½Ö´ï¿½ ï¿½Ìµï¿½ ï¿½Å¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 } AXT_MOTION_LINE_MOVE_VEL_MODE;
 #endif
 
@@ -1206,22 +1206,22 @@ typedef enum _AXT_MOTION_LINE_MOVE_VEL_MODE
 #define AXT_MOTION_HOME_DETECT_SIGNAL_DEF
 typedef enum _AXT_MOTION_HOME_DETECT_SIGNAL
 {
-    PosEndLimit                                             = 0x0,    // +Elm(End limit) +¹æÇâ ¸®¹ÌÆ® ¼¾¼­ ½ÅÈ£
-    NegEndLimit                                             = 0x1,    // -Elm(End limit) -¹æÇâ ¸®¹ÌÆ® ¼¾¼­ ½ÅÈ£
-    PosSloLimit                                             = 0x2,    // +Slm(Slow Down limit) ½ÅÈ£ - »ç¿ëÇÏÁö ¾ÊÀ½
-    NegSloLimit                                             = 0x3,    // -Slm(Slow Down limit) ½ÅÈ£ - »ç¿ëÇÏÁö ¾ÊÀ½
-    HomeSensor                                              = 0x4,    // IN0(ORG)  ¿øÁ¡ ¼¾¼­ ½ÅÈ£
-    EncodZPhase                                             = 0x5,    // IN1(Z»ó)  Encoder Z»ó ½ÅÈ£
-    UniInput02                                              = 0x6,    // IN2(¹ü¿ë) ¹ü¿ë ÀÔ·Â 2¹ø ½ÅÈ£
-    UniInput03                                              = 0x7,    // IN3(¹ü¿ë) ¹ü¿ë ÀÔ·Â 3¹ø ½ÅÈ£
-    UniInput04                                              = 0x8,    // IN4(¹ü¿ë) ¹ü¿ë ÀÔ·Â 4¹ø ½ÅÈ£
-    UniInput05                                              = 0x9,    // IN5(¹ü¿ë) ¹ü¿ë ÀÔ·Â 5¹ø ½ÅÈ£
-	HomeDetectSignalTorqueLimit                             = 0x10,   // Motor Torque Limit ½ÅÈ£¸¦ ÀÌ¿ë 
+    PosEndLimit                                             = 0x0,    // +Elm(End limit) +ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£
+    NegEndLimit                                             = 0x1,    // -Elm(End limit) -ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£
+    PosSloLimit                                             = 0x2,    // +Slm(Slow Down limit) ï¿½ï¿½È£ - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    NegSloLimit                                             = 0x3,    // -Slm(Slow Down limit) ï¿½ï¿½È£ - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    HomeSensor                                              = 0x4,    // IN0(ORG)  ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£
+    EncodZPhase                                             = 0x5,    // IN1(Zï¿½ï¿½)  Encoder Zï¿½ï¿½ ï¿½ï¿½È£
+    UniInput02                                              = 0x6,    // IN2(ï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ 2ï¿½ï¿½ ï¿½ï¿½È£
+    UniInput03                                              = 0x7,    // IN3(ï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ 3ï¿½ï¿½ ï¿½ï¿½È£
+    UniInput04                                              = 0x8,    // IN4(ï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ 4ï¿½ï¿½ ï¿½ï¿½È£
+    UniInput05                                              = 0x9,    // IN5(ï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ 5ï¿½ï¿½ ï¿½ï¿½È£
+	HomeDetectSignalTorqueLimit                             = 0x10,   // Motor Torque Limit ï¿½ï¿½È£ï¿½ï¿½ ï¿½Ì¿ï¿½ 
 	HomingMethod                                            = 0x64,   // Homing Method Base
 	HomingMethod_01                                         = 0x65,   // Homing Method Start(90 ~ 137) 
 	//...
 	HomingMethod_37                                         = 0x89,   // Homing Method Start(90 ~ 137)  
-	Manufacture										        = 0xFF	  // ¼­º¸ Àü¿ëÀÇ Æ¯ÁÖ È¨¼­Ä¡ µ¿ÀÛ ¼öÇà.
+	Manufacture										        = 0xFF	  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ È¨ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 } AXT_MOTION_HOME_DETECT_SIGNAL;
 #endif
 
@@ -1229,9 +1229,9 @@ typedef enum _AXT_MOTION_HOME_DETECT_SIGNAL
 #define AXT_MOTION_HOME_INTERLOCK_DEF
 typedef enum _AXT_MOTION_HOME_INTERLOCK_MODE
 {
-    HOME_INTERLOCK_UNUSED                                   = 0x0,    // Home Interlock »ç¿ëÇÏÁö ¾ÊÀ½
-    HOME_INTERLOCK_SENSOR_CHECK                             = 0x1,    // Limit ¼¾¼­°¡ °¨ÁöµÇ¾úÀ» ¶§ ¿øÁ¡¼¾¼­°¡ °°ÀÌ °¨ÁöµÇÁö¾Ê¾ÒÀ» ¶§
-    HOME_INTERLOCK_DISTANCE                                 = 0x2,    // ¿øÁ¡°Ë»ö ÁøÇà ¹æÇâ¿¡ ¼³Ä¡µÈ Limit¿¡¼­ ¿øÁ¡¼¾¼­±îÁöÀÇ °Å¸®°¡ Å¬ ¶§  
+    HOME_INTERLOCK_UNUSED                                   = 0x0,    // Home Interlock ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    HOME_INTERLOCK_SENSOR_CHECK                             = 0x1,    // Limit ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ ï¿½ï¿½
+    HOME_INTERLOCK_DISTANCE                                 = 0x2,    // ï¿½ï¿½ï¿½ï¿½ï¿½Ë»ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½Ä¡ï¿½ï¿½ Limitï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½ï¿½ï¿½ Å¬ ï¿½ï¿½  
 } AXT_MOTION_HOME_INTERLOCK_MODE;
 #endif
 
@@ -1240,10 +1240,10 @@ typedef enum _AXT_MOTION_HOME_INTERLOCK_MODE
 #define AXT_MOTION_INPUT_FILTER_SIGNAL_DEF
 typedef enum _AXT_MOTION_INPUT_FILTER_SIGNAL
 {
-    END_LIMIT                                               = 0x10,    // End limit +/-¹æÇâ ¸®¹ÌÆ® ¼¾¼­ ½ÅÈ£
-    INP_ALARM                                               = 0x11,    // Inposition/Alarm ½ÅÈ£
-    UIN_00_01                                               = 0x12,    // Home/Z-Phase ½ÅÈ£
-    UIN_02_04                                               = 0x13,    // UIN 2, 3, 4 ½ÅÈ£       
+    END_LIMIT                                               = 0x10,    // End limit +/-ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£
+    INP_ALARM                                               = 0x11,    // Inposition/Alarm ï¿½ï¿½È£
+    UIN_00_01                                               = 0x12,    // Home/Z-Phase ï¿½ï¿½È£
+    UIN_02_04                                               = 0x13,    // UIN 2, 3, 4 ï¿½ï¿½È£       
 } AXT_MOTION_INPUT_FILTER_SIGNAL;
 #endif
 
@@ -1251,14 +1251,14 @@ typedef enum _AXT_MOTION_INPUT_FILTER_SIGNAL
 #define AXT_MOTION_MPG_INPUT_METHOD_DEF                      
 typedef enum _AXT_MOTION_MPG_INPUT_METHOD                    
 {                                                            
-    MPG_DIFF_ONE_PHASE                                      = 0x0,    // MPG ÀÔ·Â ¹æ½Ä One Phase
-    MPG_DIFF_TWO_PHASE_1X                                   = 0x1,    // MPG ÀÔ·Â ¹æ½Ä TwoPhase1
-    MPG_DIFF_TWO_PHASE_2X                                   = 0x2,    // MPG ÀÔ·Â ¹æ½Ä TwoPhase2
-    MPG_DIFF_TWO_PHASE_4X                                   = 0x3,    // MPG ÀÔ·Â ¹æ½Ä TwoPhase4
-    MPG_LEVEL_ONE_PHASE                                     = 0x4,    // MPG ÀÔ·Â ¹æ½Ä Level One Phase
-    MPG_LEVEL_TWO_PHASE_1X                                  = 0x5,    // MPG ÀÔ·Â ¹æ½Ä Level Two Phase1
-    MPG_LEVEL_TWO_PHASE_2X                                  = 0x6,    // MPG ÀÔ·Â ¹æ½Ä Level Two Phase2
-    MPG_LEVEL_TWO_PHASE_4X                                  = 0x7,    // MPG ÀÔ·Â ¹æ½Ä Level Two Phase4
+    MPG_DIFF_ONE_PHASE                                      = 0x0,    // MPG ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ One Phase
+    MPG_DIFF_TWO_PHASE_1X                                   = 0x1,    // MPG ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ TwoPhase1
+    MPG_DIFF_TWO_PHASE_2X                                   = 0x2,    // MPG ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ TwoPhase2
+    MPG_DIFF_TWO_PHASE_4X                                   = 0x3,    // MPG ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ TwoPhase4
+    MPG_LEVEL_ONE_PHASE                                     = 0x4,    // MPG ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ Level One Phase
+    MPG_LEVEL_TWO_PHASE_1X                                  = 0x5,    // MPG ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ Level Two Phase1
+    MPG_LEVEL_TWO_PHASE_2X                                  = 0x6,    // MPG ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ Level Two Phase2
+    MPG_LEVEL_TWO_PHASE_4X                                  = 0x7,    // MPG ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ Level Two Phase4
 } AXT_MOTION_MPG_INPUT_METHOD;                               
 #endif                                                       
                                                              
@@ -1266,9 +1266,9 @@ typedef enum _AXT_MOTION_MPG_INPUT_METHOD
 #define AXT_MOTION_SENSOR_INPUT_METHOD_DEF                   
 typedef enum _AXT_MOTION_SENSOR_INPUT_METHOD                 
 {
-    SENSOR_METHOD1                                          = 0x0,    // ÀÏ¹Ý ±¸µ¿
-    SENSOR_METHOD2                                          = 0x1,    // ¼¾¼­ ½ÅÈ£ °ËÃâ ÀüÀº Àú¼Ó ±¸µ¿. ½ÅÈ£ °ËÃâ ÈÄ ÀÏ¹Ý ±¸µ¿
-    SENSOR_METHOD3                                          = 0x2     // Àú¼Ó ±¸µ¿
+    SENSOR_METHOD1                                          = 0x0,    // ï¿½Ï¹ï¿½ ï¿½ï¿½ï¿½ï¿½
+    SENSOR_METHOD2                                          = 0x1,    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ï¹ï¿½ ï¿½ï¿½ï¿½ï¿½
+    SENSOR_METHOD3                                          = 0x2     // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 } AXT_MOTION_SENSOR_INPUT_METHOD;
 #endif
 
@@ -1276,10 +1276,10 @@ typedef enum _AXT_MOTION_SENSOR_INPUT_METHOD
 #define AXT_MOTION_HOME_CRC_SELECT_DEF
 typedef enum _AXT_MOTION_HOME_CRC_SELECT
 {
-    CRC_SELECT1                                             = 0x0,    // À§Ä¡Å¬¸®¾î »ç¿ë¾ÊÇÔ, ÀÜ¿©ÆÞ½º Å¬¸®¾î »ç¿ë ¾ÈÇÔ
-    CRC_SELECT2                                             = 0x1,    // À§Ä¡Å¬¸®¾î »ç¿ëÇÔ, ÀÜ¿©ÆÞ½º Å¬¸®¾î »ç¿ë ¾ÈÇÔ
-    CRC_SELECT3                                             = 0x2,    // À§Ä¡Å¬¸®¾î »ç¿ë¾ÈÇÔ, ÀÜ¿©ÆÞ½º Å¬¸®¾î »ç¿ëÇÔ
-    CRC_SELECT4                                             = 0x3     // À§Ä¡Å¬¸®¾î »ç¿ëÇÔ, ÀÜ¿©ÆÞ½º Å¬¸®¾î »ç¿ëÇÔ
+    CRC_SELECT1                                             = 0x0,    // ï¿½ï¿½Ä¡Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½Ü¿ï¿½ï¿½Þ½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    CRC_SELECT2                                             = 0x1,    // ï¿½ï¿½Ä¡Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½Ü¿ï¿½ï¿½Þ½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    CRC_SELECT3                                             = 0x2,    // ï¿½ï¿½Ä¡Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½Ü¿ï¿½ï¿½Þ½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
+    CRC_SELECT4                                             = 0x3     // ï¿½ï¿½Ä¡Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½Ü¿ï¿½ï¿½Þ½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
 } AXT_MOTION_HOME_CRC_SELECT;
 #endif
 
@@ -1288,46 +1288,46 @@ typedef enum _AXT_MOTION_HOME_CRC_SELECT
 /* Detect Destination Signal            */
 typedef enum _AXT_MOTION_IPDETECT_DESTINATION_SIGNAL
 {
-    PElmNegativeEdge                                        = 0x0,    // +Elm(End limit) ÇÏ°­ edge
-    NElmNegativeEdge                                        = 0x1,    // -Elm(End limit) ÇÏ°­ edge
-    PSlmNegativeEdge                                        = 0x2,    // +Slm(Slowdown limit) ÇÏ°­ edge
-    NSlmNegativeEdge                                        = 0x3,    // -Slm(Slowdown limit) ÇÏ°­ edge
-    In0DownEdge                                             = 0x4,    // IN0(ORG) ÇÏ°­ edge
-    In1DownEdge                                             = 0x5,    // IN1(Z»ó) ÇÏ°­ edge
-    In2DownEdge                                             = 0x6,    // IN2(¹ü¿ë) ÇÏ°­ edge
-    In3DownEdge                                             = 0x7,    // IN3(¹ü¿ë) ÇÏ°­ edge
-    PElmPositiveEdge                                        = 0x8,    // +Elm(End limit) »ó½Â edge
-    NElmPositiveEdge                                        = 0x9,    // -Elm(End limit) »ó½Â edge
-    PSlmPositiveEdge                                        = 0xa,    // +Slm(Slowdown limit) »ó½Â edge
-    NSlmPositiveEdge                                        = 0xb,    // -Slm(Slowdown limit) »ó½Â edge
-    In0UpEdge                                               = 0xc,    // IN0(ORG) »ó½Â edge
-    In1UpEdge                                               = 0xd,    // IN1(Z»ó) »ó½Â edge
-    In2UpEdge                                               = 0xe,    // IN2(¹ü¿ë) »ó½Â edge
-    In3UpEdge                                               = 0xf     // IN3(¹ü¿ë) »ó½Â edge
+    PElmNegativeEdge                                        = 0x0,    // +Elm(End limit) ï¿½Ï°ï¿½ edge
+    NElmNegativeEdge                                        = 0x1,    // -Elm(End limit) ï¿½Ï°ï¿½ edge
+    PSlmNegativeEdge                                        = 0x2,    // +Slm(Slowdown limit) ï¿½Ï°ï¿½ edge
+    NSlmNegativeEdge                                        = 0x3,    // -Slm(Slowdown limit) ï¿½Ï°ï¿½ edge
+    In0DownEdge                                             = 0x4,    // IN0(ORG) ï¿½Ï°ï¿½ edge
+    In1DownEdge                                             = 0x5,    // IN1(Zï¿½ï¿½) ï¿½Ï°ï¿½ edge
+    In2DownEdge                                             = 0x6,    // IN2(ï¿½ï¿½ï¿½ï¿½) ï¿½Ï°ï¿½ edge
+    In3DownEdge                                             = 0x7,    // IN3(ï¿½ï¿½ï¿½ï¿½) ï¿½Ï°ï¿½ edge
+    PElmPositiveEdge                                        = 0x8,    // +Elm(End limit) ï¿½ï¿½ï¿½ edge
+    NElmPositiveEdge                                        = 0x9,    // -Elm(End limit) ï¿½ï¿½ï¿½ edge
+    PSlmPositiveEdge                                        = 0xa,    // +Slm(Slowdown limit) ï¿½ï¿½ï¿½ edge
+    NSlmPositiveEdge                                        = 0xb,    // -Slm(Slowdown limit) ï¿½ï¿½ï¿½ edge
+    In0UpEdge                                               = 0xc,    // IN0(ORG) ï¿½ï¿½ï¿½ edge
+    In1UpEdge                                               = 0xd,    // IN1(Zï¿½ï¿½) ï¿½ï¿½ï¿½ edge
+    In2UpEdge                                               = 0xe,    // IN2(ï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ edge
+    In3UpEdge                                               = 0xf     // IN3(ï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ edge
 } AXT_MOTION_IPDETECT_DESTINATION_SIGNAL;
 #endif
 
 #ifndef AXT_MOTION_IPEND_STATUS_DEF
 #define AXT_MOTION_IPEND_STATUS_DEF
-/* IP End status : 0x0000ÀÌ¸é Á¤»óÁ¾·á    */
+/* IP End status : 0x0000ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½    */
 typedef    enum _AXT_MOTION_IPEND_STATUS
 {
-    IPEND_STATUS_SLM                                        = 0x0001,    // Bit 0, limit °¨¼ÓÁ¤Áö ½ÅÈ£ ÀÔ·Â¿¡ ÀÇÇÑ Á¾·á
-    IPEND_STATUS_ELM                                        = 0x0002,    // Bit 1, limit ±ÞÁ¤Áö ½ÅÈ£ ÀÔ·Â¿¡ ÀÇÇÑ Á¾·á
-    IPEND_STATUS_SSTOP_SIGNAL                               = 0x0004,    // Bit 2, °¨¼Ó Á¤Áö ½ÅÈ£ ÀÔ·Â¿¡ ÀÇÇÑ Á¾·á
-    IPEND_STATUS_ESTOP_SIGNAL                               = 0x0008,    // Bit 3, ±ÞÁ¤Áö ½ÅÈ£ ÀÔ·Â¿¡ ÀÇÇÑ Á¾·á
-    IPEND_STATUS_SSTOP_COMMAND                              = 0x0010,    // Bit 4, °¨¼Ó Á¤Áö ¸í·É¿¡ ÀÇÇÑ Á¾·á
-    IPEND_STATUS_ESTOP_COMMAND                              = 0x0020,    // Bit 5, ±ÞÁ¤Áö Á¤Áö ¸í·É¿¡ ÀÇÇÑ Á¾·á
-    IPEND_STATUS_ALARM_SIGNAL                               = 0x0040,    // Bit 6, Alarm ½ÅÈ£ ÀÔ·Â¿¡ ÈñÇÑ Á¾·á
-    IPEND_STATUS_DATA_ERROR                                 = 0x0080,    // Bit 7, µ¥ÀÌÅÍ ¼³Á¤ ¿¡·¯¿¡ ÀÇÇÑ Á¾·á
-    IPEND_STATUS_DEVIATION_ERROR                            = 0x0100,    // Bit 8, Å»Á¶ ¿¡·¯¿¡ ÀÇÇÑ Á¾·á
-    IPEND_STATUS_ORIGIN_DETECT                              = 0x0200,    // Bit 9, ¿øÁ¡ °ËÃâ¿¡ ÀÇÇÑ Á¾·á
-    IPEND_STATUS_SIGNAL_DETECT                              = 0x0400,    // Bit 10, ½ÅÈ£ °ËÃâ¿¡ ÀÇÇÑ Á¾·á(Signal search-1/2 drive Á¾·á)
-    IPEND_STATUS_PRESET_PULSE_DRIVE                         = 0x0800,    // Bit 11, Preset pulse drive Á¾·á
-    IPEND_STATUS_SENSOR_PULSE_DRIVE                         = 0x1000,    // Bit 12, Sensor pulse drive Á¾·á
-    IPEND_STATUS_LIMIT                                      = 0x2000,    // Bit 13, Limit ¿ÏÀüÁ¤Áö¿¡ ÀÇÇÑ Á¾·á
-    IPEND_STATUS_SOFTLIMIT                                  = 0x4000,    // Bit 14, Soft limit¿¡ ÀÇÇÑ Á¾·á
-    IPEND_STATUS_INTERPOLATION_DRIVE                        = 0x8000     // Bit 15, º¸°£ µå¶óÀÌºê¿¡ ÀÇÇÑ Á¾·á.
+    IPEND_STATUS_SLM                                        = 0x0001,    // Bit 0, limit ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½Ô·Â¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    IPEND_STATUS_ELM                                        = 0x0002,    // Bit 1, limit ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½Ô·Â¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    IPEND_STATUS_SSTOP_SIGNAL                               = 0x0004,    // Bit 2, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½Ô·Â¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    IPEND_STATUS_ESTOP_SIGNAL                               = 0x0008,    // Bit 3, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½Ô·Â¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    IPEND_STATUS_SSTOP_COMMAND                              = 0x0010,    // Bit 4, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    IPEND_STATUS_ESTOP_COMMAND                              = 0x0020,    // Bit 5, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    IPEND_STATUS_ALARM_SIGNAL                               = 0x0040,    // Bit 6, Alarm ï¿½ï¿½È£ ï¿½Ô·Â¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    IPEND_STATUS_DATA_ERROR                                 = 0x0080,    // Bit 7, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    IPEND_STATUS_DEVIATION_ERROR                            = 0x0100,    // Bit 8, Å»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    IPEND_STATUS_ORIGIN_DETECT                              = 0x0200,    // Bit 9, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    IPEND_STATUS_SIGNAL_DETECT                              = 0x0400,    // Bit 10, ï¿½ï¿½È£ ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(Signal search-1/2 drive ï¿½ï¿½ï¿½ï¿½)
+    IPEND_STATUS_PRESET_PULSE_DRIVE                         = 0x0800,    // Bit 11, Preset pulse drive ï¿½ï¿½ï¿½ï¿½
+    IPEND_STATUS_SENSOR_PULSE_DRIVE                         = 0x1000,    // Bit 12, Sensor pulse drive ï¿½ï¿½ï¿½ï¿½
+    IPEND_STATUS_LIMIT                                      = 0x2000,    // Bit 13, Limit ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    IPEND_STATUS_SOFTLIMIT                                  = 0x4000,    // Bit 14, Soft limitï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    IPEND_STATUS_INTERPOLATION_DRIVE                        = 0x8000     // Bit 15, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ìºê¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 } AXT_MOTION_IPEND_STATUS;
 #endif
 
@@ -1336,26 +1336,26 @@ typedef    enum _AXT_MOTION_IPEND_STATUS
 /* IP Drive status                        */
 typedef    enum _AXT_MOTION_IPDRIVE_STATUS
 {
-    IPDRIVE_STATUS_BUSY                                     = 0x00001,    // Bit 0, BUSY(µå¶óÀÌºê ±¸µ¿ Áß)
-    IPDRIVE_STATUS_DOWN                                     = 0x00002,    // Bit 1, DOWN(°¨¼Ó Áß)
-    IPDRIVE_STATUS_CONST                                    = 0x00004,    // Bit 2, CONST(µî¼Ó Áß)
-    IPDRIVE_STATUS_UP                                       = 0x00008,    // Bit 3, UP(°¡¼Ó Áß)
-    IPDRIVE_STATUS_ICL                                      = 0x00010,    // Bit 4, ICL(³»ºÎ À§Ä¡ Ä«¿îÅÍ < ³»ºÎ À§Ä¡ Ä«¿îÅÍ ºñ±³°ª)
-    IPDRIVE_STATUS_ICG                                      = 0x00020,    // Bit 5, ICG(³»ºÎ À§Ä¡ Ä«¿îÅÍ > ³»ºÎ À§Ä¡ Ä«¿îÅÍ ºñ±³°ª)
-    IPDRIVE_STATUS_ECL                                      = 0x00040,    // Bit 6, ECL(¿ÜºÎ À§Ä¡ Ä«¿îÅÍ < ¿ÜºÎ À§Ä¡ Ä«¿îÅÍ ºñ±³°ª)
-    IPDRIVE_STATUS_ECG                                      = 0x00080,    // Bit 7, ECG(¿ÜºÎ À§Ä¡ Ä«¿îÅÍ > ¿ÜºÎ À§Ä¡ Ä«¿îÅÍ ºñ±³°ª)
-    IPDRIVE_STATUS_DRIVE_DIRECTION                          = 0x00100,    // Bit 8, µå¶óÀÌºê ¹æÇâ ½ÅÈ£(0=CW/1=CCW)
-    IPDRIVE_STATUS_COMMAND_BUSY                             = 0x00200,    // Bit 9, ¸í·É¾î ¼öÇàÁß
-    IPDRIVE_STATUS_PRESET_DRIVING                           = 0x00400,    // Bit 10, Preset pulse drive Áß
-    IPDRIVE_STATUS_CONTINUOUS_DRIVING                       = 0x00800,    // Bit 11, Continuouse speed drive Áß
-    IPDRIVE_STATUS_SIGNAL_SEARCH_DRIVING                    = 0x01000,    // Bit 12, Signal search-1/2 drive Áß
-    IPDRIVE_STATUS_ORG_SEARCH_DRIVING                       = 0x02000,    // Bit 13, ¿øÁ¡ °ËÃâ drive Áß
-    IPDRIVE_STATUS_MPG_DRIVING                              = 0x04000,    // Bit 14, MPG drive Áß
-    IPDRIVE_STATUS_SENSOR_DRIVING                           = 0x08000,    // Bit 15, Sensor positioning drive Áß
-    IPDRIVE_STATUS_L_C_INTERPOLATION                        = 0x10000,    // Bit 16, Á÷¼±/¿øÈ£ º¸°£ Áß
-    IPDRIVE_STATUS_PATTERN_INTERPOLATION                    = 0x20000,    // Bit 17, ºñÆ® ÆÐÅÏ º¸°£ Áß
-    IPDRIVE_STATUS_INTERRUPT_BANK1                          = 0x40000,    // Bit 18, ÀÎÅÍ·´Æ® bank1¿¡¼­ ¹ß»ý
-    IPDRIVE_STATUS_INTERRUPT_BANK2                          = 0x80000     // Bit 19, ÀÎÅÍ·´Æ® bank2¿¡¼­ ¹ß»ý
+    IPDRIVE_STATUS_BUSY                                     = 0x00001,    // Bit 0, BUSY(ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½)
+    IPDRIVE_STATUS_DOWN                                     = 0x00002,    // Bit 1, DOWN(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½)
+    IPDRIVE_STATUS_CONST                                    = 0x00004,    // Bit 2, CONST(ï¿½ï¿½ï¿½ ï¿½ï¿½)
+    IPDRIVE_STATUS_UP                                       = 0x00008,    // Bit 3, UP(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½)
+    IPDRIVE_STATUS_ICL                                      = 0x00010,    // Bit 4, ICL(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ Ä«ï¿½ï¿½ï¿½ï¿½ < ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ Ä«ï¿½ï¿½ï¿½ï¿½ ï¿½ñ±³°ï¿½)
+    IPDRIVE_STATUS_ICG                                      = 0x00020,    // Bit 5, ICG(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ Ä«ï¿½ï¿½ï¿½ï¿½ > ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ Ä«ï¿½ï¿½ï¿½ï¿½ ï¿½ñ±³°ï¿½)
+    IPDRIVE_STATUS_ECL                                      = 0x00040,    // Bit 6, ECL(ï¿½Üºï¿½ ï¿½ï¿½Ä¡ Ä«ï¿½ï¿½ï¿½ï¿½ < ï¿½Üºï¿½ ï¿½ï¿½Ä¡ Ä«ï¿½ï¿½ï¿½ï¿½ ï¿½ñ±³°ï¿½)
+    IPDRIVE_STATUS_ECG                                      = 0x00080,    // Bit 7, ECG(ï¿½Üºï¿½ ï¿½ï¿½Ä¡ Ä«ï¿½ï¿½ï¿½ï¿½ > ï¿½Üºï¿½ ï¿½ï¿½Ä¡ Ä«ï¿½ï¿½ï¿½ï¿½ ï¿½ñ±³°ï¿½)
+    IPDRIVE_STATUS_DRIVE_DIRECTION                          = 0x00100,    // Bit 8, ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£(0=CW/1=CCW)
+    IPDRIVE_STATUS_COMMAND_BUSY                             = 0x00200,    // Bit 9, ï¿½ï¿½ï¿½É¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    IPDRIVE_STATUS_PRESET_DRIVING                           = 0x00400,    // Bit 10, Preset pulse drive ï¿½ï¿½
+    IPDRIVE_STATUS_CONTINUOUS_DRIVING                       = 0x00800,    // Bit 11, Continuouse speed drive ï¿½ï¿½
+    IPDRIVE_STATUS_SIGNAL_SEARCH_DRIVING                    = 0x01000,    // Bit 12, Signal search-1/2 drive ï¿½ï¿½
+    IPDRIVE_STATUS_ORG_SEARCH_DRIVING                       = 0x02000,    // Bit 13, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ drive ï¿½ï¿½
+    IPDRIVE_STATUS_MPG_DRIVING                              = 0x04000,    // Bit 14, MPG drive ï¿½ï¿½
+    IPDRIVE_STATUS_SENSOR_DRIVING                           = 0x08000,    // Bit 15, Sensor positioning drive ï¿½ï¿½
+    IPDRIVE_STATUS_L_C_INTERPOLATION                        = 0x10000,    // Bit 16, ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    IPDRIVE_STATUS_PATTERN_INTERPOLATION                    = 0x20000,    // Bit 17, ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    IPDRIVE_STATUS_INTERRUPT_BANK1                          = 0x40000,    // Bit 18, ï¿½ï¿½ï¿½Í·ï¿½Æ® bank1ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½
+    IPDRIVE_STATUS_INTERRUPT_BANK2                          = 0x80000     // Bit 19, ï¿½ï¿½ï¿½Í·ï¿½Æ® bank2ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½
 } AXT_MOTION_IPDRIVE_STATUS;
 #endif
 
@@ -1447,21 +1447,21 @@ typedef    enum _AXT_MOTION_IPINTERRUPT_BANK2
 typedef    enum _AXT_MOTION_IPMECHANICAL_SIGNAL
 {
 
-    IPMECHANICAL_PELM_LEVEL                                 = 0x0001,    // Bit 0, +Limit ±ÞÁ¤Áö ½ÅÈ£°¡ ¾×Æ¼ºê µÊ
-    IPMECHANICAL_NELM_LEVEL                                 = 0x0002,    // Bit 1, -Limit ±ÞÁ¤Áö ½ÅÈ£ ¾×Æ¼ºê µÊ
-    IPMECHANICAL_PSLM_LEVEL                                 = 0x0004,    // Bit 2, +limit °¨¼ÓÁ¤Áö ½ÅÈ£ ¾×Æ¼ºê µÊ
-    IPMECHANICAL_NSLM_LEVEL                                 = 0x0008,    // Bit 3, -limit °¨¼ÓÁ¤Áö ½ÅÈ£ ¾×Æ¼ºê µÊ
-    IPMECHANICAL_ALARM_LEVEL                                = 0x0010,    // Bit 4, Alarm ½ÅÈ£ ¾×Æ¼ºê µÊ
-    IPMECHANICAL_INP_LEVEL                                  = 0x0020,    // Bit 5, Inposition ½ÅÈ£ ¾×Æ¼ºê µÊ
-    IPMECHANICAL_ENC_DOWN_LEVEL                             = 0x0040,    // Bit 6, ¿£ÄÚ´õ DOWN(B»ó) ½ÅÈ£ ÀÔ·Â Level
-    IPMECHANICAL_ENC_UP_LEVEL                               = 0x0080,    // Bit 7, ¿£ÄÚ´õ UP(A»ó) ½ÅÈ£ ÀÔ·Â Level
-    IPMECHANICAL_EXMP_LEVEL                                 = 0x0100,    // Bit 8, EXMP ½ÅÈ£ ÀÔ·Â Level
-    IPMECHANICAL_EXPP_LEVEL                                 = 0x0200,    // Bit 9, EXPP ½ÅÈ£ ÀÔ·Â Level
-    IPMECHANICAL_MARK_LEVEL                                 = 0x0400,    // Bit 10, MARK# ½ÅÈ£ ¾×Æ¼ºê µÊ
-    IPMECHANICAL_SSTOP_LEVEL                                = 0x0800,    // Bit 11, SSTOP ½ÅÈ£ ¾×Æ¼ºê µÊ
-    IPMECHANICAL_ESTOP_LEVEL                                = 0x1000,    // Bit 12, ESTOP ½ÅÈ£ ¾×Æ¼ºê µÊ
-    IPMECHANICAL_SYNC_LEVEL                                 = 0x2000,    // Bit 13, SYNC ½ÅÈ£ ÀÔ·Â Level
-    IPMECHANICAL_MODE8_16_LEVEL                             = 0x4000     // Bit 14, MODE8_16 ½ÅÈ£ ÀÔ·Â Level
+    IPMECHANICAL_PELM_LEVEL                                 = 0x0001,    // Bit 0, +Limit ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ ï¿½ï¿½Æ¼ï¿½ï¿½ ï¿½ï¿½
+    IPMECHANICAL_NELM_LEVEL                                 = 0x0002,    // Bit 1, -Limit ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½ï¿½Æ¼ï¿½ï¿½ ï¿½ï¿½
+    IPMECHANICAL_PSLM_LEVEL                                 = 0x0004,    // Bit 2, +limit ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½ï¿½Æ¼ï¿½ï¿½ ï¿½ï¿½
+    IPMECHANICAL_NSLM_LEVEL                                 = 0x0008,    // Bit 3, -limit ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½ï¿½Æ¼ï¿½ï¿½ ï¿½ï¿½
+    IPMECHANICAL_ALARM_LEVEL                                = 0x0010,    // Bit 4, Alarm ï¿½ï¿½È£ ï¿½ï¿½Æ¼ï¿½ï¿½ ï¿½ï¿½
+    IPMECHANICAL_INP_LEVEL                                  = 0x0020,    // Bit 5, Inposition ï¿½ï¿½È£ ï¿½ï¿½Æ¼ï¿½ï¿½ ï¿½ï¿½
+    IPMECHANICAL_ENC_DOWN_LEVEL                             = 0x0040,    // Bit 6, ï¿½ï¿½ï¿½Ú´ï¿½ DOWN(Bï¿½ï¿½) ï¿½ï¿½È£ ï¿½Ô·ï¿½ Level
+    IPMECHANICAL_ENC_UP_LEVEL                               = 0x0080,    // Bit 7, ï¿½ï¿½ï¿½Ú´ï¿½ UP(Aï¿½ï¿½) ï¿½ï¿½È£ ï¿½Ô·ï¿½ Level
+    IPMECHANICAL_EXMP_LEVEL                                 = 0x0100,    // Bit 8, EXMP ï¿½ï¿½È£ ï¿½Ô·ï¿½ Level
+    IPMECHANICAL_EXPP_LEVEL                                 = 0x0200,    // Bit 9, EXPP ï¿½ï¿½È£ ï¿½Ô·ï¿½ Level
+    IPMECHANICAL_MARK_LEVEL                                 = 0x0400,    // Bit 10, MARK# ï¿½ï¿½È£ ï¿½ï¿½Æ¼ï¿½ï¿½ ï¿½ï¿½
+    IPMECHANICAL_SSTOP_LEVEL                                = 0x0800,    // Bit 11, SSTOP ï¿½ï¿½È£ ï¿½ï¿½Æ¼ï¿½ï¿½ ï¿½ï¿½
+    IPMECHANICAL_ESTOP_LEVEL                                = 0x1000,    // Bit 12, ESTOP ï¿½ï¿½È£ ï¿½ï¿½Æ¼ï¿½ï¿½ ï¿½ï¿½
+    IPMECHANICAL_SYNC_LEVEL                                 = 0x2000,    // Bit 13, SYNC ï¿½ï¿½È£ ï¿½Ô·ï¿½ Level
+    IPMECHANICAL_MODE8_16_LEVEL                             = 0x4000     // Bit 14, MODE8_16 ï¿½ï¿½È£ ï¿½Ô·ï¿½ Level
                                                             
 } AXT_MOTION_IPMECHANICAL_SIGNAL;
 #endif
@@ -1471,14 +1471,14 @@ typedef    enum _AXT_MOTION_IPMECHANICAL_SIGNAL
 /* Detect Destination Signal            */
 typedef enum _AXT_MOTION_QIDETECT_DESTINATION_SIGNAL
 {
-    Signal_PosEndLimit                                      = 0x0,    // +Elm(End limit) +¹æÇâ ¸®¹ÌÆ® ¼¾¼­ ½ÅÈ£
-    Signal_NegEndLimit                                      = 0x1,    // -Elm(End limit) -¹æÇâ ¸®¹ÌÆ® ¼¾¼­ ½ÅÈ£
-    Signal_PosSloLimit                                      = 0x2,    // +Slm(Slow Down limit) ½ÅÈ£ - »ç¿ëÇÏÁö ¾ÊÀ½
-    Signal_NegSloLimit                                      = 0x3,    // -Slm(Slow Down limit) ½ÅÈ£ - »ç¿ëÇÏÁö ¾ÊÀ½
-    Signal_HomeSensor                                       = 0x4,    // IN0(ORG)  ¿øÁ¡ ¼¾¼­ ½ÅÈ£
-    Signal_EncodZPhase                                      = 0x5,    // IN1(Z»ó)  Encoder Z»ó ½ÅÈ£
-    Signal_UniInput02                                       = 0x6,    // IN2(¹ü¿ë) ¹ü¿ë ÀÔ·Â 2¹ø ½ÅÈ£
-    Signal_UniInput03                                       = 0x7     // IN3(¹ü¿ë) ¹ü¿ë ÀÔ·Â 3¹ø ½ÅÈ£
+    Signal_PosEndLimit                                      = 0x0,    // +Elm(End limit) +ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£
+    Signal_NegEndLimit                                      = 0x1,    // -Elm(End limit) -ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£
+    Signal_PosSloLimit                                      = 0x2,    // +Slm(Slow Down limit) ï¿½ï¿½È£ - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    Signal_NegSloLimit                                      = 0x3,    // -Slm(Slow Down limit) ï¿½ï¿½È£ - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    Signal_HomeSensor                                       = 0x4,    // IN0(ORG)  ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£
+    Signal_EncodZPhase                                      = 0x5,    // IN1(Zï¿½ï¿½)  Encoder Zï¿½ï¿½ ï¿½ï¿½È£
+    Signal_UniInput02                                       = 0x6,    // IN2(ï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ 2ï¿½ï¿½ ï¿½ï¿½È£
+    Signal_UniInput03                                       = 0x7     // IN3(ï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ 3ï¿½ï¿½ ï¿½ï¿½È£
 } AXT_MOTION_QIDETECT_DESTINATION_SIGNAL;
 #endif
 
@@ -1487,64 +1487,64 @@ typedef enum _AXT_MOTION_QIDETECT_DESTINATION_SIGNAL
 /* QI Drive status                        */
 typedef    enum _AXT_MOTION_QIMECHANICAL_SIGNAL
 {
-    QIMECHANICAL_PELM_LEVEL                                 = 0x00001,    // Bit 0, +Limit ±ÞÁ¤Áö ½ÅÈ£ ÇöÀç »óÅÂ
-    QIMECHANICAL_NELM_LEVEL                                 = 0x00002,    // Bit 1, -Limit ±ÞÁ¤Áö ½ÅÈ£ ÇöÀç »óÅÂ
-    QIMECHANICAL_PSLM_LEVEL                                 = 0x00004,    // Bit 2, +limit °¨¼ÓÁ¤Áö ÇöÀç »óÅÂ.
-    QIMECHANICAL_NSLM_LEVEL                                 = 0x00008,    // Bit 3, -limit °¨¼ÓÁ¤Áö ÇöÀç »óÅÂ
-    QIMECHANICAL_ALARM_LEVEL                                = 0x00010,    // Bit 4, Alarm ½ÅÈ£ ÇöÀç »óÅÂ
-    QIMECHANICAL_INP_LEVEL                                  = 0x00020,    // Bit 5, Inposition ½ÅÈ£ ÇöÀç »óÅÂ
-    QIMECHANICAL_ESTOP_LEVEL                                = 0x00040,    // Bit 6, ºñ»ó Á¤Áö ½ÅÈ£(ESTOP) ÇöÀç »óÅÂ.
-    QIMECHANICAL_ORG_LEVEL                                  = 0x00080,    // Bit 7, ¿øÁ¡ ½ÅÈ£ ÇåÀç »óÅÂ
-    QIMECHANICAL_ZPHASE_LEVEL                               = 0x00100,    // Bit 8, Z »ó ÀÔ·Â ½ÅÈ£ ÇöÀç »óÅÂ
-    QIMECHANICAL_ECUP_LEVEL                                 = 0x00200,    // Bit 9, ECUP ÅÍ¹Ì³Î ½ÅÈ£ »óÅÂ.
-    QIMECHANICAL_ECDN_LEVEL                                 = 0x00400,    // Bit 10, ECDN ÅÍ¹Ì³Î ½ÅÈ£ »óÅÂ.
-    QIMECHANICAL_EXPP_LEVEL                                 = 0x00800,    // Bit 11, EXPP ÅÍ¹Ì³Î ½ÅÈ£ »óÅÂ
-    QIMECHANICAL_EXMP_LEVEL                                 = 0x01000,    // Bit 12, EXMP ÅÍ¹Ì³Î ½ÅÈ£ »óÅÂ
-    QIMECHANICAL_SQSTR1_LEVEL                               = 0x02000,    // Bit 13, SQSTR1 ÅÍ¹Ì³Î ½ÅÈ£ »óÅÂ
-    QIMECHANICAL_SQSTR2_LEVEL                               = 0x04000,    // Bit 14, SQSTR2 ÅÍ¹Ì³Î ½ÅÈ£ »óÅÂ
-    QIMECHANICAL_SQSTP1_LEVEL                               = 0x08000,    // Bit 15, SQSTP1 ÅÍ¹Ì³Î ½ÅÈ£ »óÅÂ
-    QIMECHANICAL_SQSTP2_LEVEL                               = 0x10000,    // Bit 16, SQSTP2 ÅÍ¹Ì³Î ½ÅÈ£ »óÅÂ
-    QIMECHANICAL_MODE_LEVEL                                 = 0x20000     // Bit 17, MODE ÅÍ¹Ì³Î ½ÅÈ£ »óÅÂ.
+    QIMECHANICAL_PELM_LEVEL                                 = 0x00001,    // Bit 0, +Limit ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    QIMECHANICAL_NELM_LEVEL                                 = 0x00002,    // Bit 1, -Limit ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    QIMECHANICAL_PSLM_LEVEL                                 = 0x00004,    // Bit 2, +limit ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIMECHANICAL_NSLM_LEVEL                                 = 0x00008,    // Bit 3, -limit ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    QIMECHANICAL_ALARM_LEVEL                                = 0x00010,    // Bit 4, Alarm ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    QIMECHANICAL_INP_LEVEL                                  = 0x00020,    // Bit 5, Inposition ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    QIMECHANICAL_ESTOP_LEVEL                                = 0x00040,    // Bit 6, ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£(ESTOP) ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIMECHANICAL_ORG_LEVEL                                  = 0x00080,    // Bit 7, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    QIMECHANICAL_ZPHASE_LEVEL                               = 0x00100,    // Bit 8, Z ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    QIMECHANICAL_ECUP_LEVEL                                 = 0x00200,    // Bit 9, ECUP ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½.
+    QIMECHANICAL_ECDN_LEVEL                                 = 0x00400,    // Bit 10, ECDN ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½.
+    QIMECHANICAL_EXPP_LEVEL                                 = 0x00800,    // Bit 11, EXPP ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½
+    QIMECHANICAL_EXMP_LEVEL                                 = 0x01000,    // Bit 12, EXMP ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½
+    QIMECHANICAL_SQSTR1_LEVEL                               = 0x02000,    // Bit 13, SQSTR1 ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½
+    QIMECHANICAL_SQSTR2_LEVEL                               = 0x04000,    // Bit 14, SQSTR2 ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½
+    QIMECHANICAL_SQSTP1_LEVEL                               = 0x08000,    // Bit 15, SQSTP1 ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½
+    QIMECHANICAL_SQSTP2_LEVEL                               = 0x10000,    // Bit 16, SQSTP2 ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½
+    QIMECHANICAL_MODE_LEVEL                                 = 0x20000     // Bit 17, MODE ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½.
 } AXT_MOTION_QIMECHANICAL_SIGNAL;
 #endif
 
 #ifndef AXT_MOTION_QIEND_STATUS_DEF
 #define AXT_MOTION_QIEND_STATUS_DEF
-/* QI Á¾·á status : 0x1FFF·Î bit-and ÇÏ¿© °á°ú°¡ 0x000ÀÌ¸é Á¤»óÁ¾·á    */
+/* QI ï¿½ï¿½ï¿½ï¿½ status : 0x1FFFï¿½ï¿½ bit-and ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ 0x000ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½    */
 typedef    enum _AXT_MOTION_QIEND_STATUS
 {
-    QIEND_STATUS_0                                          = 0x00000001,    // Bit 0, Á¤¹æÇâ ¸®¹ÌÆ® ½ÅÈ£(PELM)¿¡ ÀÇÇÑ Á¾·á
-    QIEND_STATUS_1                                          = 0x00000002,    // Bit 1, ¿ª¹æÇâ ¸®¹ÌÆ® ½ÅÈ£(NELM)¿¡ ÀÇÇÑ Á¾·á
-    QIEND_STATUS_2                                          = 0x00000004,    // Bit 2, Á¤¹æÇâ ºÎ°¡ ¸®¹ÌÆ® ½ÅÈ£(PSLM)¿¡ ÀÇÇÑ ±¸µ¿ Á¾·á
-    QIEND_STATUS_3                                          = 0x00000008,    // Bit 3, ¿ª¹æÇâ ºÎ°¡ ¸®¹ÌÆ® ½ÅÈ£(NSLM)¿¡ ÀÇÇÑ ±¸µ¿ Á¾·á
-    QIEND_STATUS_4                                          = 0x00000010,    // Bit 4, Á¤¹æÇâ ¼ÒÇÁÆ® ¸®¹ÌÆ® ±ÞÁ¤Áö ±â´É¿¡ ÀÇÇÑ ±¸µ¿ Á¾·á
-    QIEND_STATUS_5                                          = 0x00000020,    // Bit 5, ¿ª¹æÇâ ¼ÒÇÁÆ® ¸®¹ÌÆ® ±ÞÁ¤Áö ±â´É¿¡ ÀÇÇÑ ±¸µ¿ Á¾·á
-    QIEND_STATUS_6                                          = 0x00000040,    // Bit 6, Á¤¹æÇâ ¼ÒÇÁÆ® ¸®¹ÌÆ® °¨¼ÓÁ¤Áö ±â´É¿¡ ÀÇÇÑ ±¸µ¿ Á¾·á
-    QIEND_STATUS_7                                          = 0x00000080,    // Bit 7, ¿ª¹æÇâ ¼ÒÇÁÆ® ¸®¹ÌÆ® °¨¼ÓÁ¤Áö ±â´É¿¡ ÀÇÇÑ ±¸µ¿ Á¾·á
-    QIEND_STATUS_8                                          = 0x00000100,    // Bit 8, ¼­º¸ ¾Ë¶÷ ±â´É¿¡ ÀÇÇÑ ±¸µ¿ Á¾·á.
-    QIEND_STATUS_9                                          = 0x00000200,    // Bit 9, ºñ»ó Á¤Áö ½ÅÈ£ ÀÔ·Â¿¡ ÀÇÇÑ ±¸µ¿ Á¾·á.
-    QIEND_STATUS_10                                         = 0x00000400,    // Bit 10, ±Þ Á¤Áö ¸í·É¿¡ ÀÇÇÑ ±¸µ¿ Á¾·á.
-    QIEND_STATUS_11                                         = 0x00000800,    // Bit 11, °¨¼Ó Á¤Áö ¸í·É¿¡ ÀÇÇÑ ±¸µ¿ Á¾·á.
-    QIEND_STATUS_12                                         = 0x00001000,    // Bit 12, ÀüÃà ±ÞÁ¤Áö ¸í·É¿¡ ÀÇÇÑ ±¸µ¿ Á¾·á
-    QIEND_STATUS_13                                         = 0x00002000,    // Bit 13, µ¿±â Á¤Áö ±â´É #1(SQSTP1)¿¡ ÀÇÇÑ ±¸µ¿ Á¾·á.
-    QIEND_STATUS_14                                         = 0x00004000,    // Bit 14, µ¿±â Á¤Áö ±â´É #2(SQSTP2)¿¡ ÀÇÇÑ ±¸µ¿ Á¾·á.
-    QIEND_STATUS_15                                         = 0x00008000,    // Bit 15, ÀÎÄÚ´õ ÀÔ·Â(ECUP,ECDN) ¿À·ù ¹ß»ý
-    QIEND_STATUS_16                                         = 0x00010000,    // Bit 16, MPG ÀÔ·Â(EXPP,EXMP) ¿À·ù ¹ß»ý
-    QIEND_STATUS_17                                         = 0x00020000,    // Bit 17, ¿øÁ¡ °Ë»ö ¼º°ø Á¾·á.
-    QIEND_STATUS_18                                         = 0x00040000,    // Bit 18, ½ÅÈ£ °Ë»ö ¼º°ø Á¾·á.
-    QIEND_STATUS_19                                         = 0x00080000,    // Bit 19, º¸°£ µ¥ÀÌÅÍ ÀÌ»óÀ¸·Î ±¸µ¿ Á¾·á.
-    QIEND_STATUS_20                                         = 0x00100000,    // Bit 20, ºñÁ¤»ó ±¸µ¿ Á¤Áö¹ß»ý.
-    QIEND_STATUS_21                                         = 0x00200000,    // Bit 21, MPG ±â´É ºí·Ï ÆÞ½º ¹öÆÛ ¿À¹öÇÃ·Î¿ì ¹ß»ý
+    QIEND_STATUS_0                                          = 0x00000001,    // Bit 0, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½È£(PELM)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    QIEND_STATUS_1                                          = 0x00000002,    // Bit 1, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½È£(NELM)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    QIEND_STATUS_2                                          = 0x00000004,    // Bit 2, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î°ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½È£(PSLM)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    QIEND_STATUS_3                                          = 0x00000008,    // Bit 3, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î°ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½È£(NSLM)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    QIEND_STATUS_4                                          = 0x00000010,    // Bit 4, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½É¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    QIEND_STATUS_5                                          = 0x00000020,    // Bit 5, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½É¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    QIEND_STATUS_6                                          = 0x00000040,    // Bit 6, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½É¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    QIEND_STATUS_7                                          = 0x00000080,    // Bit 7, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½É¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    QIEND_STATUS_8                                          = 0x00000100,    // Bit 8, ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¶ï¿½ ï¿½ï¿½É¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIEND_STATUS_9                                          = 0x00000200,    // Bit 9, ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½Ô·Â¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIEND_STATUS_10                                         = 0x00000400,    // Bit 10, ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIEND_STATUS_11                                         = 0x00000800,    // Bit 11, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIEND_STATUS_12                                         = 0x00001000,    // Bit 12, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    QIEND_STATUS_13                                         = 0x00002000,    // Bit 13, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ #1(SQSTP1)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIEND_STATUS_14                                         = 0x00004000,    // Bit 14, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ #2(SQSTP2)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIEND_STATUS_15                                         = 0x00008000,    // Bit 15, ï¿½ï¿½ï¿½Ú´ï¿½ ï¿½Ô·ï¿½(ECUP,ECDN) ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½
+    QIEND_STATUS_16                                         = 0x00010000,    // Bit 16, MPG ï¿½Ô·ï¿½(EXPP,EXMP) ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½
+    QIEND_STATUS_17                                         = 0x00020000,    // Bit 17, ï¿½ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIEND_STATUS_18                                         = 0x00040000,    // Bit 18, ï¿½ï¿½È£ ï¿½Ë»ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIEND_STATUS_19                                         = 0x00080000,    // Bit 19, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì»ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIEND_STATUS_20                                         = 0x00100000,    // Bit 20, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß»ï¿½.
+    QIEND_STATUS_21                                         = 0x00200000,    // Bit 21, MPG ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Þ½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ã·Î¿ï¿½ ï¿½ß»ï¿½
     QIEND_STATUS_22                                         = 0x00400000,    // Bit 22, DON'CARE
     QIEND_STATUS_23                                         = 0x00800000,    // Bit 23, DON'CARE
     QIEND_STATUS_24                                         = 0x01000000,    // Bit 24, DON'CARE
     QIEND_STATUS_25                                         = 0x02000000,    // Bit 25, DON'CARE
     QIEND_STATUS_26                                         = 0x04000000,    // Bit 26, DON'CARE
     QIEND_STATUS_27                                         = 0x08000000,    // Bit 27, DON'CARE
-    QIEND_STATUS_28                                         = 0x10000000,    // Bit 28, ÇöÀç/¸¶Áö¸· ±¸µ¿ µå¶óÀÌºê ¹æÇâ
-    QIEND_STATUS_29                                         = 0x20000000,    // Bit 29, ÀÜ¿© ÆÞ½º Á¦°Å ½ÅÈ£ Ãâ·Â Áß.
-    QIEND_STATUS_30                                         = 0x40000000,    // Bit 30, ºñÁ¤»ó ±¸µ¿ Á¤Áö ¿øÀÎ »óÅÂ
-    QIEND_STATUS_31                                         = 0x80000000     // Bit 31, º¸°£ µå¶óÀÌºê µ¥ÀÌÅ¸ ¿À·ù »óÅÂ.
+    QIEND_STATUS_28                                         = 0x10000000,    // Bit 28, ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½
+    QIEND_STATUS_29                                         = 0x20000000,    // Bit 29, ï¿½Ü¿ï¿½ ï¿½Þ½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½ ï¿½ï¿½.
+    QIEND_STATUS_30                                         = 0x40000000,    // Bit 30, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    QIEND_STATUS_31                                         = 0x80000000     // Bit 31, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½Å¸ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 
 } AXT_MOTION_QIEND_STATUS;
 #endif
@@ -1554,33 +1554,33 @@ typedef    enum _AXT_MOTION_QIEND_STATUS
 /* QI Drive status                        */
 typedef    enum _AXT_MOTION_QIDRIVE_STATUS
 {
-    QIDRIVE_STATUS_0                                        = 0x0000001,    // Bit 0, BUSY(µå¶óÀÌºê ±¸µ¿ Áß)
-    QIDRIVE_STATUS_1                                        = 0x0000002,    // Bit 1, DOWN(°¨¼Ó Áß)
-    QIDRIVE_STATUS_2                                        = 0x0000004,    // Bit 2, CONST(µî¼Ó Áß)
-    QIDRIVE_STATUS_3                                        = 0x0000008,    // Bit 3, UP(°¡¼Ó Áß)
-    QIDRIVE_STATUS_4                                        = 0x0000010,    // Bit 4, ¿¬¼Ó µå¶óÀÌºê ±¸µ¿ Áß
-    QIDRIVE_STATUS_5                                        = 0x0000020,    // Bit 5, ÁöÁ¤ °Å¸® µå¶óÀÌºê ±¸µ¿ Áß
-    QIDRIVE_STATUS_6                                        = 0x0000040,    // Bit 6, MPG µå¶óÀÌºê ±¸µ¿ Áß
-    QIDRIVE_STATUS_7                                        = 0x0000080,    // Bit 7, ¿øÁ¡°Ë»ö µå¶óÀÌºê ±¸µ¿Áß
-    QIDRIVE_STATUS_8                                        = 0x0000100,    // Bit 8, ½ÅÈ£ °Ë»ö µå¶óÀÌºê ±¸µ¿ Áß
-    QIDRIVE_STATUS_9                                        = 0x0000200,    // Bit 9, º¸°£ µå¶óÀÌºê ±¸µ¿ Áß
-    QIDRIVE_STATUS_10                                       = 0x0000400,    // Bit 10, Slave µå¶óÀÌºê ±¸µ¿Áß
-    QIDRIVE_STATUS_11                                       = 0x0000800,    // Bit 11, ÇöÀç ±¸µ¿ µå¶óÀÌºê ¹æÇâ(º¸°£ µå¶óÀÌºê¿¡¼­´Â Ç¥½Ã Á¤º¸ ´Ù¸§)
-    QIDRIVE_STATUS_12                                       = 0x0001000,    // Bit 12, ÆÞ½º Ãâ·ÂÈÄ ¼­º¸À§Ä¡ ¿Ï·á ½ÅÈ£ ´ë±âÁß.
-    QIDRIVE_STATUS_13                                       = 0x0002000,    // Bit 13, Á÷¼± º¸°£ µå¶óÀÌºê ±¸µ¿Áß.
-    QIDRIVE_STATUS_14                                       = 0x0004000,    // Bit 14, ¿øÈ£ º¸°£ µå¶óÀÌºê ±¸µ¿Áß.
-    QIDRIVE_STATUS_15                                       = 0x0008000,    // Bit 15, ÆÞ½º Ãâ·Â Áß.
-    QIDRIVE_STATUS_16                                       = 0x0010000,    // Bit 16, ±¸µ¿ ¿¹¾à µ¥ÀÌÅÍ °³¼ö(Ã³À½)(0-7)
-    QIDRIVE_STATUS_17                                       = 0x0020000,    // Bit 17, ±¸µ¿ ¿¹¾à µ¥ÀÌÅÍ °³¼ö(Áß°£)(0-7)
-    QIDRIVE_STATUS_18                                       = 0x0040000,    // Bit 18, ±¸µ¿ ¿¹¾à µ¥ÀÌÅÍ °¹¼ö(³¡)(0-7)
-    QIDRIVE_STATUS_19                                       = 0x0080000,    // Bit 19, ±¸µ¿ ¿¹¾à Queue ºñ¾î ÀÖÀ½.
-    QIDRIVE_STATUS_20                                       = 0x0100000,    // Bit 20, ±¸µ¿ ¿¹¾à Queue °¡µæ ?
-    QIDRIVE_STATUS_21                                       = 0x0200000,    // Bit 21, ÇöÀç ±¸µ¿ µå¶óÀÌºêÀÇ ¼Óµµ ¸ðµå(Ã³À½)
-    QIDRIVE_STATUS_22                                       = 0x0400000,    // Bit 22, ÇöÀç ±¸µ¿ µå¶óÀÌºêÀÇ ¼Óµµ ¸ðµå(³¡)
-    QIDRIVE_STATUS_23                                       = 0x0800000,    // Bit 23, MPG ¹öÆÛ #1 Full
-    QIDRIVE_STATUS_24                                       = 0x1000000,    // Bit 24, MPG ¹öÆÛ #2 Full
-    QIDRIVE_STATUS_25                                       = 0x2000000,    // Bit 25, MPG ¹öÆÛ #3 Full
-    QIDRIVE_STATUS_26                                       = 0x4000000     // Bit 26, MPG ¹öÆÛ µ¥ÀÌÅÍ OverFlow
+    QIDRIVE_STATUS_0                                        = 0x0000001,    // Bit 0, BUSY(ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½)
+    QIDRIVE_STATUS_1                                        = 0x0000002,    // Bit 1, DOWN(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½)
+    QIDRIVE_STATUS_2                                        = 0x0000004,    // Bit 2, CONST(ï¿½ï¿½ï¿½ ï¿½ï¿½)
+    QIDRIVE_STATUS_3                                        = 0x0000008,    // Bit 3, UP(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½)
+    QIDRIVE_STATUS_4                                        = 0x0000010,    // Bit 4, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    QIDRIVE_STATUS_5                                        = 0x0000020,    // Bit 5, ï¿½ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½ ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    QIDRIVE_STATUS_6                                        = 0x0000040,    // Bit 6, MPG ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    QIDRIVE_STATUS_7                                        = 0x0000080,    // Bit 7, ï¿½ï¿½ï¿½ï¿½ï¿½Ë»ï¿½ ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    QIDRIVE_STATUS_8                                        = 0x0000100,    // Bit 8, ï¿½ï¿½È£ ï¿½Ë»ï¿½ ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    QIDRIVE_STATUS_9                                        = 0x0000200,    // Bit 9, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    QIDRIVE_STATUS_10                                       = 0x0000400,    // Bit 10, Slave ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    QIDRIVE_STATUS_11                                       = 0x0000800,    // Bit 11, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ìºê¿¡ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¸ï¿½)
+    QIDRIVE_STATUS_12                                       = 0x0001000,    // Bit 12, ï¿½Þ½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¡ ï¿½Ï·ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½ï¿½.
+    QIDRIVE_STATUS_13                                       = 0x0002000,    // Bit 13, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
+    QIDRIVE_STATUS_14                                       = 0x0004000,    // Bit 14, ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
+    QIDRIVE_STATUS_15                                       = 0x0008000,    // Bit 15, ï¿½Þ½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½.
+    QIDRIVE_STATUS_16                                       = 0x0010000,    // Bit 16, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(Ã³ï¿½ï¿½)(0-7)
+    QIDRIVE_STATUS_17                                       = 0x0020000,    // Bit 17, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ß°ï¿½)(0-7)
+    QIDRIVE_STATUS_18                                       = 0x0040000,    // Bit 18, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½)(0-7)
+    QIDRIVE_STATUS_19                                       = 0x0080000,    // Bit 19, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Queue ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIDRIVE_STATUS_20                                       = 0x0100000,    // Bit 20, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Queue ï¿½ï¿½ï¿½ï¿½ ?
+    QIDRIVE_STATUS_21                                       = 0x0200000,    // Bit 21, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ìºï¿½ï¿½ï¿½ ï¿½Óµï¿½ ï¿½ï¿½ï¿½(Ã³ï¿½ï¿½)
+    QIDRIVE_STATUS_22                                       = 0x0400000,    // Bit 22, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ìºï¿½ï¿½ï¿½ ï¿½Óµï¿½ ï¿½ï¿½ï¿½(ï¿½ï¿½)
+    QIDRIVE_STATUS_23                                       = 0x0800000,    // Bit 23, MPG ï¿½ï¿½ï¿½ï¿½ #1 Full
+    QIDRIVE_STATUS_24                                       = 0x1000000,    // Bit 24, MPG ï¿½ï¿½ï¿½ï¿½ #2 Full
+    QIDRIVE_STATUS_25                                       = 0x2000000,    // Bit 25, MPG ï¿½ï¿½ï¿½ï¿½ #3 Full
+    QIDRIVE_STATUS_26                                       = 0x4000000     // Bit 26, MPG ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ OverFlow
 } AXT_MOTION_QIDRIVE_STATUS;
 #endif
 
@@ -1590,38 +1590,38 @@ typedef    enum _AXT_MOTION_QIDRIVE_STATUS
 typedef    enum _AXT_MOTION_QIINTERRUPT_BANK1
 {
     QIINTBANK1_DISABLE                                      = 0x00000000,    // INTERRUT DISABLED.
-    QIINTBANK1_0                                            = 0x00000001,    // Bit 0,  ÀÎÅÍ·´Æ® ¹ß»ý »ç¿ë ¼³Á¤µÈ ±¸µ¿ Á¾·á½Ã.
-    QIINTBANK1_1                                            = 0x00000002,    // Bit 1,  ±¸µ¿ Á¾·á½Ã.
-    QIINTBANK1_2                                            = 0x00000004,    // Bit 2,  ±¸µ¿ ½ÃÀÛ½Ã.(ÁÖÀÇ:¶óÀÌºê·¯¸® ³»ºÎ ¼³Á¤À¸·Î AXM ¸ð¼Ç ±¸µ¿½Ã µÎ¹ø ¹ß»ýÇÒ¼ö ÀÖÀ½) 
-    QIINTBANK1_3                                            = 0x00000008,    // Bit 3,  Ä«¿îÅÍ #1 < ºñ±³±â #1 ÀÌº¥Æ® ¹ß»ý
-    QIINTBANK1_4                                            = 0x00000010,    // Bit 4,  Ä«¿îÅÍ #1 = ºñ±³±â #1 ÀÌº¥Æ® ¹ß»ý
-    QIINTBANK1_5                                            = 0x00000020,    // Bit 5,  Ä«¿îÅÍ #1 > ºñ±³±â #1 ÀÌº¥Æ® ¹ß»ý
-    QIINTBANK1_6                                            = 0x00000040,    // Bit 6,  Ä«¿îÅÍ #2 < ºñ±³±â #2 ÀÌº¥Æ® ¹ß»ý
-    QIINTBANK1_7                                            = 0x00000080,    // Bit 7,  Ä«¿îÅÍ #2 = ºñ±³±â #2 ÀÌº¥Æ® ¹ß»ý
-    QIINTBANK1_8                                            = 0x00000100,    // Bit 8,  Ä«¿îÅÍ #2 > ºñ±³±â #2 ÀÌº¥Æ® ¹ß»ý
-    QIINTBANK1_9                                            = 0x00000200,    // Bit 9,  Ä«¿îÅÍ #3 < ºñ±³±â #3 ÀÌº¥Æ® ¹ß»ý
-    QIINTBANK1_10                                           = 0x00000400,    // Bit 10, Ä«¿îÅÍ #3 = ºñ±³±â #3 ÀÌº¥Æ® ¹ß»ý
-    QIINTBANK1_11                                           = 0x00000800,    // Bit 11, Ä«¿îÅÍ #3 > ºñ±³±â #3 ÀÌº¥Æ® ¹ß»ý
-    QIINTBANK1_12                                           = 0x00001000,    // Bit 12, Ä«¿îÅÍ #4 < ºñ±³±â #4 ÀÌº¥Æ® ¹ß»ý
-    QIINTBANK1_13                                           = 0x00002000,    // Bit 13, Ä«¿îÅÍ #4 = ºñ±³±â #4 ÀÌº¥Æ® ¹ß»ý
-    QIINTBANK1_14                                           = 0x00004000,    // Bit 14, Ä«¿îÅÍ #4 < ºñ±³±â #4 ÀÌº¥Æ® ¹ß»ý
-    QIINTBANK1_15                                           = 0x00008000,    // Bit 15, Ä«¿îÅÍ #5 < ºñ±³±â #5 ÀÌº¥Æ® ¹ß»ý
-    QIINTBANK1_16                                           = 0x00010000,    // Bit 16, Ä«¿îÅÍ #5 = ºñ±³±â #5 ÀÌº¥Æ® ¹ß»ý
-    QIINTBANK1_17                                           = 0x00020000,    // Bit 17, Ä«¿îÅÍ #5 > ºñ±³±â #5 ÀÌº¥Æ® ¹ß»ý
-    QIINTBANK1_18                                           = 0x00040000,    // Bit 18, Å¸ÀÌ¸Ó #1 ÀÌº¥Æ® ¹ß»ý.
-    QIINTBANK1_19                                           = 0x00080000,    // Bit 19, Å¸ÀÌ¸Ó #2 ÀÌº¥Æ® ¹ß»ý.
-    QIINTBANK1_20                                           = 0x00100000,    // Bit 20, ±¸µ¿ ¿¹¾à ¼³Á¤ Queue ºñ¿öÁü.
-    QIINTBANK1_21                                           = 0x00200000,    // Bit 21, ±¸µ¿ ¿¹¾à ¼³Á¤ Queue °¡µæ?
-    QIINTBANK1_22                                           = 0x00400000,    // Bit 22, Æ®¸®°Å ¹ß»ý°Å¸® ÁÖ±â/Àý´ëÀ§Ä¡ Queue ºñ¿öÁü.
-    QIINTBANK1_23                                           = 0x00800000,    // Bit 23, Æ®¸®°Å ¹ß»ý°Å¸® ÁÖ±â/Àý´ëÀ§Ä¡ Queue °¡µæ?
-    QIINTBANK1_24                                           = 0x01000000,    // Bit 24, Æ®¸®°Å ½ÅÈ£ ¹ß»ý ÀÌº¥Æ®
-    QIINTBANK1_25                                           = 0x02000000,    // Bit 25, ½ºÅ©¸³Æ® #1 ¸í·É¾î ¿¹¾à ¼³Á¤ Queue ºñ¿öÁü.
-    QIINTBANK1_26                                           = 0x04000000,    // Bit 26, ½ºÅ©¸³Æ® #2 ¸í·É¾î ¿¹¾à ¼³Á¤ Queue ºñ¿öÁü.
-    QIINTBANK1_27                                           = 0x08000000,    // Bit 27, ½ºÅ©¸³Æ® #3 ¸í·É¾î ¿¹¾à ¼³Á¤ ·¹Áö½ºÅÍ ½ÇÇàµÇ¾î ÃÊ±âÈ­ µÊ.
-    QIINTBANK1_28                                           = 0x10000000,    // Bit 28, ½ºÅ©¸³Æ® #4 ¸í·É¾î ¿¹¾à ¼³Á¤ ·¹Áö½ºÅÍ ½ÇÇàµÇ¾î ÃÊ±âÈ­ µÊ.
-    QIINTBANK1_29                                           = 0x20000000,    // Bit 29, ¼­º¸ ¾Ë¶÷½ÅÈ£ ÀÎ°¡µÊ.
-    QIINTBANK1_30                                           = 0x40000000,    // Bit 30, |CNT1| - |CNT2| >= |CNT4| ÀÌº¥Æ® ¹ß»ý.
-    QIINTBANK1_31                                           = 0x80000000     // Bit 31, ÀÎÅÍ·´Æ® ¹ß»ý ¸í·É¾î|INTGEN| ½ÇÇà.
+    QIINTBANK1_0                                            = 0x00000001,    // Bit 0,  ï¿½ï¿½ï¿½Í·ï¿½Æ® ï¿½ß»ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK1_1                                            = 0x00000002,    // Bit 1,  ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK1_2                                            = 0x00000004,    // Bit 2,  ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Û½ï¿½.(ï¿½ï¿½ï¿½ï¿½:ï¿½ï¿½ï¿½Ìºê·¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ AXM ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î¹ï¿½ ï¿½ß»ï¿½ï¿½Ò¼ï¿½ ï¿½ï¿½ï¿½ï¿½) 
+    QIINTBANK1_3                                            = 0x00000008,    // Bit 3,  Ä«ï¿½ï¿½ï¿½ï¿½ #1 < ï¿½ñ±³±ï¿½ #1 ï¿½Ìºï¿½Æ® ï¿½ß»ï¿½
+    QIINTBANK1_4                                            = 0x00000010,    // Bit 4,  Ä«ï¿½ï¿½ï¿½ï¿½ #1 = ï¿½ñ±³±ï¿½ #1 ï¿½Ìºï¿½Æ® ï¿½ß»ï¿½
+    QIINTBANK1_5                                            = 0x00000020,    // Bit 5,  Ä«ï¿½ï¿½ï¿½ï¿½ #1 > ï¿½ñ±³±ï¿½ #1 ï¿½Ìºï¿½Æ® ï¿½ß»ï¿½
+    QIINTBANK1_6                                            = 0x00000040,    // Bit 6,  Ä«ï¿½ï¿½ï¿½ï¿½ #2 < ï¿½ñ±³±ï¿½ #2 ï¿½Ìºï¿½Æ® ï¿½ß»ï¿½
+    QIINTBANK1_7                                            = 0x00000080,    // Bit 7,  Ä«ï¿½ï¿½ï¿½ï¿½ #2 = ï¿½ñ±³±ï¿½ #2 ï¿½Ìºï¿½Æ® ï¿½ß»ï¿½
+    QIINTBANK1_8                                            = 0x00000100,    // Bit 8,  Ä«ï¿½ï¿½ï¿½ï¿½ #2 > ï¿½ñ±³±ï¿½ #2 ï¿½Ìºï¿½Æ® ï¿½ß»ï¿½
+    QIINTBANK1_9                                            = 0x00000200,    // Bit 9,  Ä«ï¿½ï¿½ï¿½ï¿½ #3 < ï¿½ñ±³±ï¿½ #3 ï¿½Ìºï¿½Æ® ï¿½ß»ï¿½
+    QIINTBANK1_10                                           = 0x00000400,    // Bit 10, Ä«ï¿½ï¿½ï¿½ï¿½ #3 = ï¿½ñ±³±ï¿½ #3 ï¿½Ìºï¿½Æ® ï¿½ß»ï¿½
+    QIINTBANK1_11                                           = 0x00000800,    // Bit 11, Ä«ï¿½ï¿½ï¿½ï¿½ #3 > ï¿½ñ±³±ï¿½ #3 ï¿½Ìºï¿½Æ® ï¿½ß»ï¿½
+    QIINTBANK1_12                                           = 0x00001000,    // Bit 12, Ä«ï¿½ï¿½ï¿½ï¿½ #4 < ï¿½ñ±³±ï¿½ #4 ï¿½Ìºï¿½Æ® ï¿½ß»ï¿½
+    QIINTBANK1_13                                           = 0x00002000,    // Bit 13, Ä«ï¿½ï¿½ï¿½ï¿½ #4 = ï¿½ñ±³±ï¿½ #4 ï¿½Ìºï¿½Æ® ï¿½ß»ï¿½
+    QIINTBANK1_14                                           = 0x00004000,    // Bit 14, Ä«ï¿½ï¿½ï¿½ï¿½ #4 < ï¿½ñ±³±ï¿½ #4 ï¿½Ìºï¿½Æ® ï¿½ß»ï¿½
+    QIINTBANK1_15                                           = 0x00008000,    // Bit 15, Ä«ï¿½ï¿½ï¿½ï¿½ #5 < ï¿½ñ±³±ï¿½ #5 ï¿½Ìºï¿½Æ® ï¿½ß»ï¿½
+    QIINTBANK1_16                                           = 0x00010000,    // Bit 16, Ä«ï¿½ï¿½ï¿½ï¿½ #5 = ï¿½ñ±³±ï¿½ #5 ï¿½Ìºï¿½Æ® ï¿½ß»ï¿½
+    QIINTBANK1_17                                           = 0x00020000,    // Bit 17, Ä«ï¿½ï¿½ï¿½ï¿½ #5 > ï¿½ñ±³±ï¿½ #5 ï¿½Ìºï¿½Æ® ï¿½ß»ï¿½
+    QIINTBANK1_18                                           = 0x00040000,    // Bit 18, Å¸ï¿½Ì¸ï¿½ #1 ï¿½Ìºï¿½Æ® ï¿½ß»ï¿½.
+    QIINTBANK1_19                                           = 0x00080000,    // Bit 19, Å¸ï¿½Ì¸ï¿½ #2 ï¿½Ìºï¿½Æ® ï¿½ß»ï¿½.
+    QIINTBANK1_20                                           = 0x00100000,    // Bit 20, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Queue ï¿½ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK1_21                                           = 0x00200000,    // Bit 21, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Queue ï¿½ï¿½ï¿½ï¿½?
+    QIINTBANK1_22                                           = 0x00400000,    // Bit 22, Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½Å¸ï¿½ ï¿½Ö±ï¿½/ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¡ Queue ï¿½ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK1_23                                           = 0x00800000,    // Bit 23, Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½Å¸ï¿½ ï¿½Ö±ï¿½/ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¡ Queue ï¿½ï¿½ï¿½ï¿½?
+    QIINTBANK1_24                                           = 0x01000000,    // Bit 24, Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½ß»ï¿½ ï¿½Ìºï¿½Æ®
+    QIINTBANK1_25                                           = 0x02000000,    // Bit 25, ï¿½ï¿½Å©ï¿½ï¿½Æ® #1 ï¿½ï¿½ï¿½É¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Queue ï¿½ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK1_26                                           = 0x04000000,    // Bit 26, ï¿½ï¿½Å©ï¿½ï¿½Æ® #2 ï¿½ï¿½ï¿½É¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Queue ï¿½ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK1_27                                           = 0x08000000,    // Bit 27, ï¿½ï¿½Å©ï¿½ï¿½Æ® #3 ï¿½ï¿½ï¿½É¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ ï¿½Ê±ï¿½È­ ï¿½ï¿½.
+    QIINTBANK1_28                                           = 0x10000000,    // Bit 28, ï¿½ï¿½Å©ï¿½ï¿½Æ® #4 ï¿½ï¿½ï¿½É¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ ï¿½Ê±ï¿½È­ ï¿½ï¿½.
+    QIINTBANK1_29                                           = 0x20000000,    // Bit 29, ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¶ï¿½ï¿½ï¿½È£ ï¿½Î°ï¿½ï¿½ï¿½.
+    QIINTBANK1_30                                           = 0x40000000,    // Bit 30, |CNT1| - |CNT2| >= |CNT4| ï¿½Ìºï¿½Æ® ï¿½ß»ï¿½.
+    QIINTBANK1_31                                           = 0x80000000     // Bit 31, ï¿½ï¿½ï¿½Í·ï¿½Æ® ï¿½ß»ï¿½ ï¿½ï¿½ï¿½É¾ï¿½|INTGEN| ï¿½ï¿½ï¿½ï¿½.
 } AXT_MOTION_QIINTERRUPT_BANK1;
 #endif
 
@@ -1630,38 +1630,38 @@ typedef    enum _AXT_MOTION_QIINTERRUPT_BANK1
 typedef    enum _AXT_MOTION_QIINTERRUPT_BANK2
 {
     QIINTBANK2_DISABLE                                     = 0x00000000,    // INTERRUT DISABLED.
-    QIINTBANK2_0                                           = 0x00000001,    // Bit 0,  ½ºÅ©¸³Æ® #1 ÀÐ±â ¸í·É °á°ú Queue °¡ °¡µæ?.
-    QIINTBANK2_1                                           = 0x00000002,    // Bit 1,  ½ºÅ©¸³Æ® #2 ÀÐ±â ¸í·É °á°ú Queue °¡ °¡µæ?.
-    QIINTBANK2_2                                           = 0x00000004,    // Bit 2,  ½ºÅ©¸³Æ® #3 ÀÐ±â ¸í·É °á°ú ·¹Áö½ºÅÍ°¡ »õ·Î¿î µ¥ÀÌÅÍ·Î °»½ÅµÊ.
-    QIINTBANK2_3                                           = 0x00000008,    // Bit 3,  ½ºÅ©¸³Æ® #4 ÀÐ±â ¸í·É °á°ú ·¹Áö½ºÅÍ°¡ »õ·Î¿î µ¥ÀÌÅÍ·Î °»½ÅµÊ.
-    QIINTBANK2_4                                           = 0x00000010,    // Bit 4,  ½ºÅ©¸³Æ® #1 ÀÇ ¿¹¾à ¸í·É¾î Áß ½ÇÇà ½Ã ÀÎÅÍ·´Æ® ¹ß»ýÀ¸·Î ¼³Á¤µÈ ¸í·É¾î ½ÇÇàµÊ.
-    QIINTBANK2_5                                           = 0x00000020,    // Bit 5,  ½ºÅ©¸³Æ® #2 ÀÇ ¿¹¾à ¸í·É¾î Áß ½ÇÇà ½Ã ÀÎÅÍ·´Æ® ¹ß»ýÀ¸·Î ¼³Á¤µÈ ¸í·É¾î ½ÇÇàµÊ.
-    QIINTBANK2_6                                           = 0x00000040,    // Bit 6,  ½ºÅ©¸³Æ® #3 ÀÇ ¿¹¾à ¸í·É¾î ½ÇÇà ½Ã ÀÎÅÍ·´Æ® ¹ß»ýÀ¸·Î ¼³Á¤µÈ ¸í·É¾î ½ÇÇàµÊ.
-    QIINTBANK2_7                                           = 0x00000080,    // Bit 7,  ½ºÅ©¸³Æ® #4 ÀÇ ¿¹¾à ¸í·É¾î ½ÇÇà ½Ã ÀÎÅÍ·´Æ® ¹ß»ýÀ¸·Î ¼³Á¤µÈ ¸í·É¾î ½ÇÇàµÊ.
-    QIINTBANK2_8                                           = 0x00000100,    // Bit 8,  ±¸µ¿Áß ´ÙÀ½ ±¸µ¿¸í·ÉÀÌ ½ÇÇàµÉ ¶§
-    QIINTBANK2_9                                           = 0x00000200,    // Bit 9,  ¼­º¸ À§Ä¡ °áÁ¤ ¿Ï·á(Inposition)±â´ÉÀ» »ç¿ëÇÑ ±¸µ¿,Á¾·á Á¶°Ç ¹ß»ý.
-    QIINTBANK2_10                                          = 0x00000400,    // Bit 10, ÀÌº¥Æ® Ä«¿îÅÍ·Î µ¿ÀÛ ½Ã »ç¿ëÇÒ ÀÌº¥Æ® ¼±ÅÃ #1 Á¶°Ç ¹ß»ý.
-    QIINTBANK2_11                                          = 0x00000800,    // Bit 11, ÀÌº¥Æ® Ä«¿îÅÍ·Î µ¿ÀÛ ½Ã »ç¿ëÇÒ ÀÌº¥Æ® ¼±ÅÃ #2 Á¶°Ç ¹ß»ý.
-    QIINTBANK2_12                                          = 0x00001000,    // Bit 12, SQSTR1 ½ÅÈ£ ÀÎ°¡ µÊ.
-    QIINTBANK2_13                                          = 0x00002000,    // Bit 13, SQSTR2 ½ÅÈ£ ÀÎ°¡ µÊ.
-    QIINTBANK2_14                                          = 0x00004000,    // Bit 14, UIO0 ÅÍ¹Ì³Î ½ÅÈ£°¡ '1'·Î º¯ÇÔ.
-    QIINTBANK2_15                                          = 0x00008000,    // Bit 15, UIO1 ÅÍ¹Ì³Î ½ÅÈ£°¡ '1'·Î º¯ÇÔ.
-    QIINTBANK2_16                                          = 0x00010000,    // Bit 16, UIO2 ÅÍ¹Ì³Î ½ÅÈ£°¡ '1'·Î º¯ÇÔ.
-    QIINTBANK2_17                                          = 0x00020000,    // Bit 17, UIO3 ÅÍ¹Ì³Î ½ÅÈ£°¡ '1'·Î º¯ÇÔ.
-    QIINTBANK2_18                                          = 0x00040000,    // Bit 18, UIO4 ÅÍ¹Ì³Î ½ÅÈ£°¡ '1'·Î º¯ÇÔ.
-    QIINTBANK2_19                                          = 0x00080000,    // Bit 19, UIO5 ÅÍ¹Ì³Î ½ÅÈ£°¡ '1'·Î º¯ÇÔ.
-    QIINTBANK2_20                                          = 0x00100000,    // Bit 20, UIO6 ÅÍ¹Ì³Î ½ÅÈ£°¡ '1'·Î º¯ÇÔ.
-    QIINTBANK2_21                                          = 0x00200000,    // Bit 21, UIO7 ÅÍ¹Ì³Î ½ÅÈ£°¡ '1'·Î º¯ÇÔ.
-    QIINTBANK2_22                                          = 0x00400000,    // Bit 22, UIO8 ÅÍ¹Ì³Î ½ÅÈ£°¡ '1'·Î º¯ÇÔ.
-    QIINTBANK2_23                                          = 0x00800000,    // Bit 23, UIO9 ÅÍ¹Ì³Î ½ÅÈ£°¡ '1'·Î º¯ÇÔ.
-    QIINTBANK2_24                                          = 0x01000000,    // Bit 24, UIO10 ÅÍ¹Ì³Î ½ÅÈ£°¡ '1'·Î º¯ÇÔ.
-    QIINTBANK2_25                                          = 0x02000000,    // Bit 25, UIO11 ÅÍ¹Ì³Î ½ÅÈ£°¡ '1'·Î º¯ÇÔ.
-    QIINTBANK2_26                                          = 0x04000000,    // Bit 26, ¿À·ù Á¤Áö Á¶°Ç(LMT, ESTOP, STOP, ESTOP, CMD, ALARM) ¹ß»ý.
-    QIINTBANK2_27                                          = 0x08000000,    // Bit 27, º¸°£ Áß µ¥ÀÌÅÍ ¼³Á¤ ¿À·ù ¹ß»ý.
+    QIINTBANK2_0                                           = 0x00000001,    // Bit 0,  ï¿½ï¿½Å©ï¿½ï¿½Æ® #1 ï¿½Ð±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Queue ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½?.
+    QIINTBANK2_1                                           = 0x00000002,    // Bit 1,  ï¿½ï¿½Å©ï¿½ï¿½Æ® #2 ï¿½Ð±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Queue ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½?.
+    QIINTBANK2_2                                           = 0x00000004,    // Bit 2,  ï¿½ï¿½Å©ï¿½ï¿½Æ® #3 ï¿½Ð±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ ï¿½ï¿½ï¿½Åµï¿½.
+    QIINTBANK2_3                                           = 0x00000008,    // Bit 3,  ï¿½ï¿½Å©ï¿½ï¿½Æ® #4 ï¿½Ð±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ ï¿½ï¿½ï¿½Åµï¿½.
+    QIINTBANK2_4                                           = 0x00000010,    // Bit 4,  ï¿½ï¿½Å©ï¿½ï¿½Æ® #1 ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¾ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Í·ï¿½Æ® ï¿½ß»ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK2_5                                           = 0x00000020,    // Bit 5,  ï¿½ï¿½Å©ï¿½ï¿½Æ® #2 ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¾ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Í·ï¿½Æ® ï¿½ß»ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK2_6                                           = 0x00000040,    // Bit 6,  ï¿½ï¿½Å©ï¿½ï¿½Æ® #3 ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Í·ï¿½Æ® ï¿½ß»ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK2_7                                           = 0x00000080,    // Bit 7,  ï¿½ï¿½Å©ï¿½ï¿½Æ® #4 ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Í·ï¿½Æ® ï¿½ß»ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½É¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK2_8                                           = 0x00000100,    // Bit 8,  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+    QIINTBANK2_9                                           = 0x00000200,    // Bit 9,  ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½(Inposition)ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½.
+    QIINTBANK2_10                                          = 0x00000400,    // Bit 10, ï¿½Ìºï¿½Æ® Ä«ï¿½ï¿½ï¿½Í·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½ #1 ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½.
+    QIINTBANK2_11                                          = 0x00000800,    // Bit 11, ï¿½Ìºï¿½Æ® Ä«ï¿½ï¿½ï¿½Í·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½ #2 ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½.
+    QIINTBANK2_12                                          = 0x00001000,    // Bit 12, SQSTR1 ï¿½ï¿½È£ ï¿½Î°ï¿½ ï¿½ï¿½.
+    QIINTBANK2_13                                          = 0x00002000,    // Bit 13, SQSTR2 ï¿½ï¿½È£ ï¿½Î°ï¿½ ï¿½ï¿½.
+    QIINTBANK2_14                                          = 0x00004000,    // Bit 14, UIO0 ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ï¿½ï¿½ '1'ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK2_15                                          = 0x00008000,    // Bit 15, UIO1 ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ï¿½ï¿½ '1'ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK2_16                                          = 0x00010000,    // Bit 16, UIO2 ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ï¿½ï¿½ '1'ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK2_17                                          = 0x00020000,    // Bit 17, UIO3 ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ï¿½ï¿½ '1'ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK2_18                                          = 0x00040000,    // Bit 18, UIO4 ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ï¿½ï¿½ '1'ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK2_19                                          = 0x00080000,    // Bit 19, UIO5 ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ï¿½ï¿½ '1'ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK2_20                                          = 0x00100000,    // Bit 20, UIO6 ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ï¿½ï¿½ '1'ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK2_21                                          = 0x00200000,    // Bit 21, UIO7 ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ï¿½ï¿½ '1'ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK2_22                                          = 0x00400000,    // Bit 22, UIO8 ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ï¿½ï¿½ '1'ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK2_23                                          = 0x00800000,    // Bit 23, UIO9 ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ï¿½ï¿½ '1'ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK2_24                                          = 0x01000000,    // Bit 24, UIO10 ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ï¿½ï¿½ '1'ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK2_25                                          = 0x02000000,    // Bit 25, UIO11 ï¿½Í¹Ì³ï¿½ ï¿½ï¿½È£ï¿½ï¿½ '1'ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    QIINTBANK2_26                                          = 0x04000000,    // Bit 26, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(LMT, ESTOP, STOP, ESTOP, CMD, ALARM) ï¿½ß»ï¿½.
+    QIINTBANK2_27                                          = 0x08000000,    // Bit 27, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½.
     QIINTBANK2_28                                          = 0x10000000,    // Bit 28, Don't Care
-    QIINTBANK2_29                                          = 0x20000000,    // Bit 29, ¸®¹ÌÆ® ½ÅÈ£(PELM, NELM)½ÅÈ£°¡ ÀÔ·Â µÊ.
-    QIINTBANK2_30                                          = 0x40000000,    // Bit 30, ºÎ°¡ ¸®¹ÌÆ® ½ÅÈ£(PSLM, NSLM)½ÅÈ£°¡ ÀÔ·Â µÊ.
-    QIINTBANK2_31                                          = 0x80000000     // Bit 31, ºñ»ó Á¤Áö ½ÅÈ£(ESTOP)½ÅÈ£°¡ ÀÔ·ÂµÊ.
+    QIINTBANK2_29                                          = 0x20000000,    // Bit 29, ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½È£(PELM, NELM)ï¿½ï¿½È£ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½ï¿½.
+    QIINTBANK2_30                                          = 0x40000000,    // Bit 30, ï¿½Î°ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½È£(PSLM, NSLM)ï¿½ï¿½È£ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½ï¿½.
+    QIINTBANK2_31                                          = 0x80000000     // Bit 31, ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£(ESTOP)ï¿½ï¿½È£ï¿½ï¿½ ï¿½Ô·Âµï¿½.
 } AXT_MOTION_QIINTERRUPT_BANK2;
 #endif
 
@@ -1679,13 +1679,13 @@ typedef    enum _AXT_NETWORK_STATUS
 #define AXT_MOTION_INFO_DEF
 typedef struct _MOTION_INFO
 {
-    double   dCmdPos;      // Command À§Ä¡[0x01]
-    double   dActPos;      // Encoder À§Ä¡[0x02]
+    double   dCmdPos;      // Command ï¿½ï¿½Ä¡[0x01]
+    double   dActPos;      // Encoder ï¿½ï¿½Ä¡[0x02]
     DWORD    dwMechSig;    // Mechanical Signal[0x04]    
     DWORD    dwDrvStat;    // Driver Status[0x08]
     DWORD    dwInput;      // Universal Signal Input[0x10]
     DWORD    dwOutput;     // Universal Signal Output[0x10]
-    DWORD    dwMask;       // ÀÐ±â ¼³Á¤ Mask Ex) 0x1F, ¸ðµçÁ¤º¸ ÀÐ±â    
+    DWORD    dwMask;       // ï¿½Ð±ï¿½ ï¿½ï¿½ï¿½ï¿½ Mask Ex) 0x1F, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð±ï¿½    
 } MOTION_INFO, *PMOTION_INFO;
 #endif
 
@@ -1695,13 +1695,13 @@ typedef struct _MOTION_INFO
 
 typedef struct _SIIIHBoardInfo
 {
-	BOOL bIsSIIIHBoard;// SIIIH º¸µåÀÎ °æ¿ì TRUE, ¾Æ´Ï¸é FALSE
-	long lNodeCount; // ÇØ´ç º¸µå¿¡ ¿¬°áµÈ Node °³¼ö
+	BOOL bIsSIIIHBoard;// SIIIH ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ TRUE, ï¿½Æ´Ï¸ï¿½ FALSE
+	long lNodeCount; // ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½å¿¡ ï¿½ï¿½ï¿½ï¿½ï¿½ Node ï¿½ï¿½ï¿½ï¿½
 } SIIIHBoardInfo;
 
 typedef struct _SCAN_RESULT
 {
-	long lTotalBoardCount; //SIIIH Æ÷ÇÔ ÀåÂøµÈ ÀüÃ¼ º¸µå °³¼ö
+	long lTotalBoardCount; //SIIIH ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	SIIIHBoardInfo BoardInfo[MAX_BOARD_COUNT]; 
 } SCAN_RESULT;
 
@@ -1812,9 +1812,9 @@ typedef enum _PHASE_SEL
 typedef enum _COUNTER_INPUT
 {
     CnUpDownMode                                           = 0x0,    // Up/Down
-    CnSqr1Mode                                             = 0x1,    // 1Ã¼¹è
-    CnSqr2Mode                                             = 0x2,    // 2Ã¼¹è
-    CnSqr4Mode                                             = 0x3     // 4Ã¼¹è
+    CnSqr1Mode                                             = 0x1,    // 1Ã¼ï¿½ï¿½
+    CnSqr2Mode                                             = 0x2,    // 2Ã¼ï¿½ï¿½
+    CnSqr4Mode                                             = 0x3     // 4Ã¼ï¿½ï¿½
 } COUNTER_INPUT;
 
 /* CNT COMMAND LIST */
