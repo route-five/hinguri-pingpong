@@ -27,6 +27,9 @@ public:
     current_frame_ptr.store(frame_ptr);
   }
 
+  explicit WebcamVideoStream(const int source = 0, const int fps = 120)
+      : WebcamVideoStream(source, 640, 480, fps) {}
+
   double get_prop(const int prop_id) const { return stream.get(prop_id); }
 
   double get_fps() const { return capture_fps.load(); }
