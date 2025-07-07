@@ -30,6 +30,8 @@ public:
   explicit WebcamVideoStream(const int source = 0, const int fps = 120)
       : WebcamVideoStream(source, 640, 480, fps) {}
 
+  ~WebcamVideoStream() { stop(); }
+
   double get_prop(const int prop_id) const { return stream.get(prop_id); }
 
   double get_fps() const { return capture_fps.load(); }
