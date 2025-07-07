@@ -57,7 +57,7 @@ public:
       }
 
       auto now = std::chrono::high_resolution_clock::now();
-      auto elapsed =
+      const auto elapsed =
           std::chrono::duration_cast<std::chrono::milliseconds>(now - last_time)
               .count();
       if (elapsed >= 1000) {
