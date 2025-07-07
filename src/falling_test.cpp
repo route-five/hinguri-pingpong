@@ -16,7 +16,7 @@ double get_circularity(const std::vector<cv::Point> &contour) {
 }
 
 int main() {
-  WebcamVideoStream stream(0);
+  WebcamVideoStream stream(0, 240);
   if (!stream.is_opened()) {
     std::cerr << "카메라를 열 수 없습니다.\n";
     return -1;
@@ -27,9 +27,6 @@ int main() {
   const std::string window_name = "Ball Tracking";
   cv::namedWindow(window_name);
 
-  int frame_count = 0;
-  double fps = 0.0;
-  auto last_time = std::chrono::high_resolution_clock::now();
   std::deque<cv::Point2f> trails;
 
   while (true) {
@@ -83,13 +80,13 @@ int main() {
 
     // 프레임 표시
     std::string fps_text =
-        std::format("FPS: {}/{}", static_cast<int>(stream.get_fps()),
+        std::format("FPS: {:.1f}/{}", stream.get_fps(),
                     static_cast<int>(stream.get_prop(cv::CAP_PROP_FPS)));
     cv::putText(display, fps_text, {10, 30}, cv::FONT_HERSHEY_SIMPLEX, 0.7,
                 {0, 0, 255}, 2);
 
-    cv::imshow("Low-Res Webcam with FPS", display);
-    cv::imshow("Orange Detection", mask);
+    cv::imshow("Webcam with FPS", display);
+    cv::imshow("Orange Detection Mask", mask);
 
     if (cv::waitKey(1) == 'q')
       break;

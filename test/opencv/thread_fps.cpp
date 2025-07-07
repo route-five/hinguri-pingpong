@@ -20,7 +20,6 @@ int main() {
     if (frame.empty())
       continue;
 
-    // ✅ 실측 FPS 사용
     cv::putText(
         frame,
         std::format("FPS: {:.1f}/{}", stream.get_fps(),

@@ -14,11 +14,11 @@ class WebcamVideoStream {
   std::atomic<double> capture_fps{0.0};
 
 public:
-  explicit WebcamVideoStream(const int source = 0, const int width = 640,
-                             const int height = 480, const int fps = 120)
+  explicit WebcamVideoStream(const int source, const cv::Size &size,
+                             const int fps = 120)
       : stream{source}, current_frame_ptr{nullptr}, stopped{false} {
-    stream.set(cv::CAP_PROP_FRAME_WIDTH, width);
-    stream.set(cv::CAP_PROP_FRAME_HEIGHT, height);
+    stream.set(cv::CAP_PROP_FRAME_WIDTH, size.width);
+    stream.set(cv::CAP_PROP_FRAME_HEIGHT, size.height);
     stream.set(cv::CAP_PROP_FPS, fps);
 
     const auto frame_ptr = new cv::Mat();
@@ -27,8 +27,8 @@ public:
     current_frame_ptr.store(frame_ptr);
   }
 
-  explicit WebcamVideoStream(const int source = 0, const int fps = 120)
-      : WebcamVideoStream(source, 640, 480, fps) {}
+  explicit WebcamVideoStream(const int source, const int fps = 120)
+      : WebcamVideoStream(source, {640, 480}, fps) {}
 
   ~WebcamVideoStream() { stop(); }
 
