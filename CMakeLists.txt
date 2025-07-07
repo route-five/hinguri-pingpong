@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(hinguri_pingpong
         test/opencv/thread_fps.cpp
+        src/control/linear_motor.cpp
 )
 
 #set(OpenCV_DIR "C:/OpenCV/x64/mingw/lib")
@@ -18,11 +19,15 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake-modules)
 
-# Dinamixel SDK
+# Dynamixel SDK
 #find_package(DynamixelSDK REQUIRED)
+
+# Linear Motor
+find_package(LinearMotor REQUIRED)
 
 # Library Linking
 target_link_libraries(hinguri_pingpong
         ${OpenCV_LIBS}
-        #        dynamixel_sdk::dynamixel_sdk
+#        dynamixel_sdk::dynamixel_sdk
+#        linear_motor::linear_motor
 )
