@@ -1,10 +1,10 @@
-#include "CLinear_actu.h"
+#include "linear_motor.h"
 
 char mot_file[] = "source/mot/ajin20190628.mot"; // *.mot file Path
 int vel = 700;
 int accel = 200;
 
-CLinear_actu::CLinear_actu() {
+linear_motor::linear_motor() {
   DWORD Code = AxlOpen(7);
   if (Code == AXT_RT_SUCCESS) {
     printf("Library Reset. \n");
@@ -32,12 +32,12 @@ CLinear_actu::CLinear_actu() {
   }
 }
 
-CLinear_actu::~CLinear_actu() {
+linear_motor::~linear_motor() {
   AxmSignalServoOn(0, 0);
   AxlClose();
 }
 
-void CLinear_actu::move_actu(int pos) {
+void linear_motor::move_actu(int pos) {
   AxmMovePos(0, pos, vel, accel, accel);
   DWORD uStatus;
   AxmStatusReadInMotion(0, &uStatus);
@@ -47,7 +47,7 @@ void CLinear_actu::move_actu(int pos) {
 }
 
 int main() {
-  CLinear_actu actuator;
+  linear_motor actuator;
   printf("Move Actu. \n");
   actuator.move_actu(30);
 }
