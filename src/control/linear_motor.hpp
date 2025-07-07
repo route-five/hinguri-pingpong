@@ -17,10 +17,10 @@ char mot_file[] = "hingrui.mot"; // *.mot file Path
 int vel = LINEAR_MOTOR_VEL;
 int accel = LINEAR_MOTOR_ACCEL;
 
-class CLinear_actu
+class linear_motor
 {
 public:
-    CLinear_actu()
+    linear_motor()
     {
         DWORD Code = AxlOpen(7);
         if (Code == AXT_RT_SUCCESS) {
@@ -48,7 +48,7 @@ public:
             }
         }
     };
-    ~CLinear_actu()
+    ~linear_motor()
     {
         AxmSignalServoOn(0, 0);
         AxlClose();
@@ -65,7 +65,7 @@ public:
 };
 
 int move_linear(int x) {
-    CLinear_actu actuator;
+    linear_motor actuator;
     printf("Move Actu. \n");
     actuator.move_actu(x);
 }
