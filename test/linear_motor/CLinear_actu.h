@@ -1,9 +1,9 @@
 #pragma once
-#include "stddef.h"
 #include "AXL.h"
 #include "AXM.h"
-#include <iostream>
+#include "stddef.h"
 #include <conio.h>
+#include <iostream>
 
 class CLinear_actu
 {
