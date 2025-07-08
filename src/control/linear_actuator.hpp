@@ -67,18 +67,6 @@ public:
 		AxmMoveToAbsPos(LINEAR_AXIS_NO, pos, LINEAR_VEL, LINEAR_ACCEL, LINEAR_DECEL);
 	}
 
-	void move_linear_for(int x) {
-		LinearActuator actuator;
-		printf("Moved linear motor for %d. \n", x);
-		actuator.move_actu(x);
-	}
-  
-	void move_linear_to(int pos) {
-		LinearActuator actuator;
-		printf("Moved linear motor to absolute position: %d. \n", pos);
-		actuator.move_actu(pos);
-	}
-
 	/*
 	void CLinear_actu::scan_home() {
 		long nHmDir = 0; // 1단계 이동 방향 - (-) 방향
