@@ -14,7 +14,7 @@ char mot_file[] = "hinguri.mot";
 class LinearActuator
 {
 public:
-	LinearActuator::LinearActuator()
+	LinearActuator()
 	{
 		DWORD Code = AxlOpen(7);
 		if (Code == AXT_RT_SUCCESS)
@@ -45,13 +45,13 @@ public:
 		}
 	}
 
-	LinearActuator::~LinearActuator()
+	~LinearActuator()
 	{
 		AxmSignalServoOn(LINEAR_AXIS_NO, 0);
 		AxlClose();
 	}
 
-	void LinearActuator::move_actu(int pos)
+	void move_actu(int pos)
 	{
 		AxmMotSetMoveUnitPerPulse(LINEAR_AXIS_NO, 10, LINEAR_PULSE_PER_10_UNITS); // mm
 		AxmMovePos(0, pos, LINEAR_VEL, LINEAR_ACCEL, LINEAR_DECEL);
@@ -63,7 +63,7 @@ public:
 		}
 	}
 
-	void LinearActuator::move_to(int pos) {
+	void move_to(int pos) {
 		AxmMoveToAbsPos(LINEAR_AXIS_NO, pos, LINEAR_VEL, LINEAR_ACCEL, LINEAR_DECEL);
 	}
 
