@@ -4,7 +4,7 @@ project(hinguri_pingpong)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(hinguri_pingpong
-        src/sobel.cpp
+        test/opencv/tracking/sobel.cpp
 )
 
 #set(OpenCV_DIR "C:/OpenCV/x64/mingw/lib")

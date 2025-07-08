@@ -1,7 +1,7 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 
-#include "constants.hpp"
+#include "../../../src/constants.hpp"
 
 int main() {
   cv::VideoCapture cap(0);
@@ -13,6 +13,7 @@ int main() {
   while (true) {
     cv::Mat frame;
     cap >> frame;
+
     if (frame.empty())
       break;
 
