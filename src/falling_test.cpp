@@ -16,16 +16,13 @@ double get_circularity(const std::vector<cv::Point> &contour) {
 }
 
 int main() {
-  WebcamVideoStream stream(0, 240);
+  WebcamVideoStream stream(0);
   if (!stream.is_opened()) {
     std::cerr << "카메라를 열 수 없습니다.\n";
     return -1;
   }
 
   stream.start();
-
-  const std::string window_name = "Ball Tracking";
-  cv::namedWindow(window_name);
 
   std::deque<cv::Point2f> trails;
 
@@ -35,14 +32,16 @@ int main() {
       continue;
 
     // 이하 기존 색상 검출·컨투어·표시 로직 동일
-    cv::Mat mask, hsv, display;
+    cv::Mat mask, hsv;
     cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
     cv::inRange(hsv, ORANGE_MIN, ORANGE_MAX, mask);
 
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(mask, contours, cv::RETR_EXTERNAL,
                      cv::CHAIN_APPROX_SIMPLE);
-    frame.copyTo(display);
+
+    if (contours.empty())
+      continue;
 
     bool is_touched = false, is_detected = false;
     auto contour = *std::ranges::max_element(
@@ -59,16 +58,17 @@ int main() {
     cv::Point2f center;
     float radius;
     cv::minEnclosingCircle(contour, center, radius);
+
     if (radius > RADIUS_MIN) {
       is_detected = true;
       trails.push_back(center);
       if (trails.size() > TRAILS_SIZE)
         trails.pop_front();
 
-      cv::circle(display, center, static_cast<int>(radius),
-                 cv::Scalar(0, 0, 255), 2);
+      cv::circle(frame, center, static_cast<int>(radius), cv::Scalar(0, 0, 255),
+                 2);
       for (int i = 0; i < static_cast<int>(trails.size()) - 1; ++i) {
-        cv::line(display, trails[i], trails[i + 1], cv::Scalar(255, 0, 0),
+        cv::line(frame, trails[i], trails[i + 1], cv::Scalar(255, 0, 0),
                  1 + 4 * (static_cast<double>(i) / trails.size()));
       }
 
@@ -82,10 +82,10 @@ int main() {
     std::string fps_text =
         std::format("FPS: {:.1f}/{}", stream.get_fps(),
                     static_cast<int>(stream.get_prop(cv::CAP_PROP_FPS)));
-    cv::putText(display, fps_text, {10, 30}, cv::FONT_HERSHEY_SIMPLEX, 0.7,
+    cv::putText(frame, fps_text, {10, 30}, cv::FONT_HERSHEY_SIMPLEX, 0.7,
                 {0, 0, 255}, 2);
 
-    cv::imshow("Webcam with FPS", display);
+    cv::imshow("Webcam with FPS", frame);
     cv::imshow("Orange Detection Mask", mask);
 
     if (cv::waitKey(1) == 'q')
