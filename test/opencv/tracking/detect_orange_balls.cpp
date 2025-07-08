@@ -2,8 +2,8 @@
 // Created by Hyunseung Ryu on 25. 7. 7.
 //
 
-#include "constants.hpp"
-#include "stream/webcam_video_stream.hpp"
+#include "../../../src/constants.hpp"
+#include "../../../src/stream/webcam_video_stream.hpp"
 
 #include <numbers>
 #include <opencv2/opencv.hpp>
