@@ -64,7 +64,7 @@ public:
     };
 };
 
-int move_linear(int x) {
+void move_linear(int x) {
     linear_motor actuator;
     printf("Move Actu. \n");
     actuator.move_actu(x);
