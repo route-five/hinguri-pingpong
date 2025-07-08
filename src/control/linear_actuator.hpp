@@ -72,7 +72,7 @@ public:
 		printf("Moved linear motor for %d. \n", x);
 		actuator.move_actu(x);
 	}
-
+  
 	void move_linear_to(int pos) {
 		LinearActuator actuator;
 		printf("Moved linear motor to absolute position: %d. \n", pos);
