@@ -44,4 +44,15 @@ constexpr double TOUCHED_MIN = 225;
 constexpr double TOUCHED_MAX = 243;
 constexpr int TRAILS_SIZE = 30;
 
+// Linear Motor
+constexpr int LINEAR_VEL = 700; // 700
+constexpr int LINEAR_ACCEL = 200; // 200
+constexpr int LINEAR_DECEL = 200; // 200
+
+constexpr long LINEAR_AXIS_NO = 0;
+constexpr DWORD LINEAR_ABS_REL_MODE = 0; //0->abs, 1->Rel
+constexpr DWORD LINEAR_PROFILE_MODE = 3; //0->symetric trapezode, 1->unsymetric trapezode, 2->reserved, 3->symetric S Curve, 4->unsymetric S Curve
+
+constexpr long LINEAR_PULSE_PER_10_UNITS = 2439; // heuristic value for mm 
+
 #endif //CONSTANTS_HPP
