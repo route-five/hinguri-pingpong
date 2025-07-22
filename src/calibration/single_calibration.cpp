@@ -83,9 +83,10 @@ int main() {
   cv::destroyAllWindows();
 
   // calibrate
-  cv::Mat camera_matrix, dist_coeffs, rvecs,
-      tvecs;  // 내부 파라미터 행렬, 렌즈 왜곡 계수, 각 각도에서의 외부 파라미터
-              // R, t
+  cv::Mat camera_matrix;  // 내부 파라미터 행렬
+  cv::Mat dist_coeffs;    // 렌즈 왜곡 계수
+  cv::Mat rvecs;          // 각 각도에서의 외부 파라미터 R
+  cv::Mat tvecs;          // 각 각도에서의 외부 파라미터 t
   double rms = cv::calibrateCamera(object_points, image_points, image_size,
                                    camera_matrix, dist_coeffs, rvecs, tvecs);
 
