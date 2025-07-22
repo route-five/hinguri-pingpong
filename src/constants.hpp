@@ -53,4 +53,15 @@ const cv::Scalar COLOR_MAGENTA(255, 0, 255);
 const cv::Scalar COLOR_WHITE(255, 255, 255);
 const cv::Scalar COLOR_BLACK(0, 0, 0);
 
-#endif // CONSTANTS_HPP
+// Linear Motor
+constexpr int LINEAR_VEL = 700; // 700
+constexpr int LINEAR_ACCEL = 200; // 200
+constexpr int LINEAR_DECEL = 200; // 200
+
+constexpr long LINEAR_AXIS_NO = 0;
+constexpr DWORD LINEAR_ABS_REL_MODE = 0; //0->abs, 1->Rel
+constexpr DWORD LINEAR_PROFILE_MODE = 3; //0->symetric trapezode, 1->unsymetric trapezode, 2->reserved, 3->symetric S Curve, 4->unsymetric S Curve
+
+constexpr long LINEAR_PULSE_PER_10_UNITS = 2439; // heuristic value for mm 
+
+#endif //CONSTANTS_HPP
