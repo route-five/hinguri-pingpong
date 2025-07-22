@@ -10,6 +10,7 @@
 // Table Size
 constexpr float TABLE_WIDTH = 152.5;
 constexpr float TABLE_HEIGHT = 274;
+constexpr float TABLE_NET_HEIGHT = 15.25;
 
 // Orange Ball Colors
 const cv::Scalar ORANGE_MIN(13, 175, 149);  // HSV

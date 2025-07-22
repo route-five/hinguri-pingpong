@@ -4,7 +4,7 @@ project(hinguri_pingpong)
 set(CMAKE_CXX_STANDARD 23)
 
 add_executable(hinguri_pingpong
-        src/calibration/single_calibration.cpp
+        test/matplot++/plot3d.cpp
 )
 
 #set(OpenCV_DIR "C:/OpenCV/x64/mingw/lib")
@@ -15,7 +15,6 @@ add_executable(hinguri_pingpong
 # OpenCV
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake-modules)
 
 # Dynamixel SDK
@@ -23,6 +22,10 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake-mod
 
 # Linear Motor
 #find_package(LinearMotor REQUIRED)
+
+# Matplot++
+find_package(Matplot++ REQUIRED)
+target_link_libraries(hinguri_pingpong Matplot++::matplot)
 
 # Library Linking
 target_link_libraries(hinguri_pingpong
