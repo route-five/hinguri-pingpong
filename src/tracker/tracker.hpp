@@ -5,17 +5,18 @@
 #ifndef TRACKER_HPP
 #define TRACKER_HPP
 
-#include "../constants.hpp"
-#include "contour.hpp"
 #include <opencv2/opencv.hpp>
 #include <utility>
 
+#include "../constants.hpp"
+#include "contour.hpp"
+
 class Tracker {
-protected:
+ protected:
   cv::Mat frame;
   cv::Mat color_mask;
 
-public:
+ public:
   explicit Tracker(cv::Mat &frame) : frame(frame) {}
 
   cv::Mat &get_frame() { return frame; }
@@ -40,13 +41,12 @@ public:
         std::views::transform([](const auto &c) { return Contour{c}; })));
   }
 
-  static std::optional<Contour>
-  most_circular_contour(const std::vector<Contour> &contours) {
+  static std::optional<Contour> most_circular_contour(
+      const std::vector<Contour> &contours) {
     std::optional<Contour> most_contour = std::nullopt;
 
     for (const auto &contour : contours) {
-      if (contour.empty() || contour.zero())
-        continue;
+      if (contour.empty() || contour.zero()) continue;
 
       if (!most_contour.has_value() || most_contour->distance_circularity() >
                                            contour.distance_circularity()) {
@@ -57,13 +57,12 @@ public:
     return most_contour;
   }
 
-  static std::optional<Contour>
-  largest_contour(const std::vector<Contour> &contours) {
+  static std::optional<Contour> largest_contour(
+      const std::vector<Contour> &contours) {
     std::optional<Contour> largest_contour = std::nullopt;
 
     for (const auto &contour : contours) {
-      if (contour.empty() || contour.zero())
-        continue;
+      if (contour.empty() || contour.zero()) continue;
 
       if (!largest_contour.has_value() ||
           largest_contour->area() < contour.area()) {
@@ -75,4 +74,4 @@ public:
   }
 };
 
-#endif // TRACKER_HPP
+#endif  // TRACKER_HPP

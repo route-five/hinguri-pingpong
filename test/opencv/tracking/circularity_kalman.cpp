@@ -6,7 +6,7 @@
 #include "../../../src/tracker/tracker.hpp"
 
 int main() {
-  WebcamVideoStream stream({});
+  WebcamVideoStream stream;
   if (!stream.is_opened()) {
     std::cerr << "카메라를 열 수 없습니다.\n";
     return -1;
@@ -19,8 +19,8 @@ int main() {
 
   // 4 dynamic params: x, y, dx, dy; 2 measured params: x, y
   cv::KalmanFilter kf(4, 2, 0);
-  cv::Mat state(4, 1, CV_32F); // [x, y, dx, dy]
-  cv::Mat meas(2, 1, CV_32F);  // [x_meas, y_meas]
+  cv::Mat state(4, 1, CV_32F);  // [x, y, dx, dy]
+  cv::Mat meas(2, 1, CV_32F);   // [x_meas, y_meas]
 
   // clang-format off
   kf.transitionMatrix = (
@@ -38,14 +38,8 @@ int main() {
 
   cv::randu(kf.statePost, cv::Scalar::all(0), cv::Scalar::all(0.1));
 
-  stream.start();
-
   double radius = 20;
-  while (true) {
-    cv::Mat frame = stream.read();
-    if (frame.empty())
-      continue;
-
+  stream.set_frame_callback([&](cv::Mat& frame) {
     Tracker tracker{frame};
     tracker.set_color_mask(ORANGE_MIN, ORANGE_MAX);
 
@@ -54,9 +48,10 @@ int main() {
 
     // Always predict using Kalman Filter (even if no contour found)
     cv::Mat prediction = kf.predict();
-    cv::Point predicted_pt(prediction.at<float>(0), prediction.at<float>(1));
+    const cv::Point predicted_pt(prediction.at<float>(0),
+                                 prediction.at<float>(1));
     cv::circle(frame, predicted_pt, radius, COLOR_YELLOW, -1,
-               cv::LINE_AA); // Yellow prediction
+               cv::LINE_AA);  // Yellow prediction
 
     if (most_contour.has_value()) {
       auto [center, r] = most_contour->min_enclosing_circle();
@@ -71,8 +66,8 @@ int main() {
     }
 
     // Draw corrected point (green)
-    cv::Point corrected_pt(kf.statePost.at<float>(0),
-                           kf.statePost.at<float>(1));
+    const cv::Point corrected_pt(kf.statePost.at<float>(0),
+                                 kf.statePost.at<float>(1));
     cv::circle(frame, corrected_pt, radius, COLOR_GREEN, -1, cv::LINE_AA);
 
     // Draw legend in the bottom-left corner
@@ -92,11 +87,14 @@ int main() {
                             stream.get_prop(cv::CAP_PROP_FPS)),
                 cv::Point(10, base_line), font, scale, cv::Scalar(0, 0, 0),
                 thickness, cv::LINE_AA);
+  });
+  stream.start();
 
+  while (true) {
+    cv::Mat frame = stream.read();
+    if (frame.empty()) continue;
     cv::imshow("Circularity + Kalman filter", frame);
-
-    if (cv::waitKey(1) == 'q')
-      break;
+    if (cv::waitKey(1) == 'q') break;
   }
 
   stream.stop();

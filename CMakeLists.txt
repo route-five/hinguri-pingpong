@@ -4,7 +4,7 @@ project(hinguri_pingpong)
 set(CMAKE_CXX_STANDARD 23)
 
 add_executable(hinguri_pingpong
-        test/opencv/tracking/moment_kalman.cpp
+        src/sync_cameras.cpp
 )
 
 #set(OpenCV_DIR "C:/OpenCV/x64/mingw/lib")
