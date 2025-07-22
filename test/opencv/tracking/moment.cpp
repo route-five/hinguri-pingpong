@@ -1,21 +1,12 @@
-#include <chrono>
 #include <iostream>
 #include <opencv2/opencv.hpp>
 
 #include "../../../src/constants.hpp"
 #include "../../../src/stream/webcam_video_stream.hpp"
-
-double get_circularity(const std::vector<cv::Point> &contour) {
-  const double area = cv::contourArea(contour);
-  if (area == 0)
-    return 0.0;
-
-  const double perimeter = cv::arcLength(contour, true);
-  return 4 * CV_PI * area / (perimeter * perimeter);
-}
+#include "../../../src/tracker/tracker.hpp"
 
 int main() {
-  WebcamVideoStream stream(0);
+  WebcamVideoStream stream({});
   if (!stream.is_opened()) {
     std::cerr << "카메라를 열 수 없습니다.\n";
     return -1;
@@ -28,65 +19,41 @@ int main() {
     if (frame.empty())
       continue;
 
-    cv::Mat mask, hsv;
-    cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
-    cv::inRange(hsv, ORANGE_MIN, ORANGE_MAX, mask);
+    Tracker tracker{frame};
 
-    std::vector<std::vector<cv::Point>> contours;
-    cv::findContours(mask, contours, cv::RETR_EXTERNAL,
-                     cv::CHAIN_APPROX_SIMPLE);
+    tracker.set_color_mask(ORANGE_MIN, ORANGE_MAX);
+    const std::vector<Contour> contours = tracker.find_contours();
 
-    if (contours.empty())
-      continue;
-
-    for (int i = 0; i < contours.size(); ++i) {
-      cv::drawContours(frame, contours, i, cv::Scalar(0, 0, 255), 2);
-    }
-
-    bool is_touched = false, is_detected = false;
-    double max_moment = 0.0;
-    const std::vector<cv::Point> *most_contour = nullptr;
-
+    // draw contours and enclosing circles
     for (const auto &contour : contours) {
-      cv::Moments mu = cv::moments(contour);
-      if (mu.m00 > max_moment) {
-        max_moment = mu.m00;
-        most_contour = &contour;
+      if (contour.empty())
+        continue;
+
+      contour.draw(frame, COLOR_RED);
+
+      auto [center, radius] = contour.min_enclosing_circle();
+      cv::circle(frame, center, static_cast<int>(radius), COLOR_BLUE, 2,
+                 cv::LINE_AA);
+
+      if (contour.area() != 0) {
+        auto moment = contour.moment();
+        cv::circle(frame, moment, 2, COLOR_GREEN, 3, cv::LINE_AA);
       }
-
-      float radius;
-      cv::Point2f center;
-      cv::minEnclosingCircle(contour, center, radius);
-      if (radius >= RADIUS_MIN) {
-        cv::circle(frame, center, static_cast<int>(radius),
-                   cv::Scalar(255, 0, 0), 2);
-      }
-    }
-
-    if (most_contour != nullptr) {
-      cv::Point2f center;
-      float radius;
-      cv::minEnclosingCircle(*most_contour, center, radius);
-
-      cv::circle(frame, center, static_cast<int>(radius), cv::Scalar(0, 255, 0),
-                 2);
     }
 
     // Draw legend in the bottom-left corner
-    const int base_line = frame.rows - 60;
+    const int base_line = frame.rows - 10;
     constexpr int font = cv::FONT_HERSHEY_SIMPLEX;
-    constexpr double scale = 0.6;
+    constexpr double scale = 1;
     constexpr int thickness = 1;
 
-    cv::putText(frame, "Green: Most Circular One", cv::Point(10, base_line),
-                font, scale, cv::Scalar(0, 255, 0), thickness, cv::LINE_AA);
-    cv::putText(frame, "Blue: Enclosing Contour Circles",
-                cv::Point(10, base_line + 20), font, scale,
-                cv::Scalar(255, 0, 0), thickness, cv::LINE_AA);
-    cv::putText(frame, "Red: Every Contours", cv::Point(10, base_line + 40),
-                font, scale, cv::Scalar(0, 0, 255), thickness, cv::LINE_AA);
+    cv::putText(frame,
+                std::format("FPS: {:.1f}/{}", stream.get_fps(),
+                            stream.get_prop(cv::CAP_PROP_FPS)),
+                cv::Point(10, base_line), font, scale, COLOR_BLACK, thickness,
+                cv::LINE_AA);
 
-    cv::imshow("Webcam with FPS", frame);
+    cv::imshow("Moment", frame);
 
     if (cv::waitKey(1) == 'q')
       break;

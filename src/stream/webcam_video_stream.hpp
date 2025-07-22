@@ -6,6 +6,11 @@
 #include <opencv2/opencv.hpp>
 #include <thread>
 
+typedef struct {
+  int source = 0;
+  int backend = 0;
+} Device;
+
 class WebcamVideoStream {
   cv::VideoCapture stream;
   std::atomic<cv::Mat *> current_frame_ptr;
@@ -16,11 +21,30 @@ class WebcamVideoStream {
 public:
   static int FPS;
 
-  explicit WebcamVideoStream(const int source, const int backend,
-                             const cv::Size &size = {640, 480})
-      : stream{source, backend}, current_frame_ptr{nullptr}, stopped{false} {
+  /**
+   * @param device camara source index, backend - get from `python -m
+   * cv2_enumerate_cameras`
+   * @param size can be {640, 480}, **{1280, 720}**, {1920, 1080} on Logitech
+   * BRIO
+   * @param fps when size {640, 480}, 120. when size {1280, 720}, 90.
+   */
+  explicit WebcamVideoStream(const Device device, const cv::Size &size,
+                             const int fps = 120)
+      : stream{device.source, device.backend}, current_frame_ptr{nullptr},
+        stopped{false} {
     stream.set(cv::CAP_PROP_FRAME_WIDTH, size.width);
     stream.set(cv::CAP_PROP_FRAME_HEIGHT, size.height);
+    stream.set(cv::CAP_PROP_FPS, fps);
+
+    const auto frame_ptr = new cv::Mat();
+    stream >> *frame_ptr;
+
+    current_frame_ptr.store(frame_ptr);
+  }
+
+  explicit WebcamVideoStream(const Device device, const int fps = 120)
+      : stream{device.source, device.backend}, current_frame_ptr{nullptr},
+        stopped{false} {
     stream.set(cv::CAP_PROP_FPS, FPS);
 
     const auto frame_ptr = new cv::Mat();
@@ -29,11 +53,10 @@ public:
     current_frame_ptr.store(frame_ptr);
   }
 
-  explicit WebcamVideoStream(const int source,
-                             const cv::Size &size = {640, 480})
-      : WebcamVideoStream(source, 0, size) {}
-
-  ~WebcamVideoStream() { stop(); }
+  ~WebcamVideoStream() {
+    stream.release();
+    stop();
+  }
 
   double get_prop(const int prop_id) const { return stream.get(prop_id); }
 

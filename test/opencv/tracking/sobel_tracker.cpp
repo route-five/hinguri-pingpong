@@ -27,6 +27,8 @@ int main() {
     cv::findContours(mask, contours, cv::RETR_EXTERNAL,
                      cv::CHAIN_APPROX_SIMPLE);
 
+    cv::Mat grad_x, grad_y, magnitude;
+
     bool found = false;
     cv::Point2f ball_center;
 
@@ -54,7 +56,6 @@ int main() {
                   cv::LINE_AA);
     } else {
       // 📌 Circularity 실패 시 → Blur intensity 기반 후보 추정
-      cv::Mat grad_x, grad_y, magnitude;
       cv::Sobel(mask, grad_x, CV_32F, 1, 0);
       cv::Sobel(mask, grad_y, CV_32F, 0, 1);
       cv::magnitude(grad_x, grad_y, magnitude);
@@ -77,6 +78,10 @@ int main() {
     }
 
     cv::imshow("Ball Tracker", frame);
+    if (!magnitude.empty()) {
+      cv::imshow("magnitude", magnitude);
+    }
+
     if (cv::waitKey(10) == 'q')
       break;
   }

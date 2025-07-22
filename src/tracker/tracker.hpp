@@ -5,42 +5,74 @@
 #ifndef TRACKER_HPP
 #define TRACKER_HPP
 
-#include <opencv2/opencv.hpp>
-
 #include "../constants.hpp"
+#include "contour.hpp"
+#include <opencv2/opencv.hpp>
+#include <utility>
 
-namespace Tracker {
-
-using Contour = std::vector<cv::Point>;
-
-class AbstractTracker {
+class Tracker {
 protected:
   cv::Mat frame;
+  cv::Mat color_mask;
 
 public:
-  explicit AbstractTracker(const cv::Mat &frame) : frame(frame) {}
+  explicit Tracker(cv::Mat &frame) : frame(frame) {}
 
-  void set_mask(cv::Mat &mask) const {
+  cv::Mat &get_frame() { return frame; }
+
+  cv::Mat &get_color_mask() { return color_mask; }
+
+  void set_color_mask(const cv::Scalar &lower, const cv::Scalar &upper) {
     cv::Mat hsv;
     cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
-    cv::inRange(hsv, ORANGE_MIN, ORANGE_MAX, mask);
+
+    color_mask.release();
+    cv::inRange(hsv, lower, upper, color_mask);
   }
 
-  void find_contours(cv::Mat &mask, std::vector<Contour> &contours) const {
-    set_mask(mask);
-    cv::findContours(mask, contours, cv::RETR_EXTERNAL,
+  [[nodiscard]] std::vector<Contour> find_contours() const {
+    std::vector<std::vector<cv::Point>> contour_list;
+    cv::findContours(color_mask, contour_list, cv::RETR_EXTERNAL,
                      cv::CHAIN_APPROX_SIMPLE);
+
+    return std::move(std::ranges::to<std::vector<Contour>>(
+        contour_list |
+        std::views::transform([](const auto &c) { return Contour{c}; })));
   }
 
-  // AbstractTracker class can be extended with methods for tracking objects
-  // For example, methods to initialize tracking, update positions, etc.
-  // virtual void initialize() = 0;
-  // virtual void update() = 0;
-  // virtual void reset() = 0;
-  //
-  // virtual ~AbstractTracker() =
-  //     default; // Virtual destructor for proper cleanup of derived classes
+  static std::optional<Contour>
+  most_circular_contour(const std::vector<Contour> &contours) {
+    std::optional<Contour> most_contour = std::nullopt;
+
+    for (const auto &contour : contours) {
+      if (contour.empty() || contour.zero())
+        continue;
+
+      if (!most_contour.has_value() || most_contour->distance_circularity() >
+                                           contour.distance_circularity()) {
+        most_contour = contour;
+      }
+    }
+
+    return most_contour;
+  }
+
+  static std::optional<Contour>
+  largest_contour(const std::vector<Contour> &contours) {
+    std::optional<Contour> largest_contour = std::nullopt;
+
+    for (const auto &contour : contours) {
+      if (contour.empty() || contour.zero())
+        continue;
+
+      if (!largest_contour.has_value() ||
+          largest_contour->area() < contour.area()) {
+        largest_contour = contour;
+      }
+    }
+
+    return largest_contour;
+  }
 };
-} // namespace Tracker
 
 #endif // TRACKER_HPP

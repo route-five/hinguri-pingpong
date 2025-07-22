@@ -3,10 +3,10 @@
 #include <opencv2/opencv.hpp>
 
 #include "../../../src/stream/webcam_video_stream.hpp"
-#include "../../../src/tracker/circularity_based.hpp"
+#include "../../../src/tracker/tracker.hpp"
 
 int main() {
-  WebcamVideoStream stream(0);
+  WebcamVideoStream stream({0, 0});
   if (!stream.is_opened()) {
     std::cerr << "카메라를 열 수 없습니다.\n";
     return -1;
@@ -19,35 +19,19 @@ int main() {
     if (frame.empty())
       continue;
 
-    Tracker::CircularityBased tracker(frame);
+    Tracker tracker(frame);
+    tracker.set_color_mask(ORANGE_MIN, ORANGE_MAX);
 
-    // mask
-    cv::Mat mask;
-    tracker.set_mask(mask);
+    std::vector<Contour> contours = tracker.find_contours();
+    const auto most_contour = tracker.most_circular_contour(contours);
 
-    // find contours
-    std::vector<Tracker::Contour> contours;
-    tracker.find_contours(mask, contours);
+    if (most_contour.has_value()) {
+      auto [center, radius] = most_contour->min_enclosing_circle();
 
-    if (contours.empty())
-      continue;
-
-    // draw contours and enclosing circles
-    for (int i = 0; i < contours.size(); ++i) {
-      cv::drawContours(frame, contours, i, cv::Scalar(0, 0, 255), 2,
-                       cv::LINE_AA);
-
-      auto [center, radius] = tracker.min_enclosing_circle(contours[i]);
-      cv::circle(frame, center, static_cast<int>(radius), cv::Scalar(255, 0, 0),
+      cv::circle(frame, center, static_cast<int>(radius), cv::Scalar(0, 0, 255),
                  2, cv::LINE_AA);
+      cv::circle(frame, center, 2, cv::Scalar(255, 0, 0), 3, cv::LINE_AA);
     }
-
-    // draw the most circular contour
-    Tracker::Contour most_contour = tracker.most_circular_contour(contours);
-    auto [center, radius] = tracker.min_enclosing_circle(most_contour);
-
-    cv::circle(frame, center, static_cast<int>(radius), cv::Scalar(0, 255, 0),
-               2, cv::LINE_AA);
 
     // draw legend in the bottom-left corner
     const int base_line = frame.rows - 60;

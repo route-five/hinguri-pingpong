@@ -37,6 +37,5 @@
 **/._.DS_Store
 .idea
 
-img/test
-img/test2
+img/*
 /CMakeFiles
