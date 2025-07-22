@@ -1,4 +1,4 @@
-#include "../../src/stream/webcam_video_stream.hpp"
+#include "../../../src/stream/webcam_video_stream.hpp"
 #include <format>
 #include <opencv2/opencv.hpp>
 
