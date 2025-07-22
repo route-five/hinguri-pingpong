@@ -3,6 +3,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <functional>
 #include <opencv2/opencv.hpp>
 #include <thread>
 
@@ -17,8 +18,9 @@ class WebcamVideoStream {
   std::thread thread;
   std::atomic<bool> stopped;
   std::atomic<double> capture_fps{0.0};
+  std::function<void(cv::Mat &)> frame_callback;
 
-public:
+ public:
   /**
    * @param device camara source index, backend - get from `python -m
    * cv2_enumerate_cameras`
@@ -28,7 +30,8 @@ public:
    */
   explicit WebcamVideoStream(const Device device, const cv::Size &size,
                              const int fps = 120)
-      : stream{device.source, device.backend}, current_frame_ptr{nullptr},
+      : stream{device.source, device.backend},
+        current_frame_ptr{nullptr},
         stopped{false} {
     stream.set(cv::CAP_PROP_FRAME_WIDTH, size.width);
     stream.set(cv::CAP_PROP_FRAME_HEIGHT, size.height);
@@ -40,8 +43,9 @@ public:
     current_frame_ptr.store(frame_ptr);
   }
 
-  explicit WebcamVideoStream(const Device device, const int fps = 120)
-      : stream{device.source, device.backend}, current_frame_ptr{nullptr},
+  explicit WebcamVideoStream(const Device device = {}, const int fps = 120)
+      : stream{device.source, device.backend},
+        current_frame_ptr{nullptr},
         stopped{false} {
     stream.set(cv::CAP_PROP_FPS, fps);
 
@@ -54,6 +58,10 @@ public:
   ~WebcamVideoStream() {
     stream.release();
     stop();
+  }
+
+  void set_frame_callback(const std::function<void(cv::Mat &)> &callback) {
+    frame_callback = callback;
   }
 
   double get_prop(const int prop_id) const { return stream.get(prop_id); }
@@ -73,6 +81,8 @@ public:
       stream >> *new_frame;
 
       if (!new_frame->empty()) {
+        if (frame_callback) frame_callback(*new_frame);
+
         const cv::Mat *old_frame = current_frame_ptr.exchange(new_frame);
         delete old_frame;
         frame_count++;
@@ -99,12 +109,11 @@ public:
 
   void stop() {
     stopped.store(true);
-    if (thread.joinable())
-      thread.join();
+    if (thread.joinable()) thread.join();
 
     const cv::Mat *last_frame = current_frame_ptr.load();
     delete last_frame;
   }
 };
 
-#endif // WEBCAM_VIDEO_STREAM_HPP
+#endif  // WEBCAM_VIDEO_STREAM_HPP
