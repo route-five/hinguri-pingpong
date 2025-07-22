@@ -12,8 +12,8 @@ constexpr float TABLE_WIDTH = 152.5;
 constexpr float TABLE_HEIGHT = 274;
 
 // Orange Ball Colors
-const cv::Scalar ORANGE_MIN(13, 175, 149); // HSV
-const cv::Scalar ORANGE_MAX(25, 255, 255); // HSV
+const cv::Scalar ORANGE_MIN(13, 175, 149);  // HSV
+const cv::Scalar ORANGE_MAX(25, 255, 255);  // HSV
 
 // Camera Control
 constexpr int CAMERA_WIDTH = 1920;
@@ -54,14 +54,16 @@ const cv::Scalar COLOR_WHITE(255, 255, 255);
 const cv::Scalar COLOR_BLACK(0, 0, 0);
 
 // Linear Motor
-constexpr int LINEAR_VEL = 700; // 700
-constexpr int LINEAR_ACCEL = 200; // 200
-constexpr int LINEAR_DECEL = 200; // 200
+constexpr int LINEAR_VEL = 700;    // 700
+constexpr int LINEAR_ACCEL = 200;  // 200
+constexpr int LINEAR_DECEL = 200;  // 200
 
 constexpr long LINEAR_AXIS_NO = 0;
-constexpr DWORD LINEAR_ABS_REL_MODE = 0; //0->abs, 1->Rel
-constexpr DWORD LINEAR_PROFILE_MODE = 3; //0->symetric trapezode, 1->unsymetric trapezode, 2->reserved, 3->symetric S Curve, 4->unsymetric S Curve
+// constexpr DWORD LINEAR_ABS_REL_MODE = 0; //0->abs, 1->Rel
+// constexpr DWORD LINEAR_PROFILE_MODE = 3; //0->symetric trapezode,
+// 1->unsymetric trapezode, 2->reserved, 3->symetric S Curve, 4->unsymetric S
+// Curve
 
-constexpr long LINEAR_PULSE_PER_10_UNITS = 2439; // heuristic value for mm 
+constexpr long LINEAR_PULSE_PER_10_UNITS = 2439;  // heuristic value for mm
 
-#endif //CONSTANTS_HPP
+#endif  // CONSTANTS_HPP

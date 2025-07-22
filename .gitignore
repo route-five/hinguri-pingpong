@@ -38,4 +38,7 @@
 .idea
 
 img/*/
+!img/chessboard/
+!img/chessboard/**
+
 /CMakeFiles
