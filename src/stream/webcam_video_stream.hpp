@@ -19,8 +19,6 @@ class WebcamVideoStream {
   std::atomic<double> capture_fps{0.0};
 
 public:
-  static int FPS;
-
   /**
    * @param device camara source index, backend - get from `python -m
    * cv2_enumerate_cameras`
@@ -45,7 +43,7 @@ public:
   explicit WebcamVideoStream(const Device device, const int fps = 120)
       : stream{device.source, device.backend}, current_frame_ptr{nullptr},
         stopped{false} {
-    stream.set(cv::CAP_PROP_FPS, FPS);
+    stream.set(cv::CAP_PROP_FPS, fps);
 
     const auto frame_ptr = new cv::Mat();
     stream >> *frame_ptr;
@@ -108,7 +106,5 @@ public:
     delete last_frame;
   }
 };
-
-int WebcamVideoStream::FPS = 120;
 
 #endif // WEBCAM_VIDEO_STREAM_HPP
