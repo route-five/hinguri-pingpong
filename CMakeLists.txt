@@ -4,7 +4,9 @@ project(hinguri_pingpong)
 set(CMAKE_CXX_STANDARD 23)
 
 add_executable(hinguri_pingpong
-        test/matplot++/plot3d.cpp
+        src/vision/pre/points/get_camera_points.cpp
+        src/vision/predictor.h
+        src/vision/calibration.h
 )
 
 #set(OpenCV_DIR "C:/OpenCV/x64/mingw/lib")

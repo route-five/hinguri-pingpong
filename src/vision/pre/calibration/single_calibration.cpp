@@ -8,11 +8,13 @@
 #include <string>
 #include <vector>
 
-#include "../constants.hpp"
-#include "../utils/camera_type.hpp"
+#include "../../../utils/constants.hpp"
+#include "../../camera_type.hpp"
 #define IMSHOW
 
 namespace fs = std::filesystem;
+
+// TODO: calibrator.hpp 사용하기
 
 std::vector<std::string> glob_chessboard_images(const std::string& folder) {
     std::vector<std::string> result;

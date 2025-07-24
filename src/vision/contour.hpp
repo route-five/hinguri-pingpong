@@ -5,7 +5,7 @@
 #ifndef CONTOUR_HPP
 #define CONTOUR_HPP
 
-#include "../constants.hpp"
+#include "../utils/constants.hpp"
 #include <numbers>
 #include <opencv2/opencv.hpp>
 #include <ranges>
@@ -15,29 +15,38 @@ private:
   std::vector<cv::Point> points;
 
 public:
-  explicit Contour(const std::vector<cv::Point> &points) : points{points} {}
-  Contour(const std::initializer_list<cv::Point> &list) : points{list} {}
+  explicit Contour(const std::vector<cv::Point>& points) : points{points} {
+  }
 
-  void draw(cv::Mat &frame, const cv::Scalar &color) const {
+  Contour(const std::initializer_list<cv::Point>& list) : points{list} {
+  }
+
+  void draw(cv::Mat& frame, const cv::Scalar& color) const {
     for (const auto point : points) {
       cv::circle(frame, point, 1, color, 1, cv::LINE_AA);
     }
   }
 
-  [[nodiscard]] const std::vector<cv::Point> &get_points() const {
+  [[nodiscard]] const std::vector<cv::Point>& get_points() const {
     return points;
   }
 
-  [[nodiscard]] size_t size() const { return points.size(); }
+  [[nodiscard]] size_t size() const {
+    return points.size();
+  }
 
-  [[nodiscard]] bool empty() const { return points.empty(); }
+  [[nodiscard]] bool empty() const {
+    return points.empty();
+  }
 
-  [[nodiscard]] bool zero() const { return area() == 0; }
+  [[nodiscard]] bool zero() const {
+    return area() == 0;
+  }
 
   [[nodiscard]] double area() const {
     if (empty())
       throw std::runtime_error(
-          "인자로 건네 준 contour의 정점이 0개입니다. - at Contour::area");
+        "인자로 건네 준 contour의 정점이 0개입니다. - at Contour::area");
 
     return cv::contourArea(points);
   }
@@ -49,7 +58,7 @@ public:
   [[nodiscard]] double circularity() const {
     if (this->empty())
       throw std::runtime_error("인자로 건네 준 contour의 정점이 0개입니다. - "
-                               "at Contour::circularity");
+        "at Contour::circularity");
 
     const double area = this->area();
     if (area == 0)
@@ -67,7 +76,7 @@ public:
   [[nodiscard]] std::pair<cv::Point2f, double> min_enclosing_circle() const {
     if (this->empty())
       throw std::runtime_error("인자로 건네 준 contour의 정점이 0개입니다. - "
-                               "at Contour::min_enclosing_circle");
+        "at Contour::min_enclosing_circle");
 
     cv::Point2f center;
     float radius;
@@ -79,15 +88,17 @@ public:
   [[nodiscard]] cv::Point2f moment() const {
     if (this->empty())
       throw std::runtime_error(
-          "인자로 건네 준 contour의 정점이 0개입니다. - at Contour::moment");
+        "인자로 건네 준 contour의 정점이 0개입니다. - at Contour::moment");
 
     const cv::Moments mu = cv::moments(points);
     if (mu.m00 == 0)
       throw std::runtime_error(
-          "Contour의 면적이 0입니다. - at Contour::moment");
+        "Contour의 면적이 0입니다. - at Contour::moment");
 
-    return {static_cast<float>(mu.m10 / mu.m00),
-            static_cast<float>(mu.m01 / mu.m00)};
+    return {
+      static_cast<float>(mu.m10 / mu.m00),
+      static_cast<float>(mu.m01 / mu.m00)
+    };
   }
 };
 

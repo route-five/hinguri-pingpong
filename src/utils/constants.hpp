@@ -8,13 +8,16 @@
 #include <opencv2/opencv.hpp>
 
 // Table Size
-constexpr float TABLE_WIDTH = 152.5;
-constexpr float TABLE_HEIGHT = 274;
-constexpr float TABLE_NET_HEIGHT = 15.25;
+constexpr float TABLE_WIDTH = 152.5; // cm
+constexpr float TABLE_HEIGHT = 274; // cm
+constexpr float TABLE_NET_HEIGHT = 15.25; // cm
+constexpr float TABLE_OUTLINE_SIZE = 2.0; // cm
+constexpr float TABLE_TAPE_SIZE = 1.8; // cm
+constexpr float TABLE_GRID_SIZE = 15.0; // cm
 
 // Orange Ball Colors
-const cv::Scalar ORANGE_MIN(13, 175, 149);  // HSV
-const cv::Scalar ORANGE_MAX(25, 255, 255);  // HSV
+const cv::Scalar ORANGE_MIN(13, 175, 149); // HSV
+const cv::Scalar ORANGE_MAX(25, 255, 255); // HSV
 
 // Camera Control
 constexpr int CAMERA_WIDTH = 1920;
@@ -55,9 +58,9 @@ const cv::Scalar COLOR_WHITE(255, 255, 255);
 const cv::Scalar COLOR_BLACK(0, 0, 0);
 
 // Linear Motor
-constexpr int LINEAR_VEL = 700;    // 700
-constexpr int LINEAR_ACCEL = 200;  // 200
-constexpr int LINEAR_DECEL = 200;  // 200
+constexpr int LINEAR_VEL = 700; // 700
+constexpr int LINEAR_ACCEL = 200; // 200
+constexpr int LINEAR_DECEL = 200; // 200
 
 constexpr long LINEAR_AXIS_NO = 0;
 // constexpr DWORD LINEAR_ABS_REL_MODE = 0; //0->abs, 1->Rel
@@ -65,6 +68,6 @@ constexpr long LINEAR_AXIS_NO = 0;
 // 1->unsymetric trapezode, 2->reserved, 3->symetric S Curve, 4->unsymetric S
 // Curve
 
-constexpr long LINEAR_PULSE_PER_10_UNITS = 2439;  // heuristic value for mm
+constexpr long LINEAR_PULSE_PER_10_UNITS = 2439; // heuristic value for mm
 
 #endif  // CONSTANTS_HPP

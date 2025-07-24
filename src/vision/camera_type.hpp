@@ -18,7 +18,15 @@ public:
   }
 
   [[nodiscard]] std::string calibration_matrix_path() const {
-    return "data/" + name_ + ".yml";
+    return "data/calibration/" + name_ + ".yml";
+  }
+
+  [[nodiscard]] std::string camera_points_path() const {
+    return "data/points/" + name_ + "_camera.yml";
+  }
+
+  [[nodiscard]] std::string projection_matrix_path() const {
+    return "data/projection/" + name_ + ".yml";
   }
 
   [[nodiscard]] std::string name() const {

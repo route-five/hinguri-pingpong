@@ -1,6 +1,6 @@
 #include <matplot/matplot.h>
 
-#include "../../src/constants.hpp"
+#include "../../src/utils/constants.hpp"
 
 namespace plt = matplot;
 

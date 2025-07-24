@@ -5,6 +5,8 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 
+#include "camera_type.hpp"
+
 /**
  * @brief RANSAC 기반으로 카메라의 외부 파라미터(R, T)를 robust하게 추정합니다.
  * @param world_pts 월드 좌표계(예: 탁구대)에 정의된 3D 점들의 벡터.
@@ -60,10 +62,12 @@ cv::Point3f triangulate_ball_3d(
     const cv::Point2f& pt1,
     const cv::Point2f& pt2
 ) {
-    cv::Mat pts1(1, 1, CV_32FC2, cv::Scalar(pt1.x, pt1.y));
-    cv::Mat pts2(1, 1, CV_32FC2, cv::Scalar(pt2.x, pt2.y));
+    const cv::Mat pts1(1, 1, CV_32FC2, cv::Scalar(pt1.x, pt1.y));
+    const cv::Mat pts2(1, 1, CV_32FC2, cv::Scalar(pt2.x, pt2.y));
+
     cv::Mat pts4d;
     cv::triangulatePoints(proj_mat1, proj_mat2, pts1, pts2, pts4d);
+
     cv::Mat p = pts4d.col(0);
     p /= p.at<float>(3); // 동차 좌표 정규화
 
@@ -74,29 +78,33 @@ int main() {
     // (1) 카메라 내부 파라미터 로딩
     cv::Mat k_left, d_left, k_right, d_right;
 
-    cv::FileStorage fs_left("left.yml", cv::FileStorage::READ);
-    fs_left["camera_matrix"] >> k_left;
-    fs_left["dist_coeffs"] >> d_left;
-    fs_left.release();
+    cv::FileStorage fs_left_cam(CameraType::LEFT.calibration_matrix_path(), cv::FileStorage::READ);
+    fs_left_cam["camera_matrix"] >> k_left;
+    fs_left_cam["dist_coeffs"] >> d_left;
+    fs_left_cam.release();
 
-    cv::FileStorage fs_right("right.yml", cv::FileStorage::READ);
-    fs_right["camera_matrix"] >> k_right;
-    fs_right["dist_coeffs"] >> d_right;
-    fs_right.release();
+    cv::FileStorage fs_right_cam(CameraType::RIGHT.calibration_matrix_path(), cv::FileStorage::READ);
+    fs_right_cam["camera_matrix"] >> k_right;
+    fs_right_cam["dist_coeffs"] >> d_right;
+    fs_right_cam.release();
 
-    // TODO: 탁구대 위에 절연 테이프로 포인트 추가하기
-    // (2) 월드 좌표계 기준 3D 점 (탁구대 네 모서리)
-    std::vector<cv::Point3f> world_pts = {
-        {0.f, 0.f, 0.f},
-        {1525.f, 0.f, 0.f},
-        {0.f, 2740.f, 0.f},
-        {1525.f, 2740.f, 0.f}
-    };
+    // (2) 월드 좌표계 기준 3D 점
+    std::vector<cv::Point3f> world_pts;
 
-    // TODO: 이미지에서 클릭해서 얻는 코드 만들기
-    // (3) 각 카메라에서 대응되는 2D 이미지 좌표 (수집 필요)
-    std::vector<cv::Point2f> img_pts_left; // CAM1 대응점
-    std::vector<cv::Point2f> img_pts_right; // CAM2 대응점
+    cv::FileStorage fs_world_pts("data/points/world.yml", cv::FileStorage::READ);
+    fs_world_pts["points"] >> world_pts;
+    fs_world_pts.release();
+
+    // (3) 각 카메라에서 대응되는 2D 이미지 좌표
+    std::vector<cv::Point2f> img_pts_left, img_pts_right;
+
+    cv::FileStorage fs_left_pts(CameraType::LEFT.camera_points_path(), cv::FileStorage::READ);
+    fs_left_pts["points"] >> img_pts_left;
+    fs_left_pts.release();
+
+    cv::FileStorage fs_right_pts(CameraType::RIGHT.camera_points_path(), cv::FileStorage::READ);
+    fs_right_pts["points"] >> img_pts_right;
+    fs_right_pts.release();
 
     // (4) R, T 계산
     cv::Mat r_left, t_left, r_right, t_right;
@@ -105,21 +113,29 @@ int main() {
 
     // (5) Projection 행렬 구성: P = K * [R | t]
     cv::Mat proj_left, proj_right;
-    cv::hconcat(r_left, t_left, proj_left);
-    proj_left = k_left * proj_left;
-    cv::hconcat(r_right, t_right, proj_right);
-    proj_right = k_right * proj_right;
+
+    cv::hconcat(r_left, t_left, proj_left); // P_left = [R_left | t_left]
+    proj_left *= k_left; // P_left = K_left * [R_left | t_left]
+
+    cv::hconcat(r_right, t_right, proj_right); // P_right = [R_right | t_right]
+    proj_right *= k_right; // P_right = K_right * [R_right | t_right]
 
     // (6) 탁구공 센터 검출 (예: blob)
+    // TODO: 실제 공 검출 로직 구현 필요
     cv::Point2f center_left{/* CAM1에서 탐지된 공 중심 좌표 */};
     cv::Point2f center_right{/* CAM2에서 탐지된 공 중심 좌표 */};
 
     // (7) 3D 위치 삼각측량
     cv::Point3f ball_pos = triangulate_ball_3d(proj_left, proj_right, center_left, center_right);
-    std::cout << "Ball 3D pos (mm): ["
+    std::cout << "Ball 3D pos (cm): ["
         << ball_pos.x << ", "
         << ball_pos.y << ", "
         << ball_pos.z << "]" << std::endl;
+
+    // (8) 결과를 플로팅하기
+    // TODO: Matplot++로 플로팅하기
+
+    // (9) Top 카메라와 비교해서 결과 정밀하게
 
     return 0;
 }

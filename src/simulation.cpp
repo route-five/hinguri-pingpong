@@ -1,4 +1,4 @@
-#include "simulator/simulator_2d.hpp"
+#include "simulation/simulator_2d.hpp"
 
 int main() {
     Simulator2D sim("Ping Pong Simulator");

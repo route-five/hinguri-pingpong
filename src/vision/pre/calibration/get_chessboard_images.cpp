@@ -4,8 +4,8 @@
 
 #include <filesystem>
 
-#include "../stream/webcam_video_stream.hpp"
-#include "../utils/camera_type.hpp"
+#include "../../camera.hpp"
+#include "../../camera_type.hpp"
 
 namespace fs = std::filesystem;
 
@@ -25,7 +25,7 @@ int count_files_in_directory(const fs::path& dir_path) {
 int main() {
   const CameraType camera_type = CameraType::LEFT;
 
-  WebcamVideoStream stream({}, {1280, 720});
+  Camera stream({}, {1280, 720});
   if (!stream.is_opened()) {
     std::cerr << "카메라를 열 수 없습니다." << std::endl;
     return 1;

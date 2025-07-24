@@ -1,7 +1,7 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <vector>
-#include "constants.hpp"
+#include "../utils/constants.hpp"
 
 cv::Vec3d pixel_to_camera_ray(const cv::Point2f& pixel_coord, const cv::Mat& camera_matrix) {
     const double fx = camera_matrix.at<double>(0, 0);
@@ -16,7 +16,8 @@ cv::Vec3d pixel_to_camera_ray(const cv::Point2f& pixel_coord, const cv::Mat& cam
     return cv::normalize(ray_direction);
 }
 
-cv::Point3d intersect_ray_with_plane(const cv::Vec3d& ray_direction, const cv::Vec3d& camera_position, double target_z) {
+cv::Point3d intersect_ray_with_plane(const cv::Vec3d& ray_direction, const cv::Vec3d& camera_position,
+                                     double target_z) {
     const double t = (target_z - camera_position[2]) / ray_direction[2];
     double x = camera_position[0] + t * ray_direction[0];
     double y = camera_position[1] + t * ray_direction[1];
@@ -61,7 +62,7 @@ std::vector<double> quadratic_fit(const std::vector<double>& xs, const std::vect
 }
 
 double evaluate_quadratic(const std::vector<double>& coeffs, const double x) {
-    return coeffs[0]*x*x + coeffs[1]*x + coeffs[2];
+    return coeffs[0] * x * x + coeffs[1] * x + coeffs[2];
 }
 
 void process_ball_trajectory(
@@ -100,17 +101,18 @@ void process_ball_trajectory(
             const double z_test = evaluate_quadratic(coeffs, x_test);
             std::cout << "x=" << x_test << "일 때 예측 높이 z=" << z_test << std::endl;
         }
-    } else {
+    }
+    else {
         std::cout << "데이터 포인트 부족 (최소 3개 필요)" << std::endl;
     }
 }
 
 int main() {
     const std::vector<std::vector<cv::Point2f>> test_cases = {
-        { {310, 200}, {315, 180}, {320, 160} },
-        { {300, 210}, {305, 190}, {310, 170} },
-        { {330, 190}, {335, 170}, {340, 150} },
-        { {290, 220}, {295, 200}, {300, 180} }
+        {{310, 200}, {315, 180}, {320, 160}},
+        {{300, 210}, {305, 190}, {310, 170}},
+        {{330, 190}, {335, 170}, {340, 150}},
+        {{290, 220}, {295, 200}, {300, 180}}
     };
 
     for (int i = 0; i < test_cases.size(); ++i) {

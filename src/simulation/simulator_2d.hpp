@@ -7,8 +7,8 @@
 
 #include <numbers>
 #include <opencv2/opencv.hpp>
-#include "../random/Random.hpp"
-#include "../Constants.hpp"
+#include "../utils/random.hpp"
+#include "../utils/constants.hpp"
 
 class Simulator2D {
 private:
@@ -21,7 +21,7 @@ private:
         {0, TABLE_HEIGHT}, {0, 0}, {TABLE_WIDTH, 0}, {TABLE_WIDTH, TABLE_HEIGHT}
     };
 
-    [[nodiscard]] cv::Point2i to_pixel(const cv::Vec2f &pt) const {
+    [[nodiscard]] cv::Point2i to_pixel(const cv::Vec2f& pt) const {
         return {
             static_cast<int>(pt[0] * scale) + border,
             static_cast<int>((TABLE_HEIGHT - pt[1]) * scale) + border
@@ -97,7 +97,7 @@ private:
         return {init_pos, end_pos, angle};
     }
 
-    void render_projected_trajectory(const cv::Vec2f &init_pos, const cv::Vec2f &end_pos, float angle) {
+    void render_projected_trajectory(const cv::Vec2f& init_pos, const cv::Vec2f& end_pos, float angle) {
         // 대각선 그리기
         cv::line(img, to_pixel(vertices[0]), to_pixel(vertices[2]), color(0, 0, 0), 1, cv::LINE_AA);
 
@@ -109,7 +109,8 @@ private:
         // offset
         const float camera_angle = std::atan2(TABLE_HEIGHT, TABLE_WIDTH);
         const float offset_angle = std::numbers::pi_v<float> / 2 - camera_angle;
-        const cv::Vec2f offset = cv::Vec2f{std::cos(offset_angle), std::sin(offset_angle)} * (TABLE_WIDTH - init_pos[0]) * std::cos(offset_angle);
+        const cv::Vec2f offset = cv::Vec2f{std::cos(offset_angle), std::sin(offset_angle)} * (TABLE_WIDTH - init_pos[0])
+            * std::cos(offset_angle);
 
         const cv::Vec2f projected_trajectory[2] = {init_pos + offset, init_pos + offset + projected};
         cv::arrowedLine(img, to_pixel(projected_trajectory[0]), to_pixel(projected_trajectory[1]),
@@ -120,7 +121,7 @@ private:
     }
 
 public:
-    explicit Simulator2D(const std::string &window_name, const float scale = 3.0f, const int border = 50): window_name{
+    explicit Simulator2D(const std::string& window_name, const float scale = 3.0f, const int border = 50): window_name{
             window_name
         }, scale{scale}, border{border} {
         const int img_w = static_cast<int>(TABLE_WIDTH * scale) + 2 * border;
