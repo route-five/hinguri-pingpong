@@ -5,9 +5,9 @@ set(CMAKE_CXX_STANDARD 23)
 
 add_executable(hinguri_pingpong
         src/2d_predictor.cpp
-        src/simulator/simulator_side.hpp
-        src/simulator/simulator_top.hpp
-        src/simulator/simulator_property.hpp
+        src/simulation/simulator_side.hpp
+        src/simulation/simulator_top.hpp
+        src/simulation/simulator_property.hpp
 )
 
 #set(OpenCV_DIR "C:/OpenCV/x64/mingw/lib")
