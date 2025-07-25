@@ -33,13 +33,12 @@
 #define RACKET_WIDTH_HALF RACKET_WIDTH / 2
 #define RACKET_HEIGHT_HALF RACKET_HEIGHT / 2
 #define RACKET_EDGE_RADIUS 14.6  // cm
-#define GROUND_EDGE_HEIGHT 12.1  // cm
 
 // Shared handlers for all Dynamixel actuators
 static dynamixel::PortHandler* sharedPortHandler =
-dynamixel::PortHandler::getPortHandler(DEVICENAME);
+    dynamixel::PortHandler::getPortHandler(DEVICENAME);
 static dynamixel::PacketHandler* sharedPacketHandler =
-dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
+    dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
 static bool sharedPortInitialized = false;
 
 class DynamixelActuator {
@@ -49,13 +48,15 @@ private:
     int id;
 
 public:
-    explicit DynamixelActuator(const int motor_id) : id{ motor_id } {
+    explicit DynamixelActuator(const int motor_id) : id{motor_id} {
         // Use shared handlers
         portHandler = sharedPortHandler;
         packetHandler = sharedPacketHandler;
     }
 
-    ~DynamixelActuator() { close(); }
+    ~DynamixelActuator() {
+        close();
+    }
 
     [[nodiscard]] bool initialize() const {
         if (!sharedPortInitialized) {
@@ -77,14 +78,14 @@ public:
 
         int result =
             packetHandler->write1ByteTxRx(portHandler, id, ADDR_OPERATING_MODE,
-                POSITION_CONTROL_MODE, &dxl_error);
+                                          POSITION_CONTROL_MODE, &dxl_error);
         if (result != COMM_SUCCESS || dxl_error) {
             std::cerr << "Failed to set operating mode" << std::endl;
             return false;
         }
 
         result = packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE,
-            TORQUE_ENABLE, &dxl_error);
+                                               TORQUE_ENABLE, &dxl_error);
         if (result != COMM_SUCCESS || dxl_error) {
             std::cerr << "Failed to enable torque" << std::endl;
             return false;
@@ -124,7 +125,11 @@ public:
     }
 };
 
-double rad_to_deg(double rad) { return rad * 180.0 / M_PI; }
+double rad_to_deg(double rad) {
+    return rad * 180.0 / M_PI;
+}
+
+#define GROUND_EDGE_HEIGHT 12.1  // cm
 
 int main() {
     // Instantiate actuators and initialize once
@@ -144,18 +149,22 @@ int main() {
         while (1) {
             double n;
             std::cin >> n;
-            if (n == -1000) { break; }
-            if (n == -2000) { return 0;  }
+            if (n == -1000) {
+                break;
+            }
+            if (n == -2000) {
+                return 0;
+            }
             linearActuator.move_actu(IS_REVERSED ? -n : n);
         }
     }
 
     while (1) {
-        double target_x, target_z, target_angle, target_vel, theta;  // rad
+        double target_x, target_z, target_angle, target_vel, theta; // rad
         std::cout << "Enter target position (x, z, angle, velocity): ";
         std::cin >> target_x >> target_z >> target_angle >> target_vel;
 
-        double x, t, m, b, p=1;
+        double x, t, m, b, p = 1;
         double r = RACKET_HEIGHT_HALF + RACKET_EDGE_RADIUS;
         double h = GROUND_EDGE_HEIGHT + RACKET_WIDTH_HALF;
 
@@ -165,11 +174,11 @@ int main() {
 
         if (target_x == -1000) break;
 
-        topActuator.move_by_degrees(rad_to_deg(-target_angle*p));
-        midActuator.move_by_degrees(rad_to_deg(theta*p));
-        botActuator.move_by_degrees(-90*p);
+        topActuator.move_by_degrees(rad_to_deg(-target_angle * p));
+        midActuator.move_by_degrees(rad_to_deg(theta * p));
+        botActuator.move_by_degrees(-90 * p);
         linearActuator.move_actu(IS_REVERSED ? -x : x);
-        botActuator.move_by_degrees(30*p);
+        botActuator.move_by_degrees(30 * p);
 
         // go home
         topActuator.move_by_degrees(0);
