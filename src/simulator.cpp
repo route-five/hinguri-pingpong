@@ -1,5 +1,5 @@
-#include "simulator/simulator_side.hpp"
-#include "simulator/simulator_top.hpp"
+#include "simulation/simulator_side.hpp"
+#include "simulation/simulator_top.hpp"
 
 int main() {
   Simulator::Top top("Top View");
