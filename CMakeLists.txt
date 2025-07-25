@@ -12,7 +12,7 @@ add_executable(hinguri_pingpong
         src/vision/contour.hpp
         src/vision/predictor.hpp
         src/vision/tracker.hpp
-        src/vision/bridge.hpp
+        src/bridge.hpp
         src/vision/visualizer.hpp
 
         #### preprocessing
@@ -29,7 +29,8 @@ add_executable(hinguri_pingpong
         #        src/vision/pre/calibrate.cpp
 
         #### processing
-        test/opencv/get_world_pos.cpp
+        #        test/opencv/get_world_pos.cpp
+        src/main.cpp
 )
 
 #set(OpenCV_DIR "C:/OpenCV/x64/mingw/lib")

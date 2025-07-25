@@ -1,9 +1,11 @@
 //
-// Created by Hyunseung Ryu on 2025. 7. 23..
+// Created by Hyunseung Ryu on 2025. 7. 25..
 //
 
 #include <opencv2/opencv.hpp>
-#include <vector>
+#include <atomic>
+#include <optional>
+#include <thread>
 
 #include "vision/calibrator.hpp"
 #include "vision/camera.hpp"
@@ -12,7 +14,16 @@
 #include "vision/tracker.hpp"
 #include "vision/visualizer.hpp"
 
-// TODO: 모두 통합하기
+struct ControlInput {
+    double x;
+    double z;
+    double angle;
+    double velocity;
+};
+
+std::mutex control_mutex;
+std::optional<ControlInput> shared_control_input;
+std::atomic<bool> new_control_input{false};
 
 void callback(
     cv::Mat& frame,
@@ -43,7 +54,7 @@ void callback(
     cv::putText(frame, fps_text, cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX, 1, COLOR_BLACK, 2, cv::LINE_AA);
 }
 
-int main() {
+void vision_end() {
     // (2) 3대의 카메라 타임라인 동기화
     // TODO: 카메라 동기화 로직 구현 필요 - 구현 거의 완료 at PONG#60
 
@@ -57,7 +68,7 @@ int main() {
             cam_right.is_opened() ? "true" : "false"
         );
         std::cerr << message << std::endl;
-        return -1;
+        return;
     }
 
     Predictor predictor;
@@ -71,7 +82,6 @@ int main() {
             predictor.set_point_left(pt);
         }, cam_left, calibrator_left);
     });
-
     cam_right.set_frame_callback([&predictor, &cam_right, &calibrator_right](cv::Mat& frame) {
         callback(frame, [&predictor](const cv::Point2f& pt) {
             predictor.set_point_right(pt);
@@ -93,6 +103,25 @@ int main() {
 
         // (4) 3D 위치 삼각측량
         auto world_pos = predictor.get_world_pos();
+
+        static bool has_sent_command = false;
+
+        if (!has_sent_command && std::abs(world_pos.y - TABLE_HEIGHT / 4.0) < 1.0) {
+            {
+                std::lock_guard<std::mutex> lock(control_mutex);
+                ControlInput input{
+                    world_pos.x,
+                    world_pos.z,
+                    0.0, // TODO: 추후 예측각도 계산 필요
+                    0.0 // TODO: 추후 속도 계산 필요
+                };
+
+                shared_control_input = input;
+                new_control_input = true;
+            }
+
+            has_sent_command = true;
+        }
 
         // (5) Top 카메라와 비교해서 결과 정밀하게 비교
         // TODO: Top 카메라와 비교하는 로직 구현 필요
@@ -119,29 +148,74 @@ int main() {
 
     cam_left.stop();
     cam_right.stop();
+}
 
-    // (7) 탁구공 미래 궤적 예측
-    // TODO: 미래 궤적 예측 로직 구현 필요 - 구현 거의 완료 at quadratic_regression.cpp
+void control_end() {
+    DynamixelActuator topActuator(TOP_MOTOR_ID);
+    DynamixelActuator midActuator(MID_MOTOR_ID);
+    DynamixelActuator botActuator(BOT_MOTOR_ID);
+    CLinear_actu linearActuator;
 
-    // (8) 예상 도착 위치 및 각도 정보를 토대로 하드웨어에 전송할 인자 계산
-    // TODO: 하드웨어 제어 인자 계산 로직 구현 필요
-    /**
-     * h0 = 탁구 로봇 축 자체 높이
-     * r = 탁구 로봇 구동 반지름
-     * x_p = 탁구공의 예상 도착 위치 x 좌표
-     * z_p = 탁구공의 예상 도착 위치 z 좌표
-     *
-     * 탁구 로봇의 x, θ는 다음과 같음. (θ는 컴퓨터 의자 위치에서 본 좌표 평면 관점 θ, 오른쪽으로 90도 꺾인게 0)
-     * x_p = x + r * cos(θ)
-     * z_p = h0 + r * sin(θ)
-     * => θ = asin((z_p - h0) / r)
-     * => x = x_p - r * cos(θ)
-     *
-     * 어려운 것은, 탁구공을 얼마나 스윙을 길게 할지에 관한 (몸통 돌리는 축) 인자와 탁구채를 얼마나 눕힐지에 관한 (손목 축) 인자 계산
-     */
+    // Perform initialization only once
+    if (!topActuator.initialize() || !midActuator.initialize() ||
+        !botActuator.initialize()) {
+        std::cerr << "Failed to initialize one or more motors" << std::endl;
+        return;
+    }
 
-    // (9) 하드웨어에 제어 인자 + 명령 전송
-    // TODO: 하드웨어 제어 명령 전송 로직 구현 필요
+    while (true) {
+        if (!new_control_input.load()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            continue;
+        }
+
+        ControlInput input{};
+        {
+            std::lock_guard<std::mutex> lock(control_mutex);
+            if (!shared_control_input.has_value()) continue;
+            input = shared_control_input.value();
+            shared_control_input.reset();
+            new_control_input = false;
+        }
+
+        double target_x = input.x;
+        double target_z = input.z;
+        double target_angle = input.angle;
+        double target_vel = input.velocity;
+
+        double x, t, m, b, p = 1;
+        double r = RACKET_HEIGHT_HALF + RACKET_EDGE_RADIUS;
+        double h = GROUND_EDGE_HEIGHT + RACKET_WIDTH_HALF;
+
+        double theta = acos((target_z - h) / r);
+        x = target_x - r * sin(theta);
+        if (target_x < 0) p = -p;
+
+        if (target_x == -1000) break;
+
+        topActuator.move_by_degrees(rad_to_deg(-target_angle * p));
+        midActuator.move_by_degrees(rad_to_deg(theta * p));
+        botActuator.move_by_degrees(-90 * p);
+        linearActuator.move_actu(IS_REVERSED ? -x : x);
+        botActuator.move_by_degrees(30 * p);
+
+        // go home
+        topActuator.move_by_degrees(0);
+        midActuator.move_by_degrees(0);
+        botActuator.move_by_degrees(0);
+        linearActuator.move_actu(0);
+    }
+
+    // Close the shared port once
+    sharedPortHandler->closePort();
+}
+
+int main() {
+    std::thread vision_thread(vision_end);
+    std::thread control_thread(control_end);
+
+    vision_thread.join();
+    control_thread.join();
 
     return 0;
 }
