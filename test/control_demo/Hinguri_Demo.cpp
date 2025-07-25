@@ -1,5 +1,8 @@
 #define _CRT_SECURE_NO_WARNINGS
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <iostream>
+#include <numbers>
 #include <string>
 
 #include "CLinear_actu.h"
@@ -23,6 +26,13 @@
 #define MIN_POS_LIMIT 1024
 #define MAX_POS_LIMIT 3072
 #define DEGREES_PER_UNIT (360.0 / 4096.0)  // 약 0.088°
+
+#define RACKET_WIDTH 13.4   // cm
+#define RACKET_HEIGHT 14.8  // cm
+#define RACKET_WIDTH_HALF RACKET_WIDTH / 2;
+#define RACKET_HEIGHT_HALF RACKET_HEIGHT / 2;
+#define RACKET_EDGE_RADIUS 14.6  // cm
+#define GROUND_EDGE_HEIGHT 12.1  // cm
 
 // Shared handlers for all Dynamixel actuators
 static dynamixel::PortHandler* sharedPortHandler =
@@ -131,6 +141,8 @@ void control_robot(double top, double mid, double bot, int linear) {
 }
 */
 
+double rad_to_deg(double rad) { return rad * 180.0 / M_PI; }
+
 int main() {
   // Instantiate actuators and initialize once
   DynamixelActuator topActuator(TOP_MOTOR_ID);
@@ -144,34 +156,50 @@ int main() {
     std::cerr << "Failed to initialize one or more motors" << std::endl;
     return -1;
   }
+  while (1) {
+    double target_x, target_z, target_angle, target_vel, theta;  // rad
+    std::cout << "Enter target position (x, z, angle, velocity): ";
+    std::cin >> target_x >> target_z >> target_angle >> target_vel;
 
-  int x, t, m, b;
-  while (true) {
-    std::cout << "Move top for: ";
-    std::cin >> t;
-    // Exit condition on top == -1000
-    if (t == -1000) {
-      topActuator.close();
-      midActuator.close();
-      botActuator.close();
-      break;
-    }
+    double x, t, m, b;
+    double r = RACKET_HEIGHT_HALF + RACKET_EDGE_RADIUS;
+    double h = GROUND_EDGE_HEIGHT + RACKET_WIDTH_HALF;
 
-    std::cout << "Move mid for: ";
-    std::cin >> m;
+    theta = acos((target_z - h) / r);
+    x = target_x - r * sin(theta);
 
-    std::cout << "Move bot for: ";
-    std::cin >> b;
+    if (target_x == -1000) break;
 
-    std::cout << "Move linear for: ";
-    std::cin >> x;
-
-    // Move joints and linear actuator
-    topActuator.move_by_degrees(t);
-    midActuator.move_by_degrees(m);
-    botActuator.move_by_degrees(-b);
+    topActuator.move_by_degrees(rad_to_deg(-M_PI / 2 + target_angle));
+    midActuator.move_by_degrees(rad_to_deg(theta));
+    botActuator.move_by_degrees(-90);
     linearActuator.move_actu(IS_REVERSED ? -x : x);
+    botActuator.move_by_degrees(30);
   }
+
+  // while (true) {
+  // std::cout << "Move top for: ";
+  // std::cin >> t;
+  // // Exit condition on top == -1000
+  // if (t == -1000) {
+  //   topActuator.close();
+  //   midActuator.close();
+  //   botActuator.close();
+  //   break;
+  // }
+  //
+  // std::cout << "Move mid for: ";
+  // std::cin >> m;
+  //
+  // std::cout << "Move bot for: ";
+  // std::cin >> b;
+  //
+  // std::cout << "Move linear for: ";
+  // std::cin >> x;
+
+  // Move joints and linear actuator
+  // rad to deg
+  // }
 
   // Close the shared port once
   sharedPortHandler->closePort();
