@@ -11,7 +11,6 @@
 #include <utility>
 
 // TODO: 배경 제거 메소드 사용해보자
-// TODO: solve pnp로 3D 위치 추정하기까지 구현하기
 
 class Tracker {
 protected:

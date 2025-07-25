@@ -7,13 +7,15 @@
 #include <opencv2/opencv.hpp>
 #include <thread>
 
-using Device = struct {
+using Device = struct Device_ {
   int source = 0;
   int backend = 0;
 };
 
 class Camera {
   cv::VideoCapture stream;
+  Device device;
+  cv::Size image_size;
   std::atomic<cv::Mat*> current_frame_ptr;
   std::thread thread;
   std::atomic<bool> stopped;
@@ -29,6 +31,8 @@ public:
   explicit Camera(const Device device, const cv::Size& size,
                   const int fps = 120)
     : stream{device.source, device.backend},
+      device{device},
+      image_size{size},
       current_frame_ptr{nullptr},
       stopped{false} {
     stream.set(cv::CAP_PROP_FRAME_WIDTH, size.width);
@@ -43,9 +47,14 @@ public:
 
   explicit Camera(const Device device = {}, const int fps = 120)
     : stream{device.source, device.backend},
+      device{device},
       current_frame_ptr{nullptr},
       stopped{false} {
     stream.set(cv::CAP_PROP_FPS, fps);
+    image_size = {
+      static_cast<int>(stream.get(cv::CAP_PROP_FRAME_WIDTH)),
+      static_cast<int>(stream.get(cv::CAP_PROP_FRAME_HEIGHT))
+    };
 
     const auto frame_ptr = new cv::Mat();
     stream >> *frame_ptr;
@@ -118,6 +127,14 @@ public:
 
     const cv::Mat* last_frame = current_frame_ptr.load();
     delete last_frame;
+  }
+
+  [[nodiscard]] Device get_device() const {
+    return device;
+  }
+
+  [[nodiscard]] cv::Size get_image_size() const {
+    return image_size;
   }
 };
 

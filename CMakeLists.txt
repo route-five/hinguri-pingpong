@@ -4,9 +4,31 @@ project(hinguri_pingpong)
 set(CMAKE_CXX_STANDARD 23)
 
 add_executable(hinguri_pingpong
-        src/vision/pre/points/get_camera_points.cpp
-        src/vision/predictor.h
-        src/vision/calibration.h
+        src/simulation/simulator_side.hpp
+        src/simulation/simulator_top.hpp
+        src/vision/calibrator.hpp
+        src/vision/camera.hpp
+        src/vision/camera_type.hpp
+        src/vision/contour.hpp
+        src/vision/predictor.hpp
+        src/vision/tracker.hpp
+        src/vision/bridge.hpp
+
+        ## preprocessing
+        # 1. 탁구대 위의 World 좌표를 생성하는 코드
+        # src/vision/pre/generate/world_points.cpp
+
+        # 2. 체커보드 이미지를 수집하는 코드
+        # src/vision/pre/generate/chessboard_images.cpp
+
+        # 3. 탁구대 위의 Camera 좌표를 수집하는 코드
+        # src/vision/pre/generate/camera_points.cpp
+
+        # 4. 모든 generate된 데이터를 이용하여 카메라를 보정하는 코드
+        # src/vision/pre/calibrate.cpp
+
+        ## processing
+        test/opencv/get_world_pos.cpp
 )
 
 #set(OpenCV_DIR "C:/OpenCV/x64/mingw/lib")

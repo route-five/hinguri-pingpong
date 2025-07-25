@@ -7,6 +7,9 @@
 
 #include <opencv2/opencv.hpp>
 
+// Path
+const std::string PATH_WORLD_POINTS = "data/points/world.yml";
+
 // Table Size
 constexpr float TABLE_WIDTH = 152.5; // cm
 constexpr float TABLE_HEIGHT = 274; // cm
@@ -14,8 +17,9 @@ constexpr float TABLE_NET_HEIGHT = 15.25; // cm
 constexpr float TABLE_OUTLINE_SIZE = 2.0; // cm
 constexpr float TABLE_TAPE_SIZE = 1.8; // cm
 constexpr float TABLE_GRID_SIZE = 15.0; // cm
+
 // Environment
-constexpr float GRAVITY = 981;  // 중력 가속도 (cm/s^2)
+constexpr float GRAVITY = 981; // 중력 가속도 (cm/s^2)
 
 // Table Constants (cm)
 constexpr float TABLE_X_SIZE = 152.5;
@@ -50,7 +54,7 @@ constexpr double CONTOUR_AREA_MIN = 100;
 // constexpr double CIRCULARITY_MIN = 0.5;
 constexpr double CIRCULARITY_PERFECT = 0.89;
 constexpr double CIRCULARITY_THRESHOLD = 0.4;
-constexpr double RADIUS_MIN = 6;
+constexpr double RADIUS_MIN = 3;
 constexpr double TOUCHED_MIN = 225;
 constexpr double TOUCHED_MAX = 243;
 constexpr int TRAILS_SIZE = 30;
