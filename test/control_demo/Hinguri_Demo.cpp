@@ -29,8 +29,8 @@
 
 #define RACKET_WIDTH 13.4   // cm
 #define RACKET_HEIGHT 14.8  // cm
-#define RACKET_WIDTH_HALF RACKET_WIDTH / 2;
-#define RACKET_HEIGHT_HALF RACKET_HEIGHT / 2;
+#define RACKET_WIDTH_HALF RACKET_WIDTH / 2
+#define RACKET_HEIGHT_HALF RACKET_HEIGHT / 2
 #define RACKET_EDGE_RADIUS 14.6  // cm
 #define GROUND_EDGE_HEIGHT 12.1  // cm
 
@@ -127,7 +127,7 @@ int dynamixel_set_angle_for(int id, double degree) {
 
 void move_linear_for(int x) {
   CLinear_actu actuator;
-  printf("Moved linear motor for %d. \n", x);
+  std::cout << "Moved linear motor for " << x << ". \n";
   actuator.move_actu(x);
 }
 
