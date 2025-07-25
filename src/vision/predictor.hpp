@@ -10,9 +10,9 @@
 
 class Predictor {
     // TODO: Predictor
-    //  1. solve pnp / stereo calibration으로 3D 위치 추정하기까지 구현하기
-    //  2. 궤적 회귀 - quadratic_regression.cpp 로부터 살짝 수정해서 가져오기
-    //  3. Kalman filter로 보정
+    //  2. stereo calibration으로 3D 위치 추정하기까지 구현하기
+    //  3. 궤적 회귀 - quadratic_regression.cpp 로부터 살짝 수정해서 가져오기
+    //  4. Kalman filter로 보정
 
 private:
     cv::Mat R_left, R_right;
@@ -35,6 +35,8 @@ public:
         fs_right["projection_matrix"] >> P_right;
         fs_right.release();
     }
+
+    ~Predictor() = default;
 
     void set_point_left(const cv::Point2f& left) {
         pt_left = left;

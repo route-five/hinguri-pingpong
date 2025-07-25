@@ -12,8 +12,6 @@
 
 namespace fs = std::filesystem;
 
-// TODO: 최적화
-
 class Calibrator {
 private:
     const CameraType camera_type_;
@@ -26,6 +24,7 @@ private:
     std::vector<std::string> chessboard_image_paths_;
     cv::Mat camera_matrix_, dist_coeffs_, rvecs_, tvecs_;
     cv::Mat map1_, map2_;
+    cv::Rect roi_;
 
     void create_object_corners() {
         object_corners_.clear();
@@ -74,16 +73,19 @@ public:
             fs["image_size"] >> image_size_fs;
             fs["map1"] >> map1_;
             fs["map2"] >> map2_;
+            fs["roi"] >> roi_;
 
             assert(image_size_fs == image_size_ && "저장된 이미지 크기가 예상과 다릅니다.");
             assert(!camera_matrix_.empty() && "카메라 행렬이 비어 있습니다.");
             assert(!dist_coeffs_.empty() && "왜곡 계수가 비어 있습니다.");
             assert(!rvecs_.empty() && "회전 벡터가 비어 있습니다.");
             assert(!tvecs_.empty() && "이동 벡터가 비어 있습니다.");
-            // map1_과 map2_는 calibrate(init_distort=false) 한 경우 비어있을 수 있음
+            // map1_과 map2_, roi_는 calibrate(init_distort=false) 한 경우 비어있을 수 있음
         }
         fs.release();
     }
+
+    ~Calibrator() = default;
 
     /**
      * @brief 체스보드 코너 검출
@@ -171,6 +173,9 @@ public:
                 fs << "map1" << map1_;
                 fs << "map2" << map2_;
             }
+            if (roi != nullptr) {
+                fs << "roi" << *roi;
+            }
             fs.release();
         }
     }
@@ -179,9 +184,9 @@ public:
      * @brief 왜곡 제거
      * @param input 입력 이미지 (왜곡된 이미지)
      * @param output 출력 이미지 (왜곡 제거된 이미지)
-     * @param roi 유효 영역으로 output을 crop함 - nullptr이면 crop하지 않고 전체 이미지 사용
+     * @param crop_by_roi 유효 영역으로 output을 crop함 - nullptr이면 crop하지 않고 전체 이미지 사용
      */
-    void undistort(const cv::Mat& input, cv::Mat& output, const cv::Rect* roi = nullptr) {
+    void undistort(const cv::Mat& input, cv::Mat& output, const bool crop_by_roi = true) {
         if (map1_.empty() || map2_.empty()) { // 왜곡 제거 맵이 비어있다면 불러오기
             cv::FileStorage fs(camera_type_.calibration_matrix_path(), cv::FileStorage::READ);
             if (fs.isOpened()) {
@@ -195,8 +200,9 @@ public:
         assert(!map1_.empty() && !map2_.empty() && "왜곡 제거 맵이 초기화되지 않았습니다. calibrate(init_undistort = true)를 먼저 호출하세요.");
 
         cv::remap(input, output, map1_, map2_, cv::INTER_LINEAR);
-        if (roi != nullptr) {
-            output = output(*roi);
+        if (crop_by_roi) {
+            assert(!roi_.empty() && "ROI가 비어 있습니다. calibrate()를 먼저 호출하세요.");
+            output = output(roi_);
         }
     }
 

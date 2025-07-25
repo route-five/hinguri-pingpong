@@ -4,6 +4,7 @@
 
 #include <opencv2/opencv.hpp>
 
+#include "../../calibrator.hpp"
 #include "../../camera.hpp"
 #include "../../camera_type.hpp"
 
@@ -29,7 +30,7 @@ int main() {
     const CameraType camera_type = CameraType::LEFT;
     std::vector<cv::Point2f> camera_points;
 
-    // TODO: undistort 거쳐야 함
+    Calibrator calibrator(camera_type);
 
     Camera cap({}, {1280, 720}, 120);
     if (!cap.is_opened()) {

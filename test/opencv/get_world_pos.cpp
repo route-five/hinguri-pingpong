@@ -3,13 +3,13 @@
 //
 
 #include <opencv2/opencv.hpp>
-#include <matplot/matplot.h>
 
 #include "../../src/utils/constants.hpp"
 #include "../../src/vision/calibrator.hpp"
 #include "../../src/vision/camera.hpp"
 #include "../../src/vision/predictor.hpp"
 #include "../../src/vision/tracker.hpp"
+#include "../../src/vision/visualizer.hpp"
 
 namespace plt = matplot;
 
@@ -21,7 +21,7 @@ void callback(
 ) {
     if (frame.empty()) return;
 
-    calibrator.undistort(frame, frame);
+    calibrator.undistort(frame, frame, false);
 
     Tracker tracker{frame};
     tracker.set_color_mask(ORANGE_MIN, ORANGE_MAX);
@@ -105,52 +105,12 @@ int main() {
     cam_left.stop();
     cam_right.stop();
 
-    //////////////////////////////////////////////////////////////////////////////
-
-    // TODO: add visualization header
-
-    // clang-format off
-    std::vector<double> table_y_coords = {0, TABLE_HEIGHT, TABLE_HEIGHT, 0,            0};
-    std::vector<double> table_x_coords = {0, 0,            TABLE_WIDTH,  TABLE_WIDTH,  0};
-    std::vector<double> table_z_coords = {0, 0,            0,            0,            0};
-    // clang-format on
-
-    // clang-format off
-    std::vector<double> net_x_coords = {0,                 TABLE_WIDTH,      TABLE_WIDTH,      0,                0};
-    std::vector<double> net_y_coords = {TABLE_HEIGHT / 2,  TABLE_HEIGHT / 2, TABLE_HEIGHT / 2, TABLE_HEIGHT / 2, TABLE_HEIGHT / 2};
-    std::vector<double> net_z_coords = {0,                 0,                TABLE_NET_HEIGHT, TABLE_NET_HEIGHT, 0};
-    // clang-format on
-
-    plt::hold(true);
-    plt::plot3(table_x_coords, table_y_coords, table_z_coords)->line_width(2).color("r");
-    plt::plot3(net_x_coords, net_y_coords, net_z_coords)->line_width(2).color("r");
-
-    std::vector<double> X, Y, Z;
-    for (const auto& [x, y, z] : world_positions) {
-        if (x < 0 || x > TABLE_WIDTH || y < 0 || y > TABLE_HEIGHT || z < 0) {
-            continue;
-        }
-
-        X.push_back(x);
-        Y.push_back(y);
-        Z.push_back(z);
+    Visualizer visualizer;
+    for (const auto& pos : world_positions) {
+        visualizer.add_point(pos);
     }
 
-    plt::scatter3(X, Y, Z)
-        ->marker_face(true)
-        .marker_face_color("b")
-        .marker_color("b");
-
-    plt::xlabel("X [cm]");
-    plt::ylabel("Y [cm]");
-    plt::zlabel("Z [cm]");
-    plt::title("3D Table Tennis Table");
-    plt::grid(true);
-    plt::ylim({-50, TABLE_HEIGHT + 50});
-    plt::xlim({-50, TABLE_WIDTH + 50});
-    plt::zlim({0, 150});
-
-    plt::show();
+    visualizer.show();
 
     return 0;
 }

@@ -13,7 +13,7 @@ int main() {
   }
 
   // clang-format off
-  // TODO: kalman filter는 카메라 좌표에 쓸 게 아니라 삼각측량 이후 실제 3차원
+  // kalman filter는 카메라 좌표에 쓸 게 아니라 삼각측량 이후 실제 3차원
   //  좌표계에 Predictor 클래스에 적용해야할 듯 - https://github.com/robot-pingpong/robot-pingpong-cpp/blob/main/src/predictor.cpp
   // clang-format on
 

@@ -21,6 +21,8 @@ public:
   Contour(const std::initializer_list<cv::Point>& list) : points{list} {
   }
 
+  ~Contour() = default;
+
   void draw(cv::Mat& frame, const cv::Scalar& color) const {
     for (const auto point : points) {
       cv::circle(frame, point, 1, color, 1, cv::LINE_AA);

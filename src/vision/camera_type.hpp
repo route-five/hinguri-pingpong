@@ -13,6 +13,11 @@ public:
   static const CameraType LEFT;
   static const CameraType RIGHT;
 
+  CameraType(const CameraType&) = default;
+  CameraType& operator=(const CameraType&) = default;
+
+  ~CameraType() = default;
+
   [[nodiscard]] std::string calibration_image_dir() const {
     return "img/chessboard/" + name_ + "/";
   }
