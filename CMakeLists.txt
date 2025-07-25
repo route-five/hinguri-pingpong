@@ -29,6 +29,7 @@ add_executable(hinguri_pingpong
 
         ## processing
         test/opencv/get_world_pos.cpp
+        #        test/matplot++/plot3d.cpp
 )
 
 #set(OpenCV_DIR "C:/OpenCV/x64/mingw/lib")

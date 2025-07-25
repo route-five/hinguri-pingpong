@@ -3,11 +3,15 @@
 //
 
 #include <opencv2/opencv.hpp>
+#include <matplot/matplot.h>
 
+#include "../../src/utils/constants.hpp"
 #include "../../src/vision/calibrator.hpp"
 #include "../../src/vision/camera.hpp"
 #include "../../src/vision/predictor.hpp"
 #include "../../src/vision/tracker.hpp"
+
+namespace plt = matplot;
 
 void callback(
     cv::Mat& frame,
@@ -71,6 +75,8 @@ int main() {
     cam_left.start();
     cam_right.start();
 
+    std::vector<cv::Point3f> world_positions;
+
     while (true) {
         cv::Mat frame_left = cam_left.read(), frame_right = cam_right.read();
         if (frame_left.empty() || frame_right.empty())
@@ -80,6 +86,7 @@ int main() {
         cv::hconcat(frame_left, frame_right, concatenated);
 
         auto world_pos = predictor.get_world_pos();
+        world_positions.push_back(world_pos);
         std::string world_pos_text = std::format(
             "World Position: ({:.2f}, {:.2f}, {:.2f})",
             world_pos.x, world_pos.y, world_pos.z
@@ -97,6 +104,53 @@ int main() {
 
     cam_left.stop();
     cam_right.stop();
+
+    //////////////////////////////////////////////////////////////////////////////
+
+    // TODO: add visualization header
+
+    // clang-format off
+    std::vector<double> table_y_coords = {0, TABLE_HEIGHT, TABLE_HEIGHT, 0,            0};
+    std::vector<double> table_x_coords = {0, 0,            TABLE_WIDTH,  TABLE_WIDTH,  0};
+    std::vector<double> table_z_coords = {0, 0,            0,            0,            0};
+    // clang-format on
+
+    // clang-format off
+    std::vector<double> net_x_coords = {0,                 TABLE_WIDTH,      TABLE_WIDTH,      0,                0};
+    std::vector<double> net_y_coords = {TABLE_HEIGHT / 2,  TABLE_HEIGHT / 2, TABLE_HEIGHT / 2, TABLE_HEIGHT / 2, TABLE_HEIGHT / 2};
+    std::vector<double> net_z_coords = {0,                 0,                TABLE_NET_HEIGHT, TABLE_NET_HEIGHT, 0};
+    // clang-format on
+
+    plt::hold(true);
+    plt::plot3(table_x_coords, table_y_coords, table_z_coords)->line_width(2).color("r");
+    plt::plot3(net_x_coords, net_y_coords, net_z_coords)->line_width(2).color("r");
+
+    std::vector<double> X, Y, Z;
+    for (const auto& [x, y, z] : world_positions) {
+        if (x < 0 || x > TABLE_WIDTH || y < 0 || y > TABLE_HEIGHT || z < 0) {
+            continue;
+        }
+
+        X.push_back(x);
+        Y.push_back(y);
+        Z.push_back(z);
+    }
+
+    plt::scatter3(X, Y, Z)
+        ->marker_face(true)
+        .marker_face_color("b")
+        .marker_color("b");
+
+    plt::xlabel("X [cm]");
+    plt::ylabel("Y [cm]");
+    plt::zlabel("Z [cm]");
+    plt::title("3D Table Tennis Table");
+    plt::grid(true);
+    plt::ylim({-50, TABLE_HEIGHT + 50});
+    plt::xlim({-50, TABLE_WIDTH + 50});
+    plt::zlim({0, 150});
+
+    plt::show();
 
     return 0;
 }
