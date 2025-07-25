@@ -111,35 +111,7 @@ class DynamixelActuator {
                 << std::endl;
     }
   }
-
-  void close() const {}
 };
-
-int dynamixel_set_angle_for(int id, double degree) {
-  DynamixelActuator actuator(id);  // id번 모터 사용
-
-  if (!actuator.initialize()) return -1;
-  actuator.move_by_degrees(degree);
-
-  actuator.close();
-  return 0;
-}
-
-void move_linear_for(int x) {
-  CLinear_actu actuator;
-  std::cout << "Moved linear motor for " << x << ". \n";
-  actuator.move_actu(x);
-}
-
-/*
-void control_robot(double top, double mid, double bot, int linear) {
-  bot = -bot;
-  dynamixel_set_angle_for(TOP_MOTOR_ID, top);
-  dynamixel_set_angle_for(MID_MOTOR_ID, mid);
-  dynamixel_set_angle_for(BOT_MOTOR_ID, bot);
-  move_linear_for(IS_REVERSED ? -linear : linear);
-}
-*/
 
 double rad_to_deg(double rad) { return rad * 180.0 / M_PI; }
 
@@ -176,30 +148,6 @@ int main() {
     linearActuator.move_actu(IS_REVERSED ? -x : x);
     botActuator.move_by_degrees(30);
   }
-
-  // while (true) {
-  // std::cout << "Move top for: ";
-  // std::cin >> t;
-  // // Exit condition on top == -1000
-  // if (t == -1000) {
-  //   topActuator.close();
-  //   midActuator.close();
-  //   botActuator.close();
-  //   break;
-  // }
-  //
-  // std::cout << "Move mid for: ";
-  // std::cin >> m;
-  //
-  // std::cout << "Move bot for: ";
-  // std::cin >> b;
-  //
-  // std::cout << "Move linear for: ";
-  // std::cin >> x;
-
-  // Move joints and linear actuator
-  // rad to deg
-  // }
 
   // Close the shared port once
   sharedPortHandler->closePort();
