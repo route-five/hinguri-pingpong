@@ -3,8 +3,14 @@
 
 #include <atomic>
 #include <chrono>
+#include <functional>
 #include <opencv2/opencv.hpp>
 #include <thread>
+
+typedef struct {
+  int source = 0;
+  int backend = 0;
+} Device;
 
 class WebcamVideoStream {
   cv::VideoCapture stream;
@@ -12,11 +18,21 @@ class WebcamVideoStream {
   std::thread thread;
   std::atomic<bool> stopped;
   std::atomic<double> capture_fps{0.0};
+  std::function<void(cv::Mat &)> frame_callback;
 
-public:
-  explicit WebcamVideoStream(const int source, const cv::Size &size,
+ public:
+  /**
+   * @param device camara source index, backend - get from `python -m
+   * cv2_enumerate_cameras`
+   * @param size can be {640, 480}, **{1280, 720}**, {1920, 1080} on Logitech
+   * BRIO
+   * @param fps when size {640, 480}, 120. when size {1280, 720}, 90.
+   */
+  explicit WebcamVideoStream(const Device device, const cv::Size &size,
                              const int fps = 120)
-      : stream{source}, current_frame_ptr{nullptr}, stopped{false} {
+      : stream{device.source, device.backend},
+        current_frame_ptr{nullptr},
+        stopped{false} {
     stream.set(cv::CAP_PROP_FRAME_WIDTH, size.width);
     stream.set(cv::CAP_PROP_FRAME_HEIGHT, size.height);
     stream.set(cv::CAP_PROP_FPS, fps);
@@ -27,10 +43,26 @@ public:
     current_frame_ptr.store(frame_ptr);
   }
 
-  explicit WebcamVideoStream(const int source, const int fps = 120)
-      : WebcamVideoStream(source, {640, 480}, fps) {}
+  explicit WebcamVideoStream(const Device device = {}, const int fps = 120)
+      : stream{device.source, device.backend},
+        current_frame_ptr{nullptr},
+        stopped{false} {
+    stream.set(cv::CAP_PROP_FPS, fps);
 
-  ~WebcamVideoStream() { stop(); }
+    const auto frame_ptr = new cv::Mat();
+    stream >> *frame_ptr;
+
+    current_frame_ptr.store(frame_ptr);
+  }
+
+  ~WebcamVideoStream() {
+    stream.release();
+    stop();
+  }
+
+  void set_frame_callback(const std::function<void(cv::Mat &)> &callback) {
+    frame_callback = callback;
+  }
 
   double get_prop(const int prop_id) const { return stream.get(prop_id); }
 
@@ -49,6 +81,8 @@ public:
       stream >> *new_frame;
 
       if (!new_frame->empty()) {
+        if (frame_callback) frame_callback(*new_frame);
+
         const cv::Mat *old_frame = current_frame_ptr.exchange(new_frame);
         delete old_frame;
         frame_count++;
@@ -75,12 +109,11 @@ public:
 
   void stop() {
     stopped.store(true);
-    if (thread.joinable())
-      thread.join();
+    if (thread.joinable()) thread.join();
 
     const cv::Mat *last_frame = current_frame_ptr.load();
     delete last_frame;
   }
 };
 
-#endif // WEBCAM_VIDEO_STREAM_HPP
+#endif  // WEBCAM_VIDEO_STREAM_HPP

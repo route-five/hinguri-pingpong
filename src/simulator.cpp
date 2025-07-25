@@ -1,19 +1,24 @@
-#include "simulator/simulator_2d.hpp"
+#include "simulator/simulator_side.hpp"
+#include "simulator/simulator_top.hpp"
 
 int main() {
-    Simulator2D sim("Ping Pong Simulator");
+  Simulator::Top top("Top View");
+  Simulator::Side side("Side View");
 
-    std::cout << "Press 'r' to rerun or 'q' to exit." << std::endl;
+  std::cout << "Press 'r' to rerun or 'q' to exit." << std::endl;
 
-    char key = 'r';
-    while (true) {
-        if (key == 'q')
-            break;
-        if (key == 'r')
-            sim.render();
-
-        key = static_cast<char>(cv::waitKey(0));
+  char key = 'r';
+  while (true) {
+    if (key == 'q') break;
+    if (key == 'r') {
+      top.initialize();
+      top.render();
+      side.initialize();
+      side.render();
     }
 
-    return 0;
+    key = static_cast<char>(cv::waitKey(0));
+  }
+
+  return 0;
 }
