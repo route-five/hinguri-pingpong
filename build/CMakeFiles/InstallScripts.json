@@ -1,8 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/Users/rhseung/Documents/GitHub/hinguri-pingpong/build/cmake_install.cmake",
-		"/Users/rhseung/Documents/GitHub/hinguri-pingpong/build/examples/cmake_install.cmake"
-	],
-	"Parallel" : false
-}
