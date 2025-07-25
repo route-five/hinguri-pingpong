@@ -7,9 +7,15 @@
 
 #include <opencv2/opencv.hpp>
 
-// Table Size
-constexpr float TABLE_WIDTH = 152.5;
-constexpr float TABLE_HEIGHT = 274;
+// Environment
+constexpr float GRAVITY = 981;  // 중력 가속도 (cm/s^2)
+
+// Table Constants (cm)
+constexpr float TABLE_X_SIZE = 152.5;
+constexpr float TABLE_Y_SIZE = 274;
+constexpr float TABLE_Z_SIZE = 100;
+constexpr float TABLE_NET_HEIGHT = 15.25;
+constexpr float TABLE_BOUNCE_COEFFICIENT = 0.8;
 
 // Orange Ball Colors
 const cv::Scalar ORANGE_MIN(13, 175, 149);  // HSV

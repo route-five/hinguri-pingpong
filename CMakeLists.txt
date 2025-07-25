@@ -4,7 +4,10 @@ project(hinguri_pingpong)
 set(CMAKE_CXX_STANDARD 23)
 
 add_executable(hinguri_pingpong
-        src/calibration/single_calibration.cpp
+        src/2d_predictor.cpp
+        src/simulation/simulator_side.hpp
+        src/simulation/simulator_top.hpp
+        src/simulation/simulator_property.hpp
 )
 
 #set(OpenCV_DIR "C:/OpenCV/x64/mingw/lib")
