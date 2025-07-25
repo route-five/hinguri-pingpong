@@ -71,6 +71,9 @@ class DynamixelActuator {
 
     uint8_t dxl_error = 0;
 
+    // Ensure torque is disabled before changing operating mode
+    packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE, 0, &dxl_error);
+
     int result =
         packetHandler->write1ByteTxRx(portHandler, id, ADDR_OPERATING_MODE,
                                       POSITION_CONTROL_MODE, &dxl_error);
@@ -110,6 +113,12 @@ class DynamixelActuator {
       std::cout << "Moved " << degree_offset << "position: " << target_position
                 << std::endl;
     }
+  }
+
+  // Disable torque on this actuator before shutting down
+  void close() const {
+    uint8_t dxl_error = 0;
+    packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE, 0, &dxl_error);
   }
 };
 
