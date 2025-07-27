@@ -29,9 +29,10 @@ add_executable(hinguri_pingpong
         #        src/vision/pre/calibrate.cpp
 
         #### processing
-        #        test/opencv/get_world_pos.cpp
         #        src/main.cpp
         src/vision.cpp
+        #        test/opencv/measure_cor.cpp
+        #        test/opencv/world_to_camera.cpp
 )
 
 #set(OpenCV_DIR "C:/OpenCV/x64/mingw/lib")

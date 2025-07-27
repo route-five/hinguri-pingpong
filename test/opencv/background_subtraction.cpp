@@ -26,6 +26,7 @@ int main() {
 
         Tracker tracker{frame, ORANGE_MIN, ORANGE_MAX};
 
+        cv::imshow("moving_mask", tracker.get_moving_mask());
         cv::imshow("moving_color_mask", tracker.get_moving_color_mask());
 
         if (cv::waitKey(30) == 'q') break;

@@ -13,6 +13,7 @@ using Device = struct Device_ {
 };
 
 class Camera {
+  const CameraType camera_type;
   cv::VideoCapture stream;
   Device device;
   cv::Size image_size;
@@ -24,13 +25,15 @@ class Camera {
 
 public:
   /**
+   * @param camera_type type of camera, e.g., CameraType::LEFT or CameraType::RIGHT
    * @param device camara source index, backend - get from <code>python -m cv2_enumerate_cameras</code>
    * @param size can be {640, 480}, <b>{1280, 720}</b>, {1920, 1080} on Logitech BRIO
    * @param fps when size {640, 480}, 120. when size {1280, 720}, 90.
    */
-  explicit Camera(const Device device, const cv::Size& size,
+  explicit Camera(const CameraType& camera_type, const Device device, const cv::Size& size,
                   const int fps = 120)
-    : stream{device.source, device.backend},
+    : camera_type{camera_type},
+      stream{device.source, device.backend},
       device{device},
       image_size{size},
       current_frame_ptr{nullptr},
@@ -45,8 +48,9 @@ public:
     current_frame_ptr.store(frame_ptr);
   }
 
-  explicit Camera(const Device device = {}, const int fps = 120)
-    : stream{device.source, device.backend},
+  explicit Camera(const CameraType& camera_type, const Device device = {}, const int fps = 120)
+    : camera_type{camera_type},
+      stream{device.source, device.backend},
       device{device},
       current_frame_ptr{nullptr},
       stopped{false} {
@@ -69,6 +73,10 @@ public:
 
   void set_frame_callback(const std::function<void(cv::Mat&)>& callback) {
     frame_callback = callback;
+  }
+
+  CameraType get_camera_type() const {
+    return camera_type;
   }
 
   double get_prop(const int prop_id) const {
