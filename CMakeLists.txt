@@ -12,7 +12,7 @@ add_executable(hinguri_pingpong
         src/vision/contour.hpp
         src/vision/predictor.hpp
         src/vision/tracker.hpp
-        src/bridge.hpp
+        src/vision/bridge.hpp
         src/vision/visualizer.hpp
 
         #### preprocessing
