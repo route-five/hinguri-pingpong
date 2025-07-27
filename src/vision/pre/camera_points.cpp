@@ -4,9 +4,9 @@
 
 #include <opencv2/opencv.hpp>
 
-#include "../../calibrator.hpp"
-#include "../../camera.hpp"
-#include "../../camera_type.hpp"
+#include "../calibrator.hpp"
+#include "../camera.hpp"
+#include "../camera_type.hpp"
 
 /**
  * @brief 카메라 좌표계에서 탁구대 위의 테이프 교차점의 중앙을 클릭하여 좌표를 수집합니다.

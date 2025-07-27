@@ -14,33 +14,60 @@
 
 class Tracker {
 protected:
+  const cv::Scalar lower_color_bound;
+  const cv::Scalar upper_color_bound;
   cv::Mat frame;
-  cv::Mat color_mask;
+  cv::Mat moving_mask;
+  cv::Mat moving_color_mask;
 
 public:
-  // const 아님.
-  explicit Tracker(cv::Mat& frame) : frame(frame) {
+  static const cv::Ptr<cv::BackgroundSubtractor> back_sub;
+
+  explicit Tracker(
+    const cv::Mat& frame,
+    const cv::Scalar& lower_color_bound,
+    const cv::Scalar& upper_color_bound
+  ): lower_color_bound{lower_color_bound},
+     upper_color_bound{upper_color_bound},
+     frame{frame} {
+    assert(!frame.empty() && "Frame cannot be empty - at Tracker::constructor");
+
+    // 배경 제거 (subtraction)
+    back_sub->apply(frame, moving_mask, 0); // 배경 고정
+    cv::threshold(moving_mask, moving_mask, 200, 255, cv::THRESH_BINARY);
+
+    // morphology로 노이즈 제거
+    cv::erode(moving_mask, moving_mask, cv::Mat(), cv::Point(-1, -1), 1);
+    cv::dilate(moving_mask, moving_mask, cv::Mat(), cv::Point(-1, -1), 2);
+
+    // frame에서 움직이는 부분만 추출
+    cv::Mat moving_part;
+    cv::bitwise_and(frame, frame, moving_part, moving_mask);
+
+    // 색상 마스크 생성
+    cv::Mat hsv;
+    cv::cvtColor(moving_part, hsv, cv::COLOR_BGR2HSV);
+
+    // 움직이는 부분의 색상 마스크 생성
+    moving_color_mask.release();
+    cv::inRange(hsv, lower_color_bound, upper_color_bound, moving_color_mask);
   }
 
   cv::Mat& get_frame() {
     return frame;
   }
 
-  cv::Mat& get_color_mask() {
-    return color_mask;
+  cv::Mat& get_moving_mask() {
+    return moving_mask;
   }
 
-  void set_color_mask(const cv::Scalar& lower, const cv::Scalar& upper) {
-    cv::Mat hsv;
-    cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
-
-    color_mask.release();
-    cv::inRange(hsv, lower, upper, color_mask);
+  cv::Mat& get_moving_color_mask() {
+    return moving_color_mask;
   }
 
   [[nodiscard]] std::vector<Contour> find_contours() const {
     std::vector<std::vector<cv::Point>> contour_list;
-    cv::findContours(color_mask, contour_list, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    cv::findContours(moving_color_mask, contour_list, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
     return std::move(std::ranges::to<std::vector<Contour>>(
       contour_list |
@@ -79,6 +106,26 @@ public:
 
     return largest_contour;
   }
+
+  /**
+   * @brief 타겟의 위치를 카메라 좌표계에서 찾습니다.
+   * @return 가장 원형에 가까운 컨투어의 (최소 외접원 중심 좌표, 반지름)
+   */
+  [[nodiscard]] std::optional<std::pair<cv::Point2f, double>> get_camera_pos() const {
+    const std::vector<Contour> contours = find_contours();
+    const auto most_contour = most_circular_contour(contours);
+
+    if (most_contour.has_value()) {
+      const auto ret = most_contour->min_enclosing_circle();
+      if (ret.second > RADIUS_MIN) {
+        return ret;
+      };
+    }
+
+    return std::nullopt;
+  }
 };
+
+const cv::Ptr<cv::BackgroundSubtractor> Tracker::back_sub = cv::createBackgroundSubtractorMOG2();
 
 #endif // TRACKER_HPP

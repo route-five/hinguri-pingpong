@@ -5,42 +5,119 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 
+#include "vision/calibrator.hpp"
+#include "vision/camera.hpp"
 #include "vision/camera_type.hpp"
+#include "vision/predictor.hpp"
+#include "vision/tracker.hpp"
+#include "vision/visualizer.hpp"
 
 // TODO: 모두 통합하기
 
+void callback(
+    cv::Mat& frame,
+    const std::function<void(const cv::Point2f&)>& set_pt,
+    const Camera& camera,
+    Calibrator& calibrator
+) {
+    if (frame.empty()) return;
+
+    calibrator.undistort(frame, frame, false);
+
+    Tracker tracker{frame, ORANGE_MIN, ORANGE_MAX};
+    const auto ret = tracker.get_camera_pos();
+    if (ret.has_value()) {
+        cv::circle(frame, ret->first, ret->second, COLOR_GREEN, -1, cv::LINE_AA);
+        set_pt(ret->first);
+    }
+
+    std::string fps_text = std::format("FPS: {:.1f}/{:.1f}", camera.get_fps(), camera.get_prop(cv::CAP_PROP_FPS));
+    cv::putText(frame, fps_text, cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX, 1, COLOR_BLACK, 2, cv::LINE_AA);
+}
+
 int main() {
-    // (1) Projection 행렬 로드
-    cv::Mat proj_left, proj_right;
-
-    cv::FileStorage fs_left(CameraType::LEFT.projection_matrix_path(), cv::FileStorage::READ);
-    fs_left["projection_matrix"] >> proj_left;
-    fs_left.release();
-
-    cv::FileStorage fs_right(CameraType::RIGHT.projection_matrix_path(), cv::FileStorage::READ);
-    fs_right["projection_matrix"] >> proj_right;
-    fs_right.release();
-
     // (2) 3대의 카메라 타임라인 동기화
     // TODO: 카메라 동기화 로직 구현 필요 - 구현 거의 완료 at PONG#60
 
+    Camera cam_left({0, 0}, {1280, 720}, 120);
+    Camera cam_right({1, 0}, {1280, 720}, 120);
+
+    if (!cam_left.is_opened() || !cam_right.is_opened()) {
+        const std::string message = std::format(
+            "Failed to open camera: left={}, right={}",
+            cam_left.is_opened() ? "true" : "false",
+            cam_right.is_opened() ? "true" : "false"
+        );
+        std::cerr << message << std::endl;
+        return -1;
+    }
+
+    Predictor predictor;
+    Calibrator calibrator_left(CameraType::LEFT, cam_left.get_image_size());
+    Calibrator calibrator_right(CameraType::RIGHT, cam_right.get_image_size());
+
     // (3) 탁구공 센터 검출 (예: blob)
-    // TODO: 공 검출 로직 구현 필요 - 구현 완료 at tracker.hpp
-    cv::Point2f center_left{/* CAM1에서 탐지된 공 중심 좌표 */};
-    cv::Point2f center_right{/* CAM2에서 탐지된 공 중심 좌표 */};
+    // TODO: 공 검출 로직 구현 필요 - 배경 제거, blob?
+    cam_left.set_frame_callback([&predictor, &cam_left, &calibrator_left](cv::Mat& frame) {
+        callback(frame, [&predictor](const cv::Point2f& pt) {
+            predictor.set_point_left(pt);
+        }, cam_left, calibrator_left);
+    });
 
-    // (4) 3D 위치 삼각측량
-    cv::Point3f ball_pos = triangulate_ball_3d(proj_left, proj_right, center_left, center_right);
-    std::cout << "Ball 3D pos (cm): ["
-        << ball_pos.x << ", "
-        << ball_pos.y << ", "
-        << ball_pos.z << "]" << std::endl;
+    cam_right.set_frame_callback([&predictor, &cam_right, &calibrator_right](cv::Mat& frame) {
+        callback(frame, [&predictor](const cv::Point2f& pt) {
+            predictor.set_point_right(pt);
+        }, cam_right, calibrator_right);
+    });
 
-    // (5) Top 카메라와 비교해서 결과 정밀하게 비교
-    // TODO: Top 카메라와 비교하는 로직 구현 필요
+    cam_left.start();
+    cam_right.start();
 
-    // (6) Kalman filter 등의 후처리로 결과 보정
-    // TODO: Kalman filter 적용 로직 구현 필요
+    std::vector<cv::Point3f> world_positions;
+
+    while (true) {
+        cv::Mat frame_left = cam_left.read(), frame_right = cam_right.read();
+        if (frame_left.empty() || frame_right.empty())
+            continue;
+
+        cv::Mat concatenated;
+        cv::hconcat(frame_left, frame_right, concatenated);
+
+        // (4) 3D 위치 삼각측량
+        auto world_pos = predictor.get_world_pos();
+
+        // (5) Top 카메라와 비교해서 결과 정밀하게 비교
+        // TODO: Top 카메라와 비교하는 로직 구현 필요
+
+        // (6) Kalman filter 등의 후처리로 결과 보정
+        // TODO: Kalman filter 적용 로직 구현 필요
+
+        world_positions.push_back(world_pos);
+
+        std::string world_pos_text = std::format(
+            "World Position: ({:.2f}, {:.2f}, {:.2f})",
+            world_pos.x, world_pos.y, world_pos.z
+        );
+
+        cv::putText(
+            concatenated, world_pos_text, cv::Point(10, 70),
+            cv::FONT_HERSHEY_SIMPLEX, 1, COLOR_BLACK, 2, cv::LINE_AA
+        );
+
+        cv::imshow("Left / Right", concatenated);
+
+        if (cv::waitKey(1) == 'q') break;
+    }
+
+    cam_left.stop();
+    cam_right.stop();
+
+    Visualizer visualizer;
+    for (const auto& pos : world_positions) {
+        visualizer.add_point(pos);
+    }
+
+    visualizer.show();
 
     // (7) 탁구공 미래 궤적 예측
     // TODO: 미래 궤적 예측 로직 구현 필요 - 구현 거의 완료 at quadratic_regression.cpp
