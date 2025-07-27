@@ -1,3 +1,7 @@
+//
+// Created by 임정훈 on 25. 7. 27.
+//
+
 #define _USE_MATH_DEFINES
 #include <opencv2/opencv.hpp>
 #include <atomic>
@@ -40,6 +44,10 @@
 #define RACKET_EDGE_RADIUS 14.6  // cm
 #define GROUND_EDGE_HEIGHT 12.1  // cm
 
+#define START_SWING -90; // deg
+#define END_SWING 30; // deg
+
+
 struct ControlInput {
     double x;
     double z;
@@ -49,7 +57,7 @@ struct ControlInput {
 
 std::mutex control_mutex;
 std::optional<ControlInput> shared_control_input;
-std::atomic<bool> new_control_input{false};
+std::atomic<bool> new_control_input{ false };
 
 void callback(
     cv::Mat& frame,
@@ -61,7 +69,7 @@ void callback(
 
     calibrator.undistort(frame, frame, false);
 
-    Tracker tracker{frame};
+    Tracker tracker{ frame };
     tracker.set_color_mask(ORANGE_MIN, ORANGE_MAX);
 
     const std::vector<Contour> contours = tracker.find_contours();
@@ -84,8 +92,8 @@ void vision_end() {
     // (2) 3대의 카메라 타임라인 동기화
     // TODO: 카메라 동기화 로직 구현 필요 - 구현 거의 완료 at PONG#60
 
-    Camera cam_left({0, 0}, {1280, 720}, 120);
-    Camera cam_right({2, 0}, {1280, 720}, 120);
+    Camera cam_left({ 0, 1400 }, { 1280, 720 }, 120);
+    Camera cam_right({ 1, 1400 }, { 1280, 720 }, 120);
 
     if (!cam_left.is_opened() || !cam_right.is_opened()) {
         const std::string message = std::format(
@@ -106,13 +114,13 @@ void vision_end() {
     cam_left.set_frame_callback([&predictor, &cam_left, &calibrator_left](cv::Mat& frame) {
         callback(frame, [&predictor](const cv::Point2f& pt) {
             predictor.set_point_left(pt);
-        }, cam_left, calibrator_left);
-    });
+            }, cam_left, calibrator_left);
+        });
     cam_right.set_frame_callback([&predictor, &cam_right, &calibrator_right](cv::Mat& frame) {
         callback(frame, [&predictor](const cv::Point2f& pt) {
             predictor.set_point_right(pt);
-        }, cam_right, calibrator_right);
-    });
+            }, cam_right, calibrator_right);
+        });
 
     cam_left.start();
     cam_right.start();
@@ -132,7 +140,7 @@ void vision_end() {
 
         static bool has_sent_command = false;
 
-        if (!has_sent_command && world_pos.y < 7*TABLE_HEIGHT/8 && 0 < world_pos.x && world_pos.x < TABLE_WIDTH && 0 < world_pos.y && world_pos.y < TABLE_HEIGHT && world_pos.z > 0) {
+        if (!has_sent_command && world_pos.y < 3 * TABLE_HEIGHT / 4 && 0 < world_pos.x && world_pos.x < TABLE_WIDTH && 0 < world_pos.y && world_pos.y < TABLE_HEIGHT && world_pos.z > 0) {
             {
                 std::lock_guard<std::mutex> lock(control_mutex);
                 auto z = 30;
@@ -191,20 +199,23 @@ static dynamixel::PacketHandler* sharedPacketHandler =
 dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
 static bool sharedPortInitialized = false;
 
-class DynamixelActuator {
+class BulkDynamixelActuator {
 private:
     dynamixel::PortHandler* portHandler;
     dynamixel::PacketHandler* packetHandler;
-    int id;
-
+    std::vector<int> ids;
 public:
-    explicit DynamixelActuator(const int motor_id) : id{ motor_id } {
+    explicit BulkDynamixelActuator(const std::vector<int>& motor_ids) : ids{ motor_ids } {
         // Use shared handlers
         portHandler = sharedPortHandler;
         packetHandler = sharedPacketHandler;
     }
 
-    ~DynamixelActuator() { close(); }
+    ~BulkDynamixelActuator() {
+        for (const auto& id : ids) {
+            close(id);
+        }
+    }
 
     [[nodiscard]] bool initialize() const {
         if (!sharedPortInitialized) {
@@ -219,72 +230,91 @@ public:
             sharedPortInitialized = true;
         }
 
-        uint8_t dxl_error = 0;
+        for (const auto& id : ids) {
+            uint8_t dxl_error = 0;
 
-        // Ensure torque is disabled before changing operating mode
-        packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE, 0, &dxl_error);
+            // Ensure torque is disabled before changing operating mode
+            packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE, 0, &dxl_error);
 
-        int result =
-            packetHandler->write1ByteTxRx(portHandler, id, ADDR_OPERATING_MODE,
-                POSITION_CONTROL_MODE, &dxl_error);
-        if (result != COMM_SUCCESS || dxl_error) {
-            std::cerr << "Failed to set operating mode" << std::endl;
-            return false;
+            int result =
+                packetHandler->write1ByteTxRx(portHandler, id, ADDR_OPERATING_MODE,
+                    POSITION_CONTROL_MODE, &dxl_error);
+            if (result != COMM_SUCCESS || dxl_error) {
+                std::cerr << "Failed to set operating mode for motor " << id << std::endl;
+                return false;
+            }
+
+            result = packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE,
+                TORQUE_ENABLE, &dxl_error);
+            if (result != COMM_SUCCESS || dxl_error) {
+                std::cerr << "Failed to enable torque for motor " << id << std::endl;
+                return false;
+            }
         }
 
-        result = packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE,
-            TORQUE_ENABLE, &dxl_error);
-        if (result != COMM_SUCCESS || dxl_error) {
-            std::cerr << "Failed to enable torque" << std::endl;
-            return false;
-        }
-
-        std::cout << "Motor initialized successfully" << std::endl;
+        std::cout << "All motors initialized successfully" << std::endl;
         return true;
     }
 
-    void move_by_degrees(const double degree_offset) const {
-        const int offset_units = static_cast<int>(degree_offset / DEGREES_PER_UNIT);
-        const int target_position = CENTER_POS + offset_units;
-
-        // 안전 범위 제한
-        if (target_position < MIN_POS_LIMIT || target_position > MAX_POS_LIMIT) {
-            std::cerr << "Movement out of range (" << target_position << "). Ignored."
-                << std::endl;
+    void bulk_move_by_degrees(const std::vector<double>& degree_offsets) const {
+        dynamixel::GroupBulkWrite groupBulkWrite(portHandler, packetHandler);
+        if (degree_offsets.size() != ids.size()) {
+            std::cerr << "Degree offsets size does not match motor IDs size" << std::endl;
             return;
         }
 
+        std::vector<int> target_positions;
+        for (size_t i = 0; i < ids.size(); ++i) {
+            int offset_units = static_cast<int>(degree_offsets[i] / DEGREES_PER_UNIT);
+            int target_position = CENTER_POS + offset_units;
+
+            // 안전 범위 제한
+            if (target_position < MIN_POS_LIMIT || target_position > MAX_POS_LIMIT) {
+                std::cerr << "Movement out of range (" << target_position << "). Ignored."
+                    << std::endl;
+                return;
+            }
+            target_positions.push_back(target_position);
+        }
+
         uint8_t dxl_error = 0;
-        int result = packetHandler->write4ByteTxRx(
-            portHandler, id, ADDR_GOAL_POSITION, target_position, &dxl_error);
-        if (result != COMM_SUCCESS || dxl_error) {
-            std::cerr << "Failed to move motor" << std::endl;
+        bool dxl_addparam_result = false;
+        for (size_t i = 0; i < ids.size(); ++i) {
+            // id, start_address, data_length, *data
+            dxl_addparam_result = groupBulkWrite.addParam(
+                ids[i], ADDR_GOAL_POSITION, 4,
+                reinterpret_cast<uint8_t*>(&target_positions[i])
+            );
+            if (!dxl_addparam_result) {
+                std::cerr << "Failed to add parameter for motor " << ids[i] << std::endl;
+                return;
+            }
         }
-        else {
-            std::cout << "Moved " << degree_offset << ", position: " << target_position
-                << std::endl;
+
+        bool dxl_comm_result = groupBulkWrite.txPacket();
+        if (dxl_comm_result != COMM_SUCCESS) {
+            std::cerr << "Failed to write bulk data" << std::endl;
+            return;
         }
+
+        groupBulkWrite.clearParam();
     }
 
-    // Disable torque on this actuator before shutting down
-    void close() const {
+    void close(int id) const {
         uint8_t dxl_error = 0;
         packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE, 0, &dxl_error);
+        std::cout << "Torque disabled for motor " << id << std::endl;
     }
 };
 
 double rad_to_deg(double rad) { return rad * 180.0 / M_PI; }
 
 void control_end() {
-    DynamixelActuator topActuator(TOP_MOTOR_ID);
-    DynamixelActuator midActuator(MID_MOTOR_ID);
-    DynamixelActuator botActuator(BOT_MOTOR_ID);
+    BulkDynamixelActuator actuators({ TOP_MOTOR_ID, MID_MOTOR_ID, BOT_MOTOR_ID });
     LinearActuator linearActuator;
 
-    // Perform initialization only once
-    if (!topActuator.initialize() || !midActuator.initialize() ||
-        !botActuator.initialize()) {
-        std::cerr << "Failed to initialize one or more motors" << std::endl;
+    if (!actuators.initialize()) {
+        std::cerr << "Failed to initialize actuators" << std::endl;
         return;
     }
 
@@ -299,7 +329,7 @@ void control_end() {
             std::lock_guard<std::mutex> lock(control_mutex);
             if (!shared_control_input.has_value()) continue;
             input = shared_control_input.value();
-            std::cout << "received" << std::endl;
+            std::cout << "received control data" << std::endl;
             shared_control_input.reset();
             new_control_input = false;
         }
@@ -309,7 +339,7 @@ void control_end() {
         double target_angle = input.angle;
         double target_vel = input.velocity;
 
-        double x, t, m, b, p = 1;
+        double x, p = 1;
         double r = RACKET_HEIGHT_HALF + RACKET_EDGE_RADIUS;
         double h = GROUND_EDGE_HEIGHT + RACKET_WIDTH_HALF;
 
@@ -319,20 +349,22 @@ void control_end() {
 
         if (target_x == -1000) break;
 
-        topActuator.move_by_degrees(rad_to_deg(-target_angle * p));
-        midActuator.move_by_degrees(rad_to_deg(theta * p));
-        botActuator.move_by_degrees(-50 * p);
+        double top_target, mid_target, bot_target;
+        top_target = rad_to_deg(-target_angle * p);
+        mid_target = rad_to_deg(theta * p);
+        bot_target = p * START_SWING;
+        actuators.bulk_move_by_degrees({ top_target, mid_target, bot_target });
+        std::cout << "Moved to targets: "
+            << "Top: " << top_target << ", "
+            << "Mid: " << mid_target << ", "
+            << "Bot: " << bot_target << std::endl;
         linearActuator.move_actu(IS_REVERSED ? -x : x);
-        botActuator.move_by_degrees(30 * p);
-
-        // go home
-        topActuator.move_by_degrees(0);
-        midActuator.move_by_degrees(0);
-        botActuator.move_by_degrees(0);
-        linearActuator.move_actu(0);
+        bot_target = p * END_SWING;
+        actuators.bulk_move_by_degrees({ bot_target, bot_target, bot_target });
+        std::cout << "Moved to bot target (end swing): " << bot_target << std::endl;
     }
-
-    // Close the shared port once
+    actuators.bulk_move_by_degrees({ 0,0,0 });
+    linearActuator.move_actu(0);
     sharedPortHandler->closePort();
 }
 
