@@ -4,7 +4,7 @@
 
 #include <opencv2/opencv.hpp>
 
-#include "../../../utils/constants.hpp"
+#include "../../utils/constants.hpp"
 
 /**
  * @brief 탁구대 위의 테이프 교차점의 중앙을 월드 좌표계에서 정의된 3D 점으로 생성합니다.

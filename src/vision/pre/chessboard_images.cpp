@@ -4,8 +4,8 @@
 
 #include <filesystem>
 
-#include "../../camera.hpp"
-#include "../../camera_type.hpp"
+#include "../camera.hpp"
+#include "../camera_type.hpp"
 
 namespace fs = std::filesystem;
 
