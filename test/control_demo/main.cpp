@@ -315,6 +315,14 @@ public:
         groupBulkWrite.clearParam();
     }
 
+    void bulk_move_by_rads(const std::vector<double>& rad_offsets) const {
+        std::vector<double> degree_offsets(rad_offsets.size());
+        for (size_t i = 0; i < rad_offsets.size(); ++i) {
+            degree_offsets[i] = rad_to_deg(rad_offsets[i]);
+        }
+        bulk_move_by_degrees(degree_offsets);
+    }
+
     void close(int id) const {
         uint8_t dxl_error = 0;
         packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE, 0, &dxl_error);
