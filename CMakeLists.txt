@@ -5,6 +5,9 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(hinguri_pingpong
         src/control/linear_actuator.hpp
+        test/dynamixel/RobotControl.hpp
+        test/dynamixel/RobotControl.cpp
+        test/Hinguri_Demo.cpp
 )
 
 #set(OpenCV_DIR "C:/OpenCV/x64/mingw/lib")
