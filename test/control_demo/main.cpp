@@ -7,6 +7,7 @@
 #include <atomic>
 #include <optional>
 #include <thread>
+#include <iostream>
 
 #include "vision/calibrator.hpp"
 #include "vision/camera.hpp"
@@ -54,6 +55,7 @@ struct ControlInput {
     double angle;
     double velocity;
 };
+
 
 std::mutex control_mutex;
 std::optional<ControlInput> shared_control_input;
@@ -159,6 +161,11 @@ void vision_end() {
 
             has_sent_command = true;
         }
+        // automatic reset when ball enters half court
+        if (has_sent_command && world_pos.y > TABLE_HEIGHT / 2) {
+            std::cout << '\a' << std::endl;
+            has_sent_command = false;
+        }
 
         // (5) Top 카메라와 비교해서 결과 정밀하게 비교
         // TODO: Top 카메라와 비교하는 로직 구현 필요
@@ -181,7 +188,15 @@ void vision_end() {
         cv::imshow("Left / Right", concatenated);
 
         int key = cv::waitKey(1);
-        if (key == 'q') break;
+        if (key == 'q') {
+            // signal controller to shutdown
+            {
+                std::lock_guard<std::mutex> lock(control_mutex);
+                shared_control_input = ControlInput{ -1000, 0.0, 0.0, 0.0 };
+                new_control_input = true;
+            }
+            break;
+        }
         else if (key == ' ') {
             has_sent_command = false;
             std::cout << "reset chance" << std::endl;
@@ -309,68 +324,67 @@ public:
 
 double rad_to_deg(double rad) { return rad * 180.0 / M_PI; }
 
-void control_end() {
-    BulkDynamixelActuator actuators({ TOP_MOTOR_ID, MID_MOTOR_ID, BOT_MOTOR_ID });
-    LinearActuator linearActuator;
+class RobotController {
+public:
+    RobotController()
+        : actuators({ TOP_MOTOR_ID, MID_MOTOR_ID, BOT_MOTOR_ID })
+    {}
 
-    if (!actuators.initialize()) {
-        std::cerr << "Failed to initialize actuators" << std::endl;
-        return;
+    void run() {
+        if (!actuators.initialize()) {
+            std::cerr << "Failed to initialize actuators" << std::endl;
+            return;
+        }
+        while (true) {
+            if (!new_control_input.load()) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                continue;
+            }
+            ControlInput input;
+            {
+                std::lock_guard<std::mutex> lock(control_mutex);
+                if (!shared_control_input.has_value()) continue;
+                input = *shared_control_input;
+                shared_control_input.reset();
+                new_control_input = false;
+            }
+            if (input.x == -1000) break;
+            execute(input);
+        }
+        shutdown();
     }
 
-    while (true) {
-        if (!new_control_input.load()) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            continue;
-        }
+private:
+    BulkDynamixelActuator actuators;
+    LinearActuator linearActuator;
 
-        ControlInput input{};
-        {
-            std::lock_guard<std::mutex> lock(control_mutex);
-            if (!shared_control_input.has_value()) continue;
-            input = shared_control_input.value();
-            std::cout << "received control data" << std::endl;
-            shared_control_input.reset();
-            new_control_input = false;
-        }
-
-        double target_x = input.x;
-        double target_z = input.z;
-        double target_angle = input.angle;
-        double target_vel = input.velocity;
-
-        double x, p = 1;
+    void execute(const ControlInput& input) {
+        double p = 1;
         double r = RACKET_HEIGHT_HALF + RACKET_EDGE_RADIUS;
         double h = GROUND_EDGE_HEIGHT + RACKET_WIDTH_HALF;
-
-        double theta = acos((target_z - h) / r);
-        x = target_x - r * sin(theta);
-        if (target_x < 0) p = -p;
-
-        if (target_x == -1000) break;
-
-        double top_target, mid_target, bot_target;
-        top_target = rad_to_deg(-target_angle * p);
-        mid_target = rad_to_deg(theta * p);
-        bot_target = p * START_SWING;
+        double theta = std::acos((input.z - h) / r);
+        double x = input.x - r * std::sin(theta);
+        if (input.x < 0) p = -1;
+        double top_target = rad_to_deg(-input.angle * p);
+        double mid_target = rad_to_deg(theta * p);
+        double bot_target = p * START_SWING;
         actuators.bulk_move_by_degrees({ top_target, mid_target, bot_target });
-        std::cout << "Moved to targets: "
-            << "Top: " << top_target << ", "
-            << "Mid: " << mid_target << ", "
-            << "Bot: " << bot_target << std::endl;
         linearActuator.move_actu(IS_REVERSED ? -x : x);
         bot_target = p * END_SWING;
         actuators.bulk_move_by_degrees({ bot_target, bot_target, bot_target });
-        std::cout << "Moved to bot target (end swing): " << bot_target << std::endl;
     }
-    actuators.bulk_move_by_degrees({ 0,0,0 });
-    linearActuator.move_actu(0);
-    sharedPortHandler->closePort();
-}
+
+    void shutdown() {
+        actuators.bulk_move_by_degrees({ 0, 0, 0 });
+        linearActuator.move_actu(0);
+        sharedPortHandler->closePort();
+    }
+};
 
 int main() {
     std::thread vision_thread(vision_end);
-    std::thread control_thread(control_end);
+    RobotController controller;
+    std::thread control_thread(&RobotController::run, &controller);
 
     vision_thread.join();
     control_thread.join();
