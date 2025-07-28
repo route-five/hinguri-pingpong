@@ -23,15 +23,21 @@ int count_files_in_directory(const fs::path& dir_path) {
 }
 
 int main() {
-  const CameraType camera_type = CameraType::RIGHT;
+  const CameraType camera_type = CameraType::TOP;
 
-  Camera stream({}, {1280, 720});
+  Camera stream({1}, {1920, 1080});
   if (!stream.is_opened()) {
     std::cerr << "카메라를 열 수 없습니다." << std::endl;
     return 1;
   }
 
   stream.start();
+
+  // Ensure calibration image directory exists
+  fs::path output_dir = camera_type.calibration_image_dir();
+  if (!fs::exists(output_dir)) {
+      fs::create_directories(output_dir);
+  }
 
   int save_count =
     count_files_in_directory(camera_type.calibration_image_dir());
@@ -42,6 +48,13 @@ int main() {
 
     cv::Mat gray;
     cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+
+    // cv::putText(
+    //     frame,
+    //     std::format("FPS: {:.1f}/{}", stream.get_fps(),
+    //                 static_cast<int>(stream.get_prop(cv::CAP_PROP_FPS))),
+    //     cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX, 1.0, cv::Scalar(0, 255, 0),
+    //     2);
 
     cv::imshow("Calibration Image Capture", gray);
 
