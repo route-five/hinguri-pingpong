@@ -5,6 +5,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "../../src/utils/constants.hpp"
+#include "../../src/utils/draw.hpp"
 #include "../../src/vision/calibrator.hpp"
 #include "../../src/vision/camera.hpp"
 #include "../../src/vision/predictor.hpp"
@@ -13,23 +14,24 @@
 
 void callback(
     cv::Mat& frame,
-    const std::function<void(const cv::Point2f&)>& set_pt,
     const Camera& camera,
-    Calibrator& calibrator
+    Calibrator& calibrator,
+    const Predictor& predictor,
+    const std::vector<cv::Point2f>& camera_points,
+    const std::vector<cv::Point3f>& world_points
 ) {
     if (frame.empty()) return;
 
     calibrator.undistort(frame, frame, false);
 
-    Tracker tracker{frame, ORANGE_MIN, ORANGE_MAX};
-    const auto ret = tracker.get_camera_pos();
-    if (ret.has_value()) {
-        cv::circle(frame, ret->first, ret->second, COLOR_GREEN, -1, cv::LINE_AA);
-        set_pt(ret->first);
+    for (auto& pt : camera_points) {
+        cv::circle(frame, pt, 3, COLOR_GREEN, -1, cv::LINE_AA);
     }
 
-    std::string fps_text = std::format("FPS: {:.1f}/{:.1f}", camera.get_fps(), camera.get_prop(cv::CAP_PROP_FPS));
-    cv::putText(frame, fps_text, cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX, 1, COLOR_BLACK, 2, cv::LINE_AA);
+    for (auto& pt : world_points) {
+        cv::Point2f camera_pos = predictor.pos_3d_to_2d(pt, camera.get_camera_type());
+        cv::circle(frame, camera_pos, 3, COLOR_BLUE, -1, cv::LINE_AA);
+    }
 }
 
 int main() {
@@ -46,50 +48,63 @@ int main() {
         return -1;
     }
 
+    std::vector<cv::Point2f> camera_points_left, camera_points_right;
+    std::vector<cv::Point3f> world_points;
+
+    cv::FileStorage fs_left(cam_left.get_camera_type().camera_points_path(), cv::FileStorage::READ);
+    fs_left["points"] >> camera_points_left;
+    fs_left.release();
+
+    cv::FileStorage fs_right(cam_right.get_camera_type().camera_points_path(), cv::FileStorage::READ);
+    fs_right["points"] >> camera_points_right;
+    fs_right.release();
+
+    cv::FileStorage fs_world(PATH_WORLD_POINTS, cv::FileStorage::READ);
+    fs_world["points"] >> world_points;
+    fs_world.release();
+
     Predictor predictor;
     Calibrator calibrator_left(cam_left.get_camera_type(), cam_left.get_image_size());
     Calibrator calibrator_right(cam_right.get_camera_type(), cam_right.get_image_size());
 
-    cam_left.set_frame_callback([&predictor, &cam_left, &calibrator_left](cv::Mat& frame) {
-        callback(frame, [&predictor](const cv::Point2f& pt) {
-            predictor.set_point_left(pt);
-        }, cam_left, calibrator_left);
-    });
+    cam_left.set_frame_callback(
+        [&predictor, &cam_left, &calibrator_left, &camera_points_left, &world_points](cv::Mat& frame) {
+            callback(frame, cam_left, calibrator_left, predictor, camera_points_left, world_points);
+        });
 
-    cam_right.set_frame_callback([&predictor, &cam_right, &calibrator_right](cv::Mat& frame) {
-        callback(frame, [&predictor](const cv::Point2f& pt) {
-            predictor.set_point_right(pt);
-        }, cam_right, calibrator_right);
-    });
+    cam_right.set_frame_callback(
+        [&predictor, &cam_right, &calibrator_right, &camera_points_right, &world_points](cv::Mat& frame) {
+            callback(frame, cam_right, calibrator_right, predictor, camera_points_right, world_points);
+        });
 
     cam_left.start();
     cam_right.start();
+
+    std::vector<cv::Point3f> line;
+    for (int i = 0; i <= TABLE_HEIGHT; i += 10) {
+        line.emplace_back(30, i, 0);
+    }
 
     while (true) {
         cv::Mat frame_left = cam_left.read(), frame_right = cam_right.read();
         if (frame_left.empty() || frame_right.empty())
             continue;
 
-        auto world_pos = predictor.get_new_world_pos();
-        std::string world_pos_text = std::format(
-            "World Position: ({:.2f}, {:.2f}, {:.2f})",
-            world_pos.x, world_pos.y, world_pos.z
-        );
-        cv::putText(
-            frame_left, world_pos_text, cv::Point(10, 70),
-            cv::FONT_HERSHEY_SIMPLEX, 1, COLOR_BLACK, 2, cv::LINE_AA
-        );
-
-        auto world_pos_left = predictor.get_camera_pos_from_world_pos(world_pos, CameraType::LEFT);
-        auto world_pos_right = predictor.get_camera_pos_from_world_pos(world_pos, CameraType::RIGHT);
-        cv::circle(frame_left, world_pos_left, 5, COLOR_BLUE, -1, cv::LINE_AA);
-        cv::circle(frame_right, world_pos_right, 5, COLOR_BLUE, -1, cv::LINE_AA);
-
         cv::Mat concatenated;
         cv::hconcat(frame_left, frame_right, concatenated);
 
-        cv::imshow("Left / Right", concatenated);
+        for (auto& pt : line) {
+            const auto camera_pos_left = predictor.pos_3d_to_2d(pt, CameraType::LEFT);
+            const auto camera_pos_right = predictor.pos_3d_to_2d(pt, CameraType::RIGHT);
+            cv::circle(frame_left, camera_pos_left, 3, COLOR_RED, -1, cv::LINE_AA);
+            cv::circle(frame_right, camera_pos_right, 3, COLOR_RED, -1, cv::LINE_AA);
+        }
 
+        Draw::put_text(concatenated, "Blue: Calculated World Points", {10, 30}, COLOR_BLUE);
+        Draw::put_text(concatenated, "Green: Saved World Points", {10, 60}, COLOR_GREEN);
+        Draw::put_text(concatenated, "Red: x = 30 Line Points", {10, 90}, COLOR_RED);
+
+        cv::imshow("Press Q to quit", concatenated);
         if (cv::waitKey(1) == 'q') break;
     }
 

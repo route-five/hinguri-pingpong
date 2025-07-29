@@ -23,8 +23,7 @@ void callback(
 
     calibrator.undistort(frame, frame, false);
 
-    Tracker tracker{frame};
-    tracker.set_color_mask(ORANGE_MIN, ORANGE_MAX);
+    Tracker tracker{frame, ORANGE_MIN, ORANGE_MAX};
 
     const std::vector<Contour> contours = tracker.find_contours();
     const auto most_contour = tracker.most_circular_contour(contours);
@@ -43,8 +42,8 @@ void callback(
 }
 
 int main() {
-    Camera cam_left({0, 0}, {1280, 720}, 120);
-    Camera cam_right({1, 0}, {1280, 720}, 120);
+    Camera cam_left(CameraType::LEFT, {0, 0}, {1280, 720}, 120);
+    Camera cam_right(CameraType::RIGHT, {1, 0}, {1280, 720}, 120);
 
     if (!cam_left.is_opened() || !cam_right.is_opened()) {
         std::string message = std::format(
@@ -57,8 +56,8 @@ int main() {
     }
 
     Predictor predictor;
-    Calibrator calibrator_left(CameraType::LEFT, cam_left.get_image_size());
-    Calibrator calibrator_right(CameraType::RIGHT, cam_right.get_image_size());
+    Calibrator calibrator_left(cam_left);
+    Calibrator calibrator_right(cam_right);
 
     cam_left.set_frame_callback([&predictor, &cam_left, &calibrator_left](cv::Mat& frame) {
         callback(frame, [&predictor](const cv::Point2f& pt) {

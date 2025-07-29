@@ -14,25 +14,27 @@ add_executable(hinguri_pingpong
         src/vision/tracker.hpp
         src/vision/bridge.hpp
         src/vision/visualizer.hpp
+        src/utils/draw.hpp
 
         #### preprocessing
         # 1. 탁구대 위의 World 좌표를 생성하는 코드
         #        src/vision/pre/world_points.cpp
 
         # 2. 체커보드 이미지를 수집하는 코드
-#                src/vision/pre/chessboard_images.cpp
+        #                src/vision/pre/chessboard_images.cpp
 
         # 3. 탁구대 위의 Camera 좌표를 수집하는 코드
-#                src/vision/pre/camera_points.cpp
+        #                src/vision/pre/camera_points.cpp
 
         # 4. 모든 generate된 데이터를 이용하여 카메라를 보정하는 코드
-#                src/vision/pre/calibrate.cpp
+        #                src/vision/pre/calibrate.cpp
 
         #### processing
         #        src/main.cpp
         src/vision.cpp
-        #        test/opencv/measure_cor.cpp
-        #        test/opencv/world_to_camera.cpp
+        #        test/opencv/get_world_pos.cpp
+        #        test/opencv/triple_camera.cpp
+        #        test/matplot++/predict_world_pos_test.cpp
 )
 
 #set(OpenCV_DIR "C:/OpenCV/x64/mingw/lib")

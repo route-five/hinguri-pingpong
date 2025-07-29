@@ -7,6 +7,8 @@
 
 #include <filesystem>
 #include <opencv2/opencv.hpp>
+
+#include "camera.hpp"
 #include "camera_type.hpp"
 #include "../utils/constants.hpp"
 
@@ -47,6 +49,20 @@ private:
     }
 
 public:
+    explicit Calibrator(
+        const Camera& camera,
+        const cv::Size& chessboard_grid = {8, 6},
+        const float chessboard_square_size = 2.50f, // cm
+        const cv::TermCriteria& criteria = cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 30, 0.1)
+    ) : Calibrator(
+        camera.get_camera_type(),
+        camera.get_image_size(),
+        chessboard_grid,
+        chessboard_square_size,
+        criteria
+    ) {
+    }
+
     explicit Calibrator(
         const CameraType& camera_type,
         const cv::Size& image_size = {1280, 720},
@@ -331,9 +347,7 @@ public:
         return chessboard_square_size_;
     }
 
-    [[nodiscard]]
-
-    const std::vector<cv::Point3f>& get_object_corners() const {
+    [[nodiscard]] const std::vector<cv::Point3f>& get_object_corners() const {
         return object_corners_;
     }
 

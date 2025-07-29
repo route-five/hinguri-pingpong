@@ -20,7 +20,7 @@ constexpr float TABLE_GRID_SIZE = 15.0; // cm
 
 // Predictor Config
 constexpr float PREDICT_MAX_TIME = 10.0; // 최대 예측 시간 (초)
-constexpr float PREDICT_MIN_TIME = 0.1; // 최소 예측 시간 (초)
+constexpr float PREDICT_MIN_TIME = 0.05; // 최소 예측 시간 (초)
 constexpr float PREDICT_MAX_ITERATIONS = 10; // 최대 반복 횟수
 
 // Environment
