@@ -27,12 +27,12 @@
  * </code>
  */
 int main() {
-    const CameraType camera_type = CameraType::LEFT;
+    const CameraType camera_type = CameraType::TOP;
     std::vector<cv::Point2f> camera_points;
 
     Calibrator calibrator(camera_type);
 
-    Camera cap({}, {1280, 720}, 120);
+    Camera cap({1}, {1920, 1080}, 120);
     if (!cap.is_opened()) {
         std::cerr << "Failed to open camera" << std::endl;
         return -1;
