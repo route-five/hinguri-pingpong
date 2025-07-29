@@ -550,31 +550,29 @@ public:
     }
 
     /**
-     * @brief 현재 위치와 속도를 기반으로 y_lim에 도달하는 시간을 계산합니다.
-     * @param y_lim 현재 위치에서 도달할 y 좌표의 한계 (cm 단위).
-     * @return 현재 위치에서 y_lim에 도달하는 예상 시간 (초 단위).
+     * @brief 현재 위치와 속도를 기반으로 x축에 도달하는 시간을 계산합니다.
+     * @return 현재 위치에서 x축에 도달하는 예상 시간 (초 단위).
      * @note get_world_positions_size() 으로 2개 이상의 위치가 있는지 확인해야 합니다.
      */
-    [[nodiscard]] float get_arrive_time(const float y_lim = TABLE_HEIGHT) const {
+    [[nodiscard]] float get_arrive_time() const {
         const auto world_pos = get_world_pos();
         const auto world_speed = get_world_speed();
 
-        float t_y = world_speed[1] == 0 ? std::numeric_limits<float>::max() : (y_lim - world_pos.y) / world_speed[1];
-        if (t_y < 0) t_y = std::numeric_limits<float>::max(); // 이미 y_lim을 지나쳤다면 무한대
+        float t_y = world_speed[1] == 0 ? std::numeric_limits<float>::max() : world_pos.y / -world_speed[1];
+        if (t_y < 0) t_y = std::numeric_limits<float>::max(); // 이미 지나쳤다면 무한대
 
         return t_y;
     }
 
     /**
-     * @brief 현재 위치와 속도를 기반으로, y_lim에 도달하는 위치를 예측합니다.
-     * @param y_lim 현재 위치에서 도달할 y 좌표의 한계 (cm 단위).
+     * @brief 현재 위치와 속도를 기반으로, x축에 도달하는 위치를 예측합니다.
      * @return 예측된 3D 위치 (cm 단위).
      * @note get_world_positions_size() 으로 2개 이상의 위치가 있는지 확인해야 합니다.
      */
-    [[nodiscard]] std::optional<cv::Point3f> get_arrive_pos(const float y_lim = TABLE_HEIGHT) {
+    [[nodiscard]] std::optional<cv::Point3f> get_arrive_pos() const {
         const auto world_pos = get_world_pos();
         const auto world_speed = get_world_speed();
-        const float t_arrive = get_arrive_time(y_lim);
+        const float t_arrive = get_arrive_time();
 
         if (PREDICT_MIN_TIME <= t_arrive && t_arrive <= PREDICT_MAX_TIME)
             return predict_world_pos(world_pos, world_speed, t_arrive);

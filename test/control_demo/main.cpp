@@ -1,5 +1,5 @@
 //
-// Created by 임정훈 on 25. 7. 27.
+// Created by 임정훈, Hyunseung Ryu on 25. 7. 27.
 //
 
 #define _USE_MATH_DEFINES
@@ -16,6 +16,7 @@
 #include "vision/tracker.hpp"
 // #include "vision/visualizer.hpp"
 #include "../utils/constants.hpp"
+#include "../utils/draw.hpp"
 #include "dynamixel_sdk.h"
 #include "CLinear_actu.h"
 #include "constants.hpp"
@@ -48,170 +49,242 @@
 #define START_SWING -90; // deg
 #define END_SWING 30; // deg
 
+double rad_to_deg(double rad) {
+    return rad * 180.0 / M_PI;
+}
 
-struct ControlInput {
+double deg_to_rad(double deg) {
+    return deg * M_PI / 180.0;
+}
+
+struct BridgePayload {
     double x;
     double z;
     double angle;
     double velocity;
 };
 
+std::mutex mutex;
+std::optional<BridgePayload> shared_payload;
+std::atomic<bool> has_sent{false};
 
-std::mutex control_mutex;
-std::optional<ControlInput> shared_control_input;
-std::atomic<bool> new_control_input{ false };
-
-void callback(
-    cv::Mat& frame,
-    const std::function<void(cv::Point2f&)>& set_pt,
-    const Camera& camera,
-    Calibrator& calibrator
-) {
-    if (frame.empty()) return;
-
-    calibrator.undistort(frame, frame, false);
-
-    Tracker tracker{ frame };
-    tracker.set_color_mask(ORANGE_MIN, ORANGE_MAX);
-
-    const std::vector<Contour> contours = tracker.find_contours();
-    const auto most_contour = tracker.most_circular_contour(contours);
-
-    if (most_contour.has_value() && !most_contour->empty()) {
-        auto [pt, radius] = most_contour->min_enclosing_circle();
-
-        if (radius > RADIUS_MIN) {
-            cv::circle(frame, pt, radius, COLOR_GREEN, -1, cv::LINE_AA);
-            set_pt(pt);
-        }
-    }
-
-    std::string fps_text = std::format("FPS: {:.1f}/{:.1f}", camera.get_fps(), camera.get_prop(cv::CAP_PROP_FPS));
-    cv::putText(frame, fps_text, cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX, 1, COLOR_BLACK, 2, cv::LINE_AA);
-}
-
-void vision_end() {
-    // (2) 3대의 카메라 타임라인 동기화
-    // TODO: 카메라 동기화 로직 구현 필요 - 구현 거의 완료 at PONG#60
-
-    Camera cam_left({ 0, 1400 }, { 1280, 720 }, 120);
-    Camera cam_right({ 1, 1400 }, { 1280, 720 }, 120);
-
-    if (!cam_left.is_opened() || !cam_right.is_opened()) {
-        const std::string message = std::format(
-            "Failed to open camera: left={}, right={}",
-            cam_left.is_opened() ? "true" : "false",
-            cam_right.is_opened() ? "true" : "false"
-        );
-        std::cerr << message << std::endl;
-        return;
-    }
-
+class VisionEnd {
+public:
+    Camera cam_top = Camera(CameraType::TOP, {0, 1200}, 120);
+    Camera cam_left = Camera(CameraType::LEFT, {1, 1200}, 120);
+    Camera cam_right = Camera(CameraType::RIGHT, {2, 1200}, 120);
+    Tracker tracker_left = Tracker(ORANGE_MIN, ORANGE_MAX);
+    Tracker tracker_right = Tracker(ORANGE_MIN, ORANGE_MAX);
+    Tracker tracker_top = Tracker(ORANGE_MIN, ORANGE_MAX);
+    Calibrator calibrator_top = Calibrator(cam_top);
     Predictor predictor;
-    Calibrator calibrator_left(CameraType::LEFT, cam_left.get_image_size());
-    Calibrator calibrator_right(CameraType::RIGHT, cam_right.get_image_size());
 
-    // (3) 탁구공 센터 검출 (예: blob)
-    // TODO: 공 검출 로직 구현 필요 - 배경 제거, blob?
-    cam_left.set_frame_callback([&predictor, &cam_left, &calibrator_left](cv::Mat& frame) {
-        callback(frame, [&predictor](const cv::Point2f& pt) {
-            predictor.set_point_left(pt);
-            }, cam_left, calibrator_left);
-        });
-    cam_right.set_frame_callback([&predictor, &cam_right, &calibrator_right](cv::Mat& frame) {
-        callback(frame, [&predictor](const cv::Point2f& pt) {
-            predictor.set_point_right(pt);
-            }, cam_right, calibrator_right);
-        });
+    static void callback(
+        cv::Mat& frame,
+        const Camera& camera,
+        Tracker& tracker,
+        const std::function<void(const cv::Point2f&)>& set_pt
+    ) {
+        if (frame.empty()) return;
 
-    cam_left.start();
-    cam_right.start();
+        tracker.update(frame);
 
-    std::vector<cv::Point3f> world_positions;
+        const auto ret = tracker.get_camera_pos();
+        if (ret.has_value()) {
+            auto [center, radius] = ret.value();
 
-    while (true) {
-        cv::Mat frame_left = cam_left.read(), frame_right = cam_right.read();
-        if (frame_left.empty() || frame_right.empty())
-            continue;
-
-        cv::Mat concatenated;
-        cv::hconcat(frame_left, frame_right, concatenated);
-
-        // (4) 3D 위치 삼각측량
-        auto world_pos = predictor.get_world_pos();
-
-        static bool has_sent_command = false;
-
-        if (!has_sent_command && world_pos.y < 3 * TABLE_HEIGHT / 4 && 0 < world_pos.x && world_pos.x < TABLE_WIDTH && 0 < world_pos.y && world_pos.y < TABLE_HEIGHT && world_pos.z > 0) {
-            {
-                std::lock_guard<std::mutex> lock(control_mutex);
-                auto z = 30;
-                ControlInput input{
-                    world_pos.x - TABLE_WIDTH / 2,
-                    z, // TODO: 추후 회귀 필요
-                    0.0, // TODO: 추후 예측각도 계산 필요
-                    0.0 // TODO: 추후 속도 계산 필요
-                };
-
-                std::cout << "(" << world_pos.x << ", " << z << ") 로 호출" << std::endl;
-
-                shared_control_input = input;
-                new_control_input = true;
-            }
-
-            has_sent_command = true;
-        }
-        // automatic reset when ball enters half court
-        if (has_sent_command && world_pos.y > TABLE_HEIGHT / 2) {
-            std::cout << '\a' << std::endl;
-            has_sent_command = false;
+            cv::circle(frame, center, radius, COLOR_GREEN, -1, cv::LINE_AA);
+            set_pt(center);
         }
 
-        // (5) Top 카메라와 비교해서 결과 정밀하게 비교
-        // TODO: Top 카메라와 비교하는 로직 구현 필요
-
-        // (6) Kalman filter 등의 후처리로 결과 보정
-        // TODO: Kalman filter 적용 로직 구현 필요
-
-        world_positions.push_back(world_pos);
-
-        std::string world_pos_text = std::format(
-            "World Position: ({:.2f}, {:.2f}, {:.2f})",
-            world_pos.x, world_pos.y, world_pos.z
+        Draw::put_text(
+            frame,
+            std::format("FPS: {:.1f}/{:.1f}", camera.get_fps(), camera.get_prop(cv::CAP_PROP_FPS)),
+            {10, 30}
         );
-
-        cv::putText(
-            concatenated, world_pos_text, cv::Point(10, 70),
-            cv::FONT_HERSHEY_SIMPLEX, 1, COLOR_BLACK, 2, cv::LINE_AA
-        );
-
-        cv::imshow("Left / Right", concatenated);
-
-        int key = cv::waitKey(1);
-        if (key == 'q') {
-            // signal controller to shutdown
-            {
-                std::lock_guard<std::mutex> lock(control_mutex);
-                shared_control_input = ControlInput{ -1000, 0.0, 0.0, 0.0 };
-                new_control_input = true;
-            }
-            break;
-        }
-        else if (key == ' ') {
-            has_sent_command = false;
-            std::cout << "reset chance" << std::endl;
-        }
     }
 
-    cam_left.stop();
-    cam_right.stop();
-}
+    void run() {
+        // (1) 3대의 카메라 레이턴시 고려해서 동기화
+        // TODO: 카메라 동기화 로직 구현 필요 - 구현 거의 완료 at PONG#60
+
+        if (!cam_top.is_opened() || !cam_left.is_opened() || !cam_right.is_opened()) {
+            const std::string message = std::format(
+                "Failed to open camera: top={}, left={}, right={}",
+                cam_top.is_opened() ? "true" : "false",
+                cam_left.is_opened() ? "true" : "false",
+                cam_right.is_opened() ? "true" : "false"
+            );
+            std::cerr << message << std::endl;
+            return;
+        }
+
+        // (2) 탁구공 위치 검출
+        cam_top.set_frame_callback([&](cv::Mat& frame) {
+            callback(frame, cam_top, tracker_top, [&predictor, this](const cv::Point2f& pt) {
+                predictor.set_point_top(pt);
+            });
+        });
+        cam_left.set_frame_callback([&](cv::Mat& frame) {
+            callback(frame, cam_left, tracker_left, [&predictor, this](const cv::Point2f& pt) {
+                predictor.set_point_left(pt);
+            });
+        });
+        cam_right.set_frame_callback([&](cv::Mat& frame) {
+            callback(frame, cam_right, tracker_right, [&predictor, this](const cv::Point2f& pt) {
+                predictor.set_point_right(pt);
+            });
+        });
+
+        cam_top.start();
+        cam_left.start();
+        cam_right.start();
+
+        // TODO: 카메라에 공이 적어도 한 대라도 안 보일 경우 위치가 겁나 튀는 문제 해결 필요 - 이 때 kalman filter 같은 걸로 예측?
+        cv::Point3f world_pos;
+        cv::Point3f predict_pos;
+        cv::Point3f real_arrive_pos;
+        std::deque<cv::Point3f> orbit;
+
+        while (true) {
+            cv::Mat frame_top = cam_top.read(),
+                    frame_left = cam_left.read(),
+                    frame_right = cam_right.read();
+
+            if (frame_top.empty() || frame_left.empty() || frame_right.empty())
+                continue;
+
+            // (3) 삼각측량 및 bird's eye view로 3D 위치 계산
+            tracker_top.update(frame_top);
+            auto ret = tracker_top.get_camera_pos();
+            world_pos = predictor.get_new_world_pos(ret.has_value() ? &ret.value().first : nullptr);
+
+            // 궤적 100개 제한해서 저장
+            orbit.push_back(world_pos);
+            if (orbit.size() > 100) {
+                orbit.pop_front();
+            }
+
+            Draw::put_text(
+                frame_top,
+                Draw::to_string("Pos", world_pos, "cm"),
+                {10, 70}
+            );
+            Draw::put_text(
+                frame_left,
+                Draw::to_string("Pos", world_pos, "cm"),
+                {10, 70}
+            );
+
+            if (predictor.get_world_positions_size() >= 2) {
+                auto world_speed = predictor.get_world_speed();
+
+                // (4) Kalman filter 등의 후처리로 결과 보정
+                // TODO: Kalman filter 적용 로직 구현 필요
+
+                Draw::put_text(
+                    frame_left,
+                    Draw::to_string("Speed", world_speed, "cm/s"),
+                    {10, 110}
+                );
+
+                // 네트를 3/4 넘길 때까지만 예측
+                if (0 <= world_pos.y && world_pos.y <= 3 * TABLE_HEIGHT / 4) {
+                    const auto predict = predictor.get_arrive_pos();
+                    if (predict.has_value()) {
+                        predict_pos = predict.value();
+                    }
+                }
+                else if (!has_sent.load()) {
+                    {
+                        std::lock_guard<std::mutex> lock(mutex);
+                        BridgePayload input{
+                            predict_pos.x - TABLE_WIDTH / 2,
+                            predict_pos.z,
+                            deg_to_rad(35), // TODO: 추후 예측각도 계산 필요
+                            0.0 // TODO: 추후 속도 계산 필요
+                        };
+
+                        std::cout << "(" << world_pos.x << ", " << world_pos.z << ") 로 호출" << std::endl;
+
+                        shared_payload = input;
+                        has_sent = true;
+                    }
+                }
+            }
+
+            // 실제 도착 위치 저장
+            if (-5 <= world_pos.y && world_pos.y < 3) {
+                real_arrive_pos = world_pos;
+            }
+
+            Draw::put_text(
+                frame_top,
+                Draw::to_string("Predict", predict_pos, "cm"),
+                {10, 150}
+            );
+            Draw::put_text(
+                frame_left,
+                Draw::to_string("Predict", predict_pos, "cm"),
+                {10, 150}
+            );
+
+            Draw::put_text(
+                frame_top,
+                Draw::to_string("Arrive", real_arrive_pos, "cm"),
+                {10, 190}
+            );
+            Draw::put_text(
+                frame_left,
+                Draw::to_string("Arrive", real_arrive_pos, "cm"),
+                {10, 190}
+            );
+
+            // 궤적 그리기
+            for (const auto& pos : orbit) {
+                cv::Point2f predict_left = predictor.pos_3d_to_2d(pos, CameraType::LEFT);
+                cv::Point2f predict_right = predictor.pos_3d_to_2d(pos, CameraType::RIGHT);
+                cv::Point2f predict_top = predictor.pos_3d_to_2d(pos, CameraType::TOP);
+                cv::circle(frame_left, predict_left, 3, COLOR_MAGENTA, -1, cv::LINE_AA);
+                cv::circle(frame_right, predict_right, 3, COLOR_MAGENTA, -1, cv::LINE_AA);
+                cv::circle(frame_top, predict_top, 3, COLOR_MAGENTA, -1, cv::LINE_AA);
+            }
+
+            // 예상 도착 위치 그리기
+            const auto predict_left = predictor.pos_3d_to_2d(predict_pos, CameraType::LEFT);
+            const auto predict_right = predictor.pos_3d_to_2d(predict_pos, CameraType::RIGHT);
+            const auto predict_top = predictor.pos_3d_to_2d(predict_pos, CameraType::TOP);
+            cv::circle(frame_left, predict_left, 10, COLOR_BLUE, -1, cv::LINE_AA);
+            cv::circle(frame_right, predict_right, 10, COLOR_BLUE, -1, cv::LINE_AA);
+            cv::circle(frame_top, predict_top, 10, COLOR_BLUE, -1, cv::LINE_AA);
+
+            // 실제 도착 위치 그리기
+            const auto real_left = predictor.pos_3d_to_2d(real_arrive_pos, CameraType::LEFT);
+            const auto real_right = predictor.pos_3d_to_2d(real_arrive_pos, CameraType::RIGHT);
+            const auto real_top = predictor.pos_3d_to_2d(real_arrive_pos, CameraType::TOP);
+            cv::circle(frame_left, real_left, 10, COLOR_RED, -1, cv::LINE_AA);
+            cv::circle(frame_right, real_right, 10, COLOR_RED, -1, cv::LINE_AA);
+            cv::circle(frame_top, real_top, 10, COLOR_RED, -1, cv::LINE_AA);
+
+            cv::imshow("Left", frame_left);
+            cv::imshow("Right", frame_right);
+            cv::imshow("Top", frame_top);
+
+            if (cv::waitKey(1) == 'q') break;
+        }
+
+        cam_top.stop();
+        cam_left.stop();
+        cam_right.stop();
+        cv::destroyAllWindows();
+    }
+};
 
 // Shared handlers for all Dynamixel actuators
 static dynamixel::PortHandler* sharedPortHandler =
-dynamixel::PortHandler::getPortHandler(DEVICENAME);
+    dynamixel::PortHandler::getPortHandler(DEVICENAME);
 static dynamixel::PacketHandler* sharedPacketHandler =
-dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
+    dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
 static bool sharedPortInitialized = false;
 
 class BulkDynamixelActuator {
@@ -219,8 +292,9 @@ private:
     dynamixel::PortHandler* portHandler;
     dynamixel::PacketHandler* packetHandler;
     std::vector<int> ids;
+
 public:
-    explicit BulkDynamixelActuator(const std::vector<int>& motor_ids) : ids{ motor_ids } {
+    explicit BulkDynamixelActuator(const std::vector<int>& motor_ids) : ids{motor_ids} {
         // Use shared handlers
         portHandler = sharedPortHandler;
         packetHandler = sharedPacketHandler;
@@ -253,14 +327,14 @@ public:
 
             int result =
                 packetHandler->write1ByteTxRx(portHandler, id, ADDR_OPERATING_MODE,
-                    POSITION_CONTROL_MODE, &dxl_error);
+                                              POSITION_CONTROL_MODE, &dxl_error);
             if (result != COMM_SUCCESS || dxl_error) {
                 std::cerr << "Failed to set operating mode for motor " << id << std::endl;
                 return false;
             }
 
             result = packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE,
-                TORQUE_ENABLE, &dxl_error);
+                                                   TORQUE_ENABLE, &dxl_error);
             if (result != COMM_SUCCESS || dxl_error) {
                 std::cerr << "Failed to enable torque for motor " << id << std::endl;
                 return false;
@@ -315,14 +389,6 @@ public:
         groupBulkWrite.clearParam();
     }
 
-    void bulk_move_by_rads(const std::vector<double>& rad_offsets) const {
-        std::vector<double> degree_offsets(rad_offsets.size());
-        for (size_t i = 0; i < rad_offsets.size(); ++i) {
-            degree_offsets[i] = rad_to_deg(rad_offsets[i]);
-        }
-        bulk_move_by_degrees(degree_offsets);
-    }
-
     void close(int id) const {
         uint8_t dxl_error = 0;
         packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE, 0, &dxl_error);
@@ -330,13 +396,15 @@ public:
     }
 };
 
-double rad_to_deg(double rad) { return rad * 180.0 / M_PI; }
-
-class RobotController {
+class ControlEnd {
 public:
-    RobotController()
-        : actuators({ TOP_MOTOR_ID, MID_MOTOR_ID, BOT_MOTOR_ID })
-    {}
+    ControlEnd()
+        : actuators({TOP_MOTOR_ID, MID_MOTOR_ID, BOT_MOTOR_ID}) {
+    }
+
+    ~ControlEnd() {
+        shutdown();
+    }
 
     void run() {
         if (!actuators.initialize()) {
@@ -344,17 +412,17 @@ public:
             return;
         }
         while (true) {
-            if (!new_control_input.load()) {
+            if (!has_sent.load()) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 continue;
             }
-            ControlInput input;
+            BridgePayload input;
             {
-                std::lock_guard<std::mutex> lock(control_mutex);
-                if (!shared_control_input.has_value()) continue;
-                input = *shared_control_input;
-                shared_control_input.reset();
-                new_control_input = false;
+                std::lock_guard<std::mutex> lock(mutex);
+                if (!shared_payload.has_value()) continue;
+                input = shared_payload.value();
+                shared_payload.reset();
+                has_sent = false;
             }
             if (input.x == -1000) break;
             execute(input);
@@ -366,7 +434,7 @@ private:
     BulkDynamixelActuator actuators;
     LinearActuator linearActuator;
 
-    void execute(const ControlInput& input) {
+    void execute(const BridgePayload& input) {
         double p = 1;
         double r = RACKET_HEIGHT_HALF + RACKET_EDGE_RADIUS;
         double h = GROUND_EDGE_HEIGHT + RACKET_WIDTH_HALF;
@@ -376,23 +444,25 @@ private:
         double top_target = rad_to_deg(-input.angle * p);
         double mid_target = rad_to_deg(theta * p);
         double bot_target = p * START_SWING;
-        actuators.bulk_move_by_degrees({ top_target, mid_target, bot_target });
+        actuators.bulk_move_by_degrees({top_target, mid_target, bot_target});
         linearActuator.move_actu(IS_REVERSED ? -x : x);
         bot_target = p * END_SWING;
-        actuators.bulk_move_by_degrees({ bot_target, bot_target, bot_target });
+        actuators.bulk_move_by_degrees({bot_target, bot_target, bot_target});
     }
 
     void shutdown() {
-        actuators.bulk_move_by_degrees({ 0, 0, 0 });
+        actuators.bulk_move_by_degrees({0, 0, 0});
         linearActuator.move_actu(0);
         sharedPortHandler->closePort();
     }
 };
 
 int main() {
-    std::thread vision_thread(vision_end);
-    RobotController controller;
-    std::thread control_thread(&RobotController::run, &controller);
+    VisionEnd vision_end;
+    std::thread vision_thread(&VisionEnd::run, &vision_end);
+
+    ControlEnd control_end;
+    std::thread control_thread(&ControlEnd::run, &control_end);
 
     vision_thread.join();
     control_thread.join();

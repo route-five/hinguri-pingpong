@@ -8,13 +8,13 @@ int main() {
     using namespace std;
 
     // 초기 위치 및 속도
-    cv::Point3f init_pos{0.0f, 0.0f, 80.0f}; // 초기 높이 80cm
-    cv::Vec3f init_speed{0.0f, 100.0f, -200.0f}; // 평면 이동 + z=0
+    cv::Point3f init_pos{0.0f, TABLE_HEIGHT, 80.0f}; // 초기 높이 80cm
+    cv::Vec3f init_speed{0.0f, -100.0f, -200.0f}; // 평면 이동 + z=0
 
     vector<double> ys, zs;
 
     // 시간 간격 (dt가 아님), 단순히 궤적을 따라가기 위한 샘플링 간격
-    constexpr float t_step = 0.01f;
+    constexpr float t_step = 0.05f;
     constexpr float total_t = 3.0f;
 
     int i = 0;

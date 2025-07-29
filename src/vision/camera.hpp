@@ -19,7 +19,7 @@ class Camera {
   const CameraType camera_type;
   cv::VideoCapture stream;
   Device device;
-  cv::Size image_size;
+  cv::Size frame_size;
   std::shared_ptr<cv::Mat> current_frame_ptr;
   mutable std::mutex frame_mutex;
   std::thread thread;
@@ -31,37 +31,18 @@ public:
   /**
    * @param camera_type type of camera, e.g., CameraType::LEFT or CameraType::RIGHT
    * @param device camara source index, backend - get from <code>python -m cv2_enumerate_cameras</code>
-   * @param size can be {640, 480}, <b>{1280, 720}</b>, {1920, 1080} on Logitech BRIO
    * @param fps when size {640, 480}, 120. when size {1280, 720}, 90.
    */
-  explicit Camera(const CameraType& camera_type, const Device device, const cv::Size& size,
-                  const int fps = 120)
+  explicit Camera(const CameraType& camera_type, const Device device, const int fps = 120)
     : camera_type{camera_type},
       stream{device.source, device.backend},
       device{device},
-      image_size{size},
+      frame_size{camera_type.resolution()},
       current_frame_ptr{nullptr},
       stopped{false} {
-    stream.set(cv::CAP_PROP_FRAME_WIDTH, size.width);
-    stream.set(cv::CAP_PROP_FRAME_HEIGHT, size.height);
+    stream.set(cv::CAP_PROP_FRAME_WIDTH, frame_size.width);
+    stream.set(cv::CAP_PROP_FRAME_HEIGHT, frame_size.height);
     stream.set(cv::CAP_PROP_FPS, fps);
-
-    const auto frame_ptr = std::make_shared<cv::Mat>();
-    stream >> *frame_ptr;
-    current_frame_ptr = frame_ptr;
-  }
-
-  explicit Camera(const CameraType& camera_type, const Device device = {}, const int fps = 120)
-    : camera_type{camera_type},
-      stream{device.source, device.backend},
-      device{device},
-      current_frame_ptr{nullptr},
-      stopped{false} {
-    stream.set(cv::CAP_PROP_FPS, fps);
-    image_size = {
-      static_cast<int>(stream.get(cv::CAP_PROP_FRAME_WIDTH)),
-      static_cast<int>(stream.get(cv::CAP_PROP_FRAME_HEIGHT))
-    };
 
     const auto frame_ptr = std::make_shared<cv::Mat>();
     stream >> *frame_ptr;
@@ -146,8 +127,8 @@ public:
     return device;
   }
 
-  [[nodiscard]] cv::Size get_image_size() const {
-    return image_size;
+  [[nodiscard]] cv::Size get_frame_size() const {
+    return frame_size;
   }
 };
 

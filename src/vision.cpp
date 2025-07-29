@@ -45,9 +45,9 @@ int main() {
     // (2) 3대의 카메라 타임라인 동기화
     // TODO: 카메라 동기화 로직 구현 필요 - 구현 거의 완료 at PONG#60
 
-    Camera cam_top(CameraType::TOP, {0, 1200}, {1920, 1080}, 120);
-    Camera cam_left(CameraType::LEFT, {1, 1200}, {1280, 720}, 120);
-    Camera cam_right(CameraType::RIGHT, {2, 1200}, {1280, 720}, 120);
+    Camera cam_top(CameraType::TOP, {0, 1200}, 120);
+    Camera cam_left(CameraType::LEFT, {1, 1200}, 120);
+    Camera cam_right(CameraType::RIGHT, {2, 1200}, 120);
 
     if (!cam_top.is_opened() || !cam_left.is_opened() || !cam_right.is_opened()) {
         const std::string message = std::format(
@@ -127,9 +127,6 @@ int main() {
         if (predictor.get_world_positions_size() >= 2) {
             auto world_speed = predictor.get_world_speed();
 
-            // (5) Top 카메라와 비교해서 결과 정밀하게 비교
-            // TODO: Top 카메라와 비교하는 로직 구현 필요
-
             // (6) Kalman filter 등의 후처리로 결과 보정
             // TODO: Kalman filter 적용 로직 구현 필요
 
@@ -139,17 +136,8 @@ int main() {
                 {10, 110}
             );
 
-            // 네트를 넘길 때까지만 예측 FIXME: 이거 나중에 주석 없애기
+            // 네트를 넘길 때까지만 예측
             if (0 <= world_pos.y && world_pos.y <= 3 * TABLE_HEIGHT / 4) {
-                // int i = 0;
-                // predict_orbit.clear();
-                // while (i++ < 20 && predict_orbit.size() < 20) {
-                //     const auto predict = predictor.predict_world_pos(world_pos, world_speed,
-                //                                                      0.1f * (predict_orbit.size() + 1));
-                //     if (predict.has_value())
-                //         predict_orbit.emplace_back(predict.value());
-                // }
-
                 const auto predict = predictor.get_arrive_pos();
                 if (predict.has_value()) {
                     predict_pos = predict.value();
@@ -158,7 +146,7 @@ int main() {
         }
 
         // 실제 도착 위치 저장
-        if (0 <= TABLE_HEIGHT - world_pos.y && TABLE_HEIGHT - world_pos.y < 3) {
+        if (-10 <= world_pos.y && world_pos.y < 3) {
             real_arrive_pos = world_pos;
         }
 
@@ -232,9 +220,6 @@ int main() {
     cam_left.stop();
     cam_right.stop();
     cv::destroyAllWindows();
-
-    // (7) 탁구공 미래 궤적 예측
-    // TODO: 미래 궤적 예측 로직 구현 필요 - 구현 거의 완료 at quadratic_regression.cpp
 
     // (8) 예상 도착 위치 및 각도 정보를 토대로 하드웨어에 전송할 인자 계산
     // TODO: 하드웨어 제어 인자 계산 로직 구현 필요

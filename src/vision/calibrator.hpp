@@ -56,7 +56,7 @@ public:
         const cv::TermCriteria& criteria = cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 30, 0.1)
     ) : Calibrator(
         camera.get_camera_type(),
-        camera.get_image_size(),
+        camera.get_frame_size(),
         chessboard_grid,
         chessboard_square_size,
         criteria
@@ -65,7 +65,21 @@ public:
 
     explicit Calibrator(
         const CameraType& camera_type,
-        const cv::Size& image_size = {1280, 720},
+        const cv::Size& chessboard_grid = {8, 6},
+        const float chessboard_square_size = 2.50f, // cm
+        const cv::TermCriteria& criteria = cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 30, 0.1)
+    ) : Calibrator(
+        camera_type,
+        camera_type.resolution(),
+        chessboard_grid,
+        chessboard_square_size,
+        criteria
+    ) {
+    }
+
+    explicit Calibrator(
+        const CameraType& camera_type,
+        const cv::Size& image_size,
         const cv::Size& chessboard_grid = {8, 6},
         const float chessboard_square_size = 2.50f, // cm
         const cv::TermCriteria& criteria = cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 30, 0.1)
