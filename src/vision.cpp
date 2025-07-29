@@ -4,7 +4,9 @@
 
 #include <opencv2/opencv.hpp>
 #include <vector>
+#include <mutex>
 
+#include "utils/draw.hpp"
 #include "vision/calibrator.hpp"
 #include "vision/camera.hpp"
 #include "vision/camera_type.hpp"
@@ -16,35 +18,41 @@
 
 void callback(
     cv::Mat& frame,
-    const std::function<void(const cv::Point2f&)>& set_pt,
     const Camera& camera,
-    Calibrator& calibrator
+    Tracker& tracker,
+    const std::function<void(const cv::Point2f&)>& set_pt
 ) {
     if (frame.empty()) return;
 
-    calibrator.undistort(frame, frame, false);
+    tracker.update(frame);
 
-    Tracker tracker{frame, ORANGE_MIN, ORANGE_MAX};
     const auto ret = tracker.get_camera_pos();
     if (ret.has_value()) {
-        cv::circle(frame, ret->first, ret->second, COLOR_GREEN, -1, cv::LINE_AA);
-        set_pt(ret->first);
+        auto [center, radius] = ret.value();
+
+        cv::circle(frame, center, radius, COLOR_GREEN, -1, cv::LINE_AA);
+        set_pt(center);
     }
 
-    std::string fps_text = std::format("FPS: {:.1f}/{:.1f}", camera.get_fps(), camera.get_prop(cv::CAP_PROP_FPS));
-    cv::putText(frame, fps_text, cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX, 1, COLOR_BLACK, 2, cv::LINE_AA);
+    Draw::put_text(
+        frame,
+        std::format("FPS: {:.1f}/{:.1f}", camera.get_fps(), camera.get_prop(cv::CAP_PROP_FPS)),
+        {10, 30}
+    );
 }
 
 int main() {
     // (2) 3대의 카메라 타임라인 동기화
     // TODO: 카메라 동기화 로직 구현 필요 - 구현 거의 완료 at PONG#60
 
-    Camera cam_left({0, 0}, {1280, 720}, 120);
-    Camera cam_right({1, 0}, {1280, 720}, 120);
+    Camera cam_top(CameraType::TOP, {0, 1200}, 120);
+    Camera cam_left(CameraType::LEFT, {1, 1200}, 120);
+    Camera cam_right(CameraType::RIGHT, {2, 1200}, 120);
 
-    if (!cam_left.is_opened() || !cam_right.is_opened()) {
+    if (!cam_top.is_opened() || !cam_left.is_opened() || !cam_right.is_opened()) {
         const std::string message = std::format(
-            "Failed to open camera: left={}, right={}",
+            "Failed to open camera: top={}, left={}, right={}",
+            cam_top.is_opened() ? "true" : "false",
             cam_left.is_opened() ? "true" : "false",
             cam_right.is_opened() ? "true" : "false"
         );
@@ -52,75 +60,166 @@ int main() {
         return -1;
     }
 
+    Calibrator calibrator_top(cam_top);
     Predictor predictor;
-    Calibrator calibrator_left(CameraType::LEFT, cam_left.get_image_size());
-    Calibrator calibrator_right(CameraType::RIGHT, cam_right.get_image_size());
+    Tracker tracker_left(ORANGE_MIN, ORANGE_MAX);
+    Tracker tracker_right(ORANGE_MIN, ORANGE_MAX);
+    Tracker tracker_top(ORANGE_MIN, ORANGE_MAX);
 
     // (3) 탁구공 센터 검출 (예: blob)
     // TODO: 공 검출 로직 구현 필요 - 배경 제거, blob?
-    cam_left.set_frame_callback([&predictor, &cam_left, &calibrator_left](cv::Mat& frame) {
-        callback(frame, [&predictor](const cv::Point2f& pt) {
+    cam_top.set_frame_callback([&predictor, &cam_top, &tracker_top, &calibrator_top](cv::Mat& frame) {
+        callback(frame, cam_top, tracker_top, [&predictor](const cv::Point2f& pt) {
+            predictor.set_point_top(pt);
+        });
+    });
+    cam_left.set_frame_callback([&predictor, &cam_left, &tracker_left](cv::Mat& frame) {
+        callback(frame, cam_left, tracker_left, [&predictor](const cv::Point2f& pt) {
             predictor.set_point_left(pt);
-        }, cam_left, calibrator_left);
+        });
     });
-
-    cam_right.set_frame_callback([&predictor, &cam_right, &calibrator_right](cv::Mat& frame) {
-        callback(frame, [&predictor](const cv::Point2f& pt) {
+    cam_right.set_frame_callback([&predictor, &cam_right, &tracker_right](cv::Mat& frame) {
+        callback(frame, cam_right, tracker_right, [&predictor](const cv::Point2f& pt) {
             predictor.set_point_right(pt);
-        }, cam_right, calibrator_right);
+        });
     });
 
+    cam_top.start();
     cam_left.start();
     cam_right.start();
 
-    std::vector<cv::Point3f> world_positions;
+    // TODO: 카메라에 공이 적어도 한 대라도 안 보일 경우 위치가 겁나 튀는 문제 해결 필요 - 이 때 kalman filter 같은 걸로 예측?
+    cv::Point3f world_pos;
+    cv::Point3f predict_pos;
+    cv::Point3f real_arrive_pos;
+    std::deque<cv::Point3f> orbit;
+    std::deque<cv::Point3f> predict_orbit;
 
     while (true) {
-        cv::Mat frame_left = cam_left.read(), frame_right = cam_right.read();
-        if (frame_left.empty() || frame_right.empty())
+        cv::Mat frame_top = cam_top.read(),
+                frame_left = cam_left.read(),
+                frame_right = cam_right.read();
+
+        if (frame_top.empty() || frame_left.empty() || frame_right.empty())
             continue;
+
+        // (4) 3D 위치 삼각측량
+        tracker_top.update(frame_top);
+        auto ret = tracker_top.get_camera_pos();
+
+        world_pos = predictor.get_new_world_pos(ret.has_value() ? &ret.value().first : nullptr);
+        orbit.push_back(world_pos);
+        if (orbit.size() > 100) {
+            orbit.pop_front(); // 궤적이 너무 길어지지 않도록 제한
+        }
+
+        Draw::put_text(
+            frame_top,
+            Draw::to_string("Pos", world_pos, "cm"),
+            {10, 70}
+        );
+        Draw::put_text(
+            frame_left,
+            Draw::to_string("Pos", world_pos, "cm"),
+            {10, 70}
+        );
+
+        if (predictor.get_world_positions_size() >= 2) {
+            auto world_speed = predictor.get_world_speed();
+
+            // (6) Kalman filter 등의 후처리로 결과 보정
+            // TODO: Kalman filter 적용 로직 구현 필요
+
+            Draw::put_text(
+                frame_left,
+                Draw::to_string("Speed", world_speed, "cm/s"),
+                {10, 110}
+            );
+
+            // 네트를 넘길 때까지만 예측
+            if (0 <= world_pos.y && world_pos.y <= 3 * TABLE_HEIGHT / 4) {
+                const auto predict = predictor.get_arrive_pos();
+                if (predict.has_value()) {
+                    predict_pos = predict.value();
+                }
+            }
+        }
+
+        // 실제 도착 위치 저장
+        if (-10 <= world_pos.y && world_pos.y < 3) {
+            real_arrive_pos = world_pos;
+        }
+
+        Draw::put_text(
+            frame_top,
+            Draw::to_string("Predict", predict_pos, "cm"),
+            {10, 150}
+        );
+        Draw::put_text(
+            frame_left,
+            Draw::to_string("Predict", predict_pos, "cm"),
+            {10, 150}
+        );
+
+        Draw::put_text(
+            frame_top,
+            Draw::to_string("Arrive", real_arrive_pos, "cm"),
+            {10, 190}
+        );
+        Draw::put_text(
+            frame_left,
+            Draw::to_string("Arrive", real_arrive_pos, "cm"),
+            {10, 190}
+        );
+
+        // 궤적 그리기
+        for (const auto& pos : orbit) {
+            cv::Point2f predict_left = predictor.pos_3d_to_2d(pos, CameraType::LEFT);
+            cv::Point2f predict_right = predictor.pos_3d_to_2d(pos, CameraType::RIGHT);
+            cv::Point2f predict_top = predictor.pos_3d_to_2d(pos, CameraType::TOP);
+            cv::circle(frame_left, predict_left, 3, COLOR_MAGENTA, -1, cv::LINE_AA);
+            cv::circle(frame_right, predict_right, 3, COLOR_MAGENTA, -1, cv::LINE_AA);
+            cv::circle(frame_top, predict_top, 3, COLOR_MAGENTA, -1, cv::LINE_AA);
+        }
+
+        // 예상 궤적 그리기
+        for (const auto& pos : predict_orbit) {
+            cv::Point2f predict_left = predictor.pos_3d_to_2d(pos, CameraType::LEFT);
+            cv::Point2f predict_right = predictor.pos_3d_to_2d(pos, CameraType::RIGHT);
+            cv::Point2f predict_top = predictor.pos_3d_to_2d(pos, CameraType::TOP);
+            cv::circle(frame_left, predict_left, 3, COLOR_CYAN, -1, cv::LINE_AA);
+            cv::circle(frame_right, predict_right, 3, COLOR_CYAN, -1, cv::LINE_AA);
+            cv::circle(frame_top, predict_top, 3, COLOR_CYAN, -1, cv::LINE_AA);
+        }
+
+        // 예상 도착 위치 그리기
+        const auto predict_left = predictor.pos_3d_to_2d(predict_pos, CameraType::LEFT);
+        const auto predict_right = predictor.pos_3d_to_2d(predict_pos, CameraType::RIGHT);
+        const auto predict_top = predictor.pos_3d_to_2d(predict_pos, CameraType::TOP);
+        cv::circle(frame_left, predict_left, 10, COLOR_BLUE, -1, cv::LINE_AA);
+        cv::circle(frame_right, predict_right, 10, COLOR_BLUE, -1, cv::LINE_AA);
+        cv::circle(frame_top, predict_top, 10, COLOR_BLUE, -1, cv::LINE_AA);
+
+        // 실제 도착 위치 그리기
+        const auto real_left = predictor.pos_3d_to_2d(real_arrive_pos, CameraType::LEFT);
+        const auto real_right = predictor.pos_3d_to_2d(real_arrive_pos, CameraType::RIGHT);
+        const auto real_top = predictor.pos_3d_to_2d(real_arrive_pos, CameraType::TOP);
+        cv::circle(frame_left, real_left, 10, COLOR_RED, -1, cv::LINE_AA);
+        cv::circle(frame_right, real_right, 10, COLOR_RED, -1, cv::LINE_AA);
+        cv::circle(frame_top, real_top, 10, COLOR_RED, -1, cv::LINE_AA);
 
         cv::Mat concatenated;
         cv::hconcat(frame_left, frame_right, concatenated);
-
-        // (4) 3D 위치 삼각측량
-        auto world_pos = predictor.get_world_pos();
-
-        // (5) Top 카메라와 비교해서 결과 정밀하게 비교
-        // TODO: Top 카메라와 비교하는 로직 구현 필요
-
-        // (6) Kalman filter 등의 후처리로 결과 보정
-        // TODO: Kalman filter 적용 로직 구현 필요
-
-        world_positions.push_back(world_pos);
-
-        std::string world_pos_text = std::format(
-            "World Position: ({:.2f}, {:.2f}, {:.2f})",
-            world_pos.x, world_pos.y, world_pos.z
-        );
-
-        cv::putText(
-            concatenated, world_pos_text, cv::Point(10, 70),
-            cv::FONT_HERSHEY_SIMPLEX, 1, COLOR_BLACK, 2, cv::LINE_AA
-        );
-
         cv::imshow("Left / Right", concatenated);
+        cv::imshow("Top", frame_top);
 
         if (cv::waitKey(1) == 'q') break;
     }
 
+    cam_top.stop();
     cam_left.stop();
     cam_right.stop();
-
-    Visualizer visualizer;
-    for (const auto& pos : world_positions) {
-        visualizer.add_point(pos);
-    }
-
-    visualizer.show();
-
-    // (7) 탁구공 미래 궤적 예측
-    // TODO: 미래 궤적 예측 로직 구현 필요 - 구현 거의 완료 at quadratic_regression.cpp
+    cv::destroyAllWindows();
 
     // (8) 예상 도착 위치 및 각도 정보를 토대로 하드웨어에 전송할 인자 계산
     // TODO: 하드웨어 제어 인자 계산 로직 구현 필요

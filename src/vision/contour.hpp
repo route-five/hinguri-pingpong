@@ -71,8 +71,12 @@ public:
     return 4 * std::numbers::pi_v<double> * area / (perimeter * perimeter);
   }
 
-  [[nodiscard]] double distance_circularity() const {
-    return std::abs(CIRCULARITY_PERFECT - this->circularity());
+  [[nodiscard]] double distance_circularity(const double threshold = std::numeric_limits<double>::max()) const {
+    const double dist = std::abs(CIRCULARITY_PERFECT - this->circularity());
+    if (dist > threshold)
+      return std::numeric_limits<double>::max();
+    else
+      return dist;
   }
 
   [[nodiscard]] std::pair<cv::Point2f, double> min_enclosing_circle() const {

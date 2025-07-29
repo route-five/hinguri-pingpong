@@ -27,18 +27,15 @@
  * </code>
  */
 int main() {
-    const CameraType camera_type = CameraType::TOP;
     std::vector<cv::Point2f> camera_points;
 
-    Calibrator calibrator(camera_type);
-
-    Camera cap({1}, {1920, 1080}, 120);
-    if (!cap.is_opened()) {
+    Camera cam(CameraType::TOP, {0, 1200}, 120);
+    if (!cam.is_opened()) {
         std::cerr << "Failed to open camera" << std::endl;
         return -1;
     }
 
-    cap.start();
+    cam.start();
 
     cv::Mat frame;
     bool frozen = false;
@@ -57,7 +54,7 @@ int main() {
 
     while (true) {
         if (!frozen) {
-            frame = cap.read();
+            frame = cam.read();
             if (frame.empty()) break;
             cv::imshow(window_name, frame);
         }
@@ -76,11 +73,11 @@ int main() {
         }
     }
 
-    cap.stop();
+    cam.stop();
     cv::destroyAllWindows();
 
     if (!camera_points.empty()) {
-        cv::FileStorage fs(camera_type.camera_points_path(), cv::FileStorage::WRITE);
+        cv::FileStorage fs(cam.get_camera_type().camera_points_path(), cv::FileStorage::WRITE);
         fs << "points" << camera_points;
         fs.release();
     }

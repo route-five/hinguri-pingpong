@@ -38,19 +38,24 @@ public:
     return name_;
   }
 
+  [[nodiscard]] cv::Size resolution() const {
+    return resolution_;
+  }
+
   bool operator==(const CameraType& other) const {
     return name_ == other.name_;
   }
 
 private:
   std::string name_;
+  cv::Size resolution_;
 
-  explicit CameraType(const std::string& name) : name_{name} {
+  explicit CameraType(const std::string& name, const cv::Size& resolution) : name_{name}, resolution_{resolution} {
   }
 };
 
-const CameraType CameraType::TOP{"top"};
-const CameraType CameraType::LEFT{"left"};
-const CameraType CameraType::RIGHT{"right"};
+const CameraType CameraType::TOP{"top", {1920, 1080}};
+const CameraType CameraType::LEFT{"left", {1280, 720}};
+const CameraType CameraType::RIGHT{"right", {1280, 720}};
 
 #endif  // CAMERA_TYPE_HPP

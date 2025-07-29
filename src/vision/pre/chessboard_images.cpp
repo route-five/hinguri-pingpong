@@ -23,9 +23,7 @@ int count_files_in_directory(const fs::path& dir_path) {
 }
 
 int main() {
-  const CameraType camera_type = CameraType::TOP;
-
-  Camera stream({1}, {1920, 1080});
+  Camera stream(CameraType::TOP, {1});
   if (!stream.is_opened()) {
     std::cerr << "카메라를 열 수 없습니다." << std::endl;
     return 1;
@@ -34,13 +32,13 @@ int main() {
   stream.start();
 
   // Ensure calibration image directory exists
-  fs::path output_dir = camera_type.calibration_image_dir();
+  fs::path output_dir = stream.get_camera_type().calibration_image_dir();
   if (!fs::exists(output_dir)) {
-      fs::create_directories(output_dir);
+    fs::create_directories(output_dir);
   }
 
   int save_count =
-    count_files_in_directory(camera_type.calibration_image_dir());
+    count_files_in_directory(stream.get_camera_type().calibration_image_dir());
 
   while (true) {
     cv::Mat frame = stream.read();
@@ -62,7 +60,7 @@ int main() {
     if (key == 'q') break;
     if (key == ' ') {
       std::ostringstream filename;
-      filename << camera_type.calibration_image_dir() << std::setfill('0')
+      filename << stream.get_camera_type().calibration_image_dir() << std::setfill('0')
         << std::setw(2) << save_count++ << ".png";
 
       if (cv::imwrite(filename.str(), gray)) {

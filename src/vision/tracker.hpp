@@ -10,27 +10,27 @@
 #include <opencv2/opencv.hpp>
 #include <utility>
 
-// TODO: 배경 제거 메소드 사용해보자
-
 class Tracker {
 protected:
   const cv::Scalar lower_color_bound;
   const cv::Scalar upper_color_bound;
+  const cv::Ptr<cv::BackgroundSubtractor> back_sub = cv::createBackgroundSubtractorMOG2();
   cv::Mat frame;
   cv::Mat moving_mask;
   cv::Mat moving_color_mask;
 
 public:
-  static const cv::Ptr<cv::BackgroundSubtractor> back_sub;
-
   explicit Tracker(
-    const cv::Mat& frame,
     const cv::Scalar& lower_color_bound,
     const cv::Scalar& upper_color_bound
   ): lower_color_bound{lower_color_bound},
-     upper_color_bound{upper_color_bound},
-     frame{frame} {
-    assert(!frame.empty() && "Frame cannot be empty - at Tracker::constructor");
+     upper_color_bound{upper_color_bound} {
+  }
+
+  void update(const cv::Mat& new_frame) {
+    assert(!new_frame.empty() && "Frame cannot be empty - at Tracker::constructor");
+
+    new_frame.copyTo(frame);
 
     // 배경 제거 (subtraction)
     back_sub->apply(frame, moving_mask, 0); // 배경 고정
@@ -77,14 +77,16 @@ public:
     ));
   }
 
-  static std::optional<Contour> most_circular_contour(const std::vector<Contour>& contours) {
+  static std::optional<Contour> most_circular_contour(const std::vector<Contour>& contours,
+                                                      const double threshold = CIRCULARITY_THRESHOLD) {
     std::optional<Contour> most_contour = std::nullopt;
 
     for (const auto& contour : contours) {
       if (contour.empty() || contour.zero())
         continue;
 
-      if (!most_contour.has_value() || most_contour->distance_circularity() > contour.distance_circularity()) {
+      const double dist = contour.distance_circularity(threshold);
+      if (dist < threshold && (!most_contour.has_value() || most_contour->distance_circularity() > dist)) {
         most_contour = contour;
       }
     }
@@ -125,7 +127,5 @@ public:
     return std::nullopt;
   }
 };
-
-const cv::Ptr<cv::BackgroundSubtractor> Tracker::back_sub = cv::createBackgroundSubtractorMOG2();
 
 #endif // TRACKER_HPP
