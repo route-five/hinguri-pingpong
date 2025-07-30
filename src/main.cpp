@@ -1,20 +1,18 @@
 //
-// Created by Hyunseung Ryu on 2025. 7. 30..
+// Created by Hyunseung Ryu on 2025. 7. 31..
 //
 
-#ifndef VISION_END_HPP
-#define VISION_END_HPP
-
 #include <opencv2/opencv.hpp>
-#include <vector>
 
-#include "bridge.hpp"
-#include "../utils/draw.hpp"
-#include "camera.hpp"
-#include "camera_type.hpp"
-#include "predictor.hpp"
-#include "tracker.hpp"
-#include "visualizer.hpp"
+#include "control/dynamixel_actuator.hpp"
+#include "control/linear_actuator.hpp"
+#include "vision/bridge.hpp"
+#include "vision/camera.hpp"
+#include "vision/camera_type.hpp"
+#include "vision/predictor.hpp"
+#include "vision/tracker.hpp"
+#include "utils/constants.hpp"
+#include "utils/draw.hpp"
 
 #define DEBUG
 #define IMSHOW
@@ -22,6 +20,81 @@
 inline std::mutex mutex;
 inline std::atomic has_sent{false};
 inline std::optional<BridgePayload> shared_payload;
+
+constexpr float START_SWING = -90.0; // deg
+constexpr int TOP_MOTOR_ID = 4;
+constexpr int MID_MOTOR_ID = 3;
+constexpr int BOT_MOTOR_ID = 2;
+
+class ControlEnd {
+public:
+    ControlEnd()
+        : actuators({TOP_MOTOR_ID, MID_MOTOR_ID, BOT_MOTOR_ID}) {
+    }
+
+    ~ControlEnd() {
+        shutdown();
+    }
+
+    [[noreturn]] void run() {
+        if (!actuators.initialize()) {
+            std::cerr << "Failed to initialize actuators" << std::endl;
+            return;
+        }
+        while (true) {
+            if (!has_sent.load()) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                continue;
+            }
+
+            BridgePayload payload;
+            {
+                std::lock_guard lock(mutex);
+                if (!shared_payload.has_value())
+                    continue;
+
+                payload = shared_payload.value();
+                shared_payload.reset();
+                has_sent = false;
+
+                std::cout << "Received from vision: " << std::endl
+                    << "\tx: " << payload.x << " cm" << std::endl
+                    << "\ttheta: " << payload.theta << " deg" << std::endl
+                    << "\tswing_length: " << payload.swing_length << " deg" << std::endl
+                    << "\twrist_angle: " << payload.wrist_angle << " deg" << std::endl
+                    << "=========================" << std::endl;
+            }
+
+            execute(payload);
+        }
+        shutdown();
+    }
+
+private:
+    BulkDynamixelActuator actuators;
+    LinearActuator linearActuator;
+
+    void execute(const BridgePayload& payload) {
+        const auto& [x, theta, swing_length, wrist_angle, use_right_hand] = payload;
+
+        const double hand_coeff = use_right_hand ? 1.0 : -1.0;
+
+        const double top_target = wrist_angle * hand_coeff;
+        const double mid_target = theta * hand_coeff;
+        double bot_target = START_SWING * hand_coeff;
+        actuators.bulk_move_by_degrees({top_target, mid_target, bot_target});
+        linearActuator.move_actu(-x);
+
+        bot_target = (START_SWING + swing_length) * hand_coeff;
+        actuators.bulk_move_by_degrees({top_target, mid_target, bot_target});
+    }
+
+    void shutdown() {
+        actuators.bulk_move_by_degrees({0, 0, 0});
+        linearActuator.move_actu(0);
+        sharedPortHandler->closePort();
+    }
+};
 
 class VisionEnd {
 private:
@@ -113,14 +186,13 @@ public:
             if (frame_top.empty() || frame_left.empty() || frame_right.empty())
                 continue;
 
-            // (4) 3D 위치 삼각측량
             if (const auto new_world_pos = predictor.get_new_world_pos(1.0f / static_cast<float>(cam_top.get_fps()))) {
                 world_pos = new_world_pos.value();
 
 #ifdef DEBUG
                 orbit.push_back(world_pos);
                 if (orbit.size() > 100) {
-                    orbit.pop_front(); // 궤적이 너무 길어지지 않도록 제한
+                    orbit.pop_front();
                 }
 #endif
             }
@@ -157,7 +229,7 @@ public:
 
 #ifdef DEBUG
             // 실제 도착 위치 저장
-            if (std::abs(world_pos.y - TABLE_HEIGHT) < 5) {
+            if (std::abs(world_pos.y) < 5) {
                 real_arrive_pos = world_pos;
             }
 #endif
@@ -252,5 +324,15 @@ public:
     }
 };
 
+int main() {
+    VisionEnd vision_end;
+    ControlEnd control_end;
 
-#endif //VISION_END_HPP
+    std::thread vision_thread(&VisionEnd::run, &vision_end);
+    std::thread control_thread(&ControlEnd::run, &control_end);
+
+    vision_thread.join();
+    control_thread.join();
+
+    return 0;
+}

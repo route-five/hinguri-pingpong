@@ -5,25 +5,11 @@
 #ifndef CONTROL_END_HPP
 #define CONTROL_END_HPP
 
-#include "CLinear_actu.h"
-#include "linear_actuator.hpp"
-#include "../vision/bridge.hpp"
-#include "../utils/constants.hpp"
+#include "control/linear_actuator.hpp"
+#include "vision/bridge.hpp"
+#include "utils/constants.hpp"
 
-#define CENTER_POS 2048
-#define MIN_POS_LIMIT 1024
-#define MAX_POS_LIMIT 3072
-#define DEGREES_PER_UNIT (360.0 / 4096.0)  // 약 0.088°
-
-#define RACKET_WIDTH 13.4   // cm
-#define RACKET_HEIGHT 14.8  // cm
-#define RACKET_WIDTH_HALF (RACKET_WIDTH / 2)
-#define RACKET_HEIGHT_HALF (RACKET_HEIGHT / 2)
-#define RACKET_EDGE_RADIUS 14.6  // cm
-#define GROUND_EDGE_HEIGHT 12.1  // cm
-
-#define START_SWING (-90.0) // deg
-
+constexpr float START_SWING = -90.0; // deg
 constexpr int TOP_MOTOR_ID = 4;
 constexpr int MID_MOTOR_ID = 3;
 constexpr int BOT_MOTOR_ID = 2;

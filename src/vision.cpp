@@ -5,9 +5,8 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 
-#include "vision/bridge.hpp"
 #include "utils/draw.hpp"
-#include "vision/calibrator.hpp"
+#include "vision/bridge.hpp"
 #include "vision/camera.hpp"
 #include "vision/camera_type.hpp"
 #include "vision/predictor.hpp"
@@ -30,9 +29,13 @@ void frame_callback(
     tracker << frame;
 
     const auto camera_pos = tracker.get_camera_pos();
-    (predictor.*set_pt)(camera_pos.has_value() ? camera_pos.value().first : std::nullopt);
+    (predictor.*set_pt)(camera_pos.has_value() ? std::make_optional(camera_pos.value().first) : std::nullopt);
 
 #ifdef DEBUG
+    if (camera_pos.has_value()) {
+        Draw::put_circle(frame, camera_pos.value().first, camera_pos.value().second, COLOR_GREEN);
+    }
+
     Draw::put_text(
         frame,
         std::format("FPS: {:.1f}/{:.1f}", camera.get_fps(), camera.get_prop(cv::CAP_PROP_FPS)),
@@ -46,9 +49,9 @@ int main() {
     // TODO: 카메라 레이턴시, 타임라인 동기화 로직 구현 필요 - 구현 거의 완료 at PONG#60
 
 #pragma region Initialization
-    Camera cam_top(CameraType::TOP, {0, 1200}, 120);
-    Camera cam_left(CameraType::LEFT, {1, 1200}, 120);
-    Camera cam_right(CameraType::RIGHT, {2, 1200}, 120);
+    Camera cam_top(CameraType::TOP, {1, 1200}, 120);
+    Camera cam_left(CameraType::LEFT, {2, 1200}, 120);
+    Camera cam_right(CameraType::RIGHT, {0, 1200}, 120);
     Tracker tracker_top(ORANGE_MIN, ORANGE_MAX);
     Tracker tracker_left(ORANGE_MIN, ORANGE_MAX);
     Tracker tracker_right(ORANGE_MIN, ORANGE_MAX);
@@ -126,7 +129,7 @@ int main() {
             0 <= world_pos.z &&
             !has_sent) {
             {
-                auto [x, theta, swing_length, wrist_angle] = Bridge::convert(predict_arrive_pos);
+                auto [x, theta, swing_length, wrist_angle, use_right_hand] = Bridge::convert(predict_arrive_pos);
 
                 std::cout << "Predicted position: " << predict_arrive_pos << std::endl;
                 std::cout << "Broadcast to hardware: " << std::endl
@@ -164,7 +167,8 @@ int main() {
         Draw::put_text_border(
             frame_left,
             Draw::to_string("speed", world_speed, "cm/s"),
-            {10, 80}
+            {10, 80},
+            COLOR_WHITE
         );
 
         // 예상 도착 위치 시각화
@@ -182,7 +186,7 @@ int main() {
         Draw::put_circle(frame_top, predictor.pos_3d_to_2d(real_arrive_pos, CameraType::TOP), 10, COLOR_RED);
         Draw::put_circle(frame_left, predictor.pos_3d_to_2d(real_arrive_pos, CameraType::LEFT), 10, COLOR_RED);
         Draw::put_circle(frame_right, predictor.pos_3d_to_2d(real_arrive_pos, CameraType::RIGHT), 10, COLOR_RED);
-        Draw::put_text(
+        Draw::put_text_border(
             frame_left,
             Draw::to_string("real", real_arrive_pos, "cm"),
             {10, 140},
@@ -208,13 +212,29 @@ int main() {
 #pragma region Imshow
 #ifdef IMSHOW
         cv::Mat frame_top_resized, frame_left_resized, frame_right_resized;
-        cv::resize(frame_top, frame_top_resized, {}, 0.5, 0.5);
+        cv::resize(frame_top, frame_top_resized, {}, 0.4, 0.4);
         cv::resize(frame_left, frame_left_resized, {}, 0.5, 0.5);
         cv::resize(frame_right, frame_right_resized, {}, 0.5, 0.5);
 
-        cv::imshow("Top", frame_top);
-        cv::imshow("Left", frame_left_resized);
-        cv::imshow("Right", frame_right_resized);
+        // Create a final frame with left/right on top and top frame centered below
+        int top_width = frame_left_resized.cols + frame_right_resized.cols;
+        int max_width = std::max(top_width, frame_top_resized.cols);
+        int total_height = std::max(frame_left_resized.rows, frame_right_resized.rows) + frame_top_resized.rows;
+
+        cv::Mat final_frame = cv::Mat::zeros(total_height, max_width, frame_left_resized.type());
+
+        // Copy left on top-left
+        frame_left_resized.copyTo(final_frame(cv::Rect(0, 0, frame_left_resized.cols, frame_left_resized.rows)));
+        // Copy right on top-right (next to left)
+        frame_right_resized.copyTo(final_frame(cv::Rect(frame_left_resized.cols, 0, frame_right_resized.cols,
+                                                        frame_right_resized.rows)));
+        // Copy top centered below
+        int x_offset = (max_width - frame_top_resized.cols) / 2;
+        frame_top_resized.copyTo(final_frame(cv::Rect(
+            x_offset, std::max(frame_left_resized.rows, frame_right_resized.rows), frame_top_resized.cols,
+            frame_top_resized.rows)));
+
+        cv::imshow("Combined", final_frame);
 
         if (cv::waitKey(1) == 'q') break;
 #endif

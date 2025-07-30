@@ -29,7 +29,7 @@ namespace Draw {
         const int thickness = 2,
         const double font_scale = 0.8
     ) {
-        cv::putText(frame, text, position, cv::FONT_HERSHEY_SIMPLEX, font_scale, COLOR_BLACK, thickness + 1,
+        cv::putText(frame, text, position, cv::FONT_HERSHEY_SIMPLEX, font_scale, COLOR_BLACK, thickness + 2,
                     cv::LINE_AA);
         cv::putText(frame, text, position, cv::FONT_HERSHEY_SIMPLEX, font_scale, color, thickness, cv::LINE_AA);
     }

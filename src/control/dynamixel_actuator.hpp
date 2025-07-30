@@ -6,7 +6,7 @@
 #define DYNAMIXEL_ACTUATOR_HPP
 
 #include "dynamixel_sdk.h"
-#include "../utils/constants.hpp"
+#include "utils/constants.hpp"
 
 #define ADDR_TORQUE_ENABLE 64
 #define ADDR_OPERATING_MODE 11

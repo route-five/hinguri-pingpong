@@ -36,7 +36,8 @@ add_executable(hinguri_pingpong
 
         #### processing
         #        src/main.cpp
-        src/vision.cpp
+        #        src/vision.cpp
+        src/main.cpp
 
         #### test
         #        test/matplot++/bridge_convert_test.cpp

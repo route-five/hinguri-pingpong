@@ -83,6 +83,12 @@ const cv::Scalar COLOR_MAGENTA(255, 0, 255);
 const cv::Scalar COLOR_WHITE(255, 255, 255);
 const cv::Scalar COLOR_BLACK(0, 0, 0);
 
+// Dynamixel Actuator
+constexpr float CENTER_POS = 2048;
+constexpr float MIN_POS_LIMIT = 1024;
+constexpr float MAX_POS_LIMIT = 3072;
+constexpr float DEGREES_PER_UNIT = 360.0 / 4096.0;
+
 // Linear Motor
 constexpr int LINEAR_VEL = 700; // 700
 constexpr int LINEAR_ACCEL = 200; // 200

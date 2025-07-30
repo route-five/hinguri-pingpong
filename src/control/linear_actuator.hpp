@@ -1,16 +1,15 @@
 #pragma once
-#include "stddef.h"
+
+#include <conio.h>
+
 #include "AXL.h"
 #include "AXM.h"
-#include <iostream>
-#include <conio.h>
-#include "../constants.hpp"
-#include "../utils/constants.hpp"
-#include "../utils/sleep.hpp"
+#include "utils/constants.hpp"
+#include "utils/constants.hpp"
+#include "utils/sleep.hpp"
 
-/// char mot_file[] = "src/mot/ajin20190628.mot";        // *.mot file Path
-char mot_file[] = "hinguri.mot";
-
+char mot_file[] = "src/mot/ajin20190628.mot"; // *.mot file Path
+// char mot_file[] = "hinguri.mot";
 
 class LinearActuator {
 public:

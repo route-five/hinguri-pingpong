@@ -33,48 +33,27 @@ public:
     void update(const cv::Mat& new_frame) {
         assert(!new_frame.empty() && "Frame cannot be empty - at Tracker::constructor");
 
-        frame = new_frame; // shallow copy header, avoid deep copy
-
-        // Pre-allocate mats to reuse buffers
-        moving_mask.create(frame.size(), CV_8UC1);
-        moving_color_mask.create(frame.size(), CV_8UC1);
-        moving_part_.create(frame.size(), frame.type());
-        hsv_.create(frame.size(), CV_8UC3);
+        frame = new_frame;
 
         // 배경 제거 (subtraction)
         back_sub->apply(frame, moving_mask, 0); // 배경 고정
         cv::threshold(moving_mask, moving_mask, 200, 255, cv::THRESH_BINARY);
-
-        // moving_mask가 제대로 생성되었는지 확인
-        if (moving_mask.empty()) {
-            std::cerr << "Error: moving_mask is empty after background subtraction" << std::endl;
-            return;
-        }
 
         // morphology로 노이즈 제거
         cv::erode(moving_mask, moving_mask, cv::Mat(), cv::Point(-1, -1), 1);
         cv::dilate(moving_mask, moving_mask, cv::Mat(), cv::Point(-1, -1), 2);
 
         // frame에서 움직이는 부분만 추출
-        cv::bitwise_and(frame, frame, moving_part_, moving_mask);
+        cv::Mat moving_part;
+        cv::bitwise_and(frame, frame, moving_part, moving_mask);
 
         // 색상 마스크 생성
-        cv::cvtColor(moving_part_, hsv_, cv::COLOR_BGR2HSV);
-
-        // HSV 변환이 제대로 되었는지 확인
-        if (hsv_.empty()) {
-            std::cerr << "Error: HSV conversion failed" << std::endl;
-            return;
-        }
+        cv::Mat hsv;
+        cv::cvtColor(moving_part, hsv, cv::COLOR_BGR2HSV);
 
         // 움직이는 부분의 색상 마스크 생성
-        // release() 대신 직접 inRange로 새로 생성
-        cv::inRange(hsv_, lower_color_bound, upper_color_bound, moving_color_mask);
-
-        // moving_color_mask가 제대로 생성되었는지 확인
-        if (moving_color_mask.empty()) {
-            std::cerr << "Error: moving_color_mask is empty after inRange" << std::endl;
-        }
+        moving_color_mask.release();
+        cv::inRange(hsv, lower_color_bound, upper_color_bound, moving_color_mask);
     }
 
     friend Tracker& operator<<(Tracker& tracker, const cv::Mat& new_frame) noexcept {
