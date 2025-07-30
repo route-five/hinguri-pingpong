@@ -14,14 +14,14 @@
 #include "utils/constants.hpp"
 #include "utils/draw.hpp"
 
-#define DEBUG
-#define IMSHOW
+//#define DEBUG
+//#define IMSHOW
 
 inline std::mutex mutex;
-inline std::atomic has_sent{false};
+inline std::atomic has_sent{ false };
 inline std::optional<BridgePayload> shared_payload;
 
-constexpr float START_SWING = -90.0; // deg
+constexpr float START_SWING = -60.0; // deg
 constexpr int TOP_MOTOR_ID = 4;
 constexpr int MID_MOTOR_ID = 3;
 constexpr int BOT_MOTOR_ID = 2;
@@ -29,7 +29,7 @@ constexpr int BOT_MOTOR_ID = 2;
 class ControlEnd {
 public:
     ControlEnd()
-        : actuators({TOP_MOTOR_ID, MID_MOTOR_ID, BOT_MOTOR_ID}) {
+        : actuators({ TOP_MOTOR_ID, MID_MOTOR_ID, BOT_MOTOR_ID }) {
     }
 
     ~ControlEnd() {
@@ -55,7 +55,6 @@ public:
 
                 payload = shared_payload.value();
                 shared_payload.reset();
-                has_sent = false;
 
                 std::cout << "Received from vision: " << std::endl
                     << "\tx: " << payload.x << " cm" << std::endl
@@ -75,22 +74,25 @@ private:
     LinearActuator linearActuator;
 
     void execute(const BridgePayload& payload) {
-        const auto& [x, theta, swing_length, wrist_angle, use_right_hand] = payload;
+        if (has_sent.load()) {
+            const auto& [x, theta, swing_length, wrist_angle, use_right_hand] = payload;
 
-        const double hand_coeff = use_right_hand ? 1.0 : -1.0;
+            const double hand_coeff = use_right_hand ? 1.0 : -1.0;
 
-        const double top_target = wrist_angle * hand_coeff;
-        const double mid_target = theta * hand_coeff;
-        double bot_target = START_SWING * hand_coeff;
-        actuators.bulk_move_by_degrees({top_target, mid_target, bot_target});
-        linearActuator.move_actu(-x);
+            const double top_target = wrist_angle * hand_coeff;
+            const double mid_target = theta * hand_coeff;
+            double bot_target = START_SWING * hand_coeff;
 
-        bot_target = (START_SWING + swing_length) * hand_coeff;
-        actuators.bulk_move_by_degrees({top_target, mid_target, bot_target});
+            actuators.bulk_move_by_degrees({ top_target, mid_target, bot_target });
+            linearActuator.move_actu(-x);
+
+            bot_target = (START_SWING + swing_length) * hand_coeff;
+            actuators.bulk_move_by_degrees({ top_target, mid_target, bot_target });
+        }
     }
 
     void shutdown() {
-        actuators.bulk_move_by_degrees({0, 0, 0});
+        actuators.bulk_move_by_degrees({ 0, 0, 0 });
         linearActuator.move_actu(0);
         sharedPortHandler->closePort();
     }
@@ -98,9 +100,9 @@ private:
 
 class VisionEnd {
 private:
-    Camera cam_top = Camera(CameraType::TOP, {0, 1200}, 120);
-    Camera cam_left = Camera(CameraType::LEFT, {1, 1200}, 120);
-    Camera cam_right = Camera(CameraType::RIGHT, {2, 1200}, 120);
+    Camera cam_top = Camera(CameraType::TOP, { 1400, 0 }, 120);
+    Camera cam_left = Camera(CameraType::LEFT, { 1401, 0 }, 120);
+    Camera cam_right = Camera(CameraType::RIGHT, { 1404, 0 }, 120);
     Tracker tracker_top = Tracker(ORANGE_MIN, ORANGE_MAX);
     Tracker tracker_left = Tracker(ORANGE_MIN, ORANGE_MAX);
     Tracker tracker_right = Tracker(ORANGE_MIN, ORANGE_MAX);
@@ -111,7 +113,7 @@ private:
         const Camera& camera,
         Tracker& tracker,
         Predictor& predictor,
-        void (Predictor::*set_pt)(const std::optional<cv::Point2f>&)
+        void (Predictor::* set_pt)(const std::optional<cv::Point2f>&)
     ) {
         if (frame.empty()) return;
         tracker << frame;
@@ -127,7 +129,7 @@ private:
         Draw::put_text(
             frame,
             std::format("FPS: {:.1f}/{:.1f}", camera.get_fps(), camera.get_prop(cv::CAP_PROP_FPS)),
-            {10, 20}
+            { 10, 20 }
         );
 #endif
     }
@@ -136,13 +138,13 @@ public:
     VisionEnd() {
         cam_top.set_frame_callback([this](cv::Mat& frame) {
             frame_callback(frame, cam_top, tracker_top, predictor, &Predictor::set_point_top);
-        });
+            });
         cam_left.set_frame_callback([this](cv::Mat& frame) {
             frame_callback(frame, cam_left, tracker_left, predictor, &Predictor::set_point_left);
-        });
+            });
         cam_right.set_frame_callback([this](cv::Mat& frame) {
             frame_callback(frame, cam_right, tracker_right, predictor, &Predictor::set_point_right);
-        });
+            });
     }
 
     ~VisionEnd() {
@@ -170,10 +172,10 @@ public:
         cam_left.start();
         cam_right.start();
 
-        cv::Point3f world_pos{-1, -1, -1};
-        cv::Vec3f world_speed{0, 0, 0};
-        cv::Point3f predict_arrive_pos{-1, -1, -1};
-        cv::Point3f real_arrive_pos{-1, -1, -1};
+        cv::Point3f world_pos{ -1, -1, -1 };
+        cv::Vec3f world_speed{ 0, 0, 0 };
+        cv::Point3f predict_arrive_pos{ -1, -1, -1 };
+        cv::Point3f real_arrive_pos{ -1, -1, -1 };
         std::deque<cv::Point3f> orbit;
         std::deque<cv::Point3f> predict_orbit;
 
@@ -206,24 +208,29 @@ public:
                 if (const auto new_arrive_pos = predictor.get_arrive_pos()) {
                     predict_arrive_pos = new_arrive_pos.value();
                 }
+                has_sent = false;
             }
             else if (0 <= world_pos.x && world_pos.x <= TABLE_WIDTH &&
-                0 <= world_pos.y &&
-                0 <= world_pos.z &&
-                !has_sent.load()) {
-                {
-                    std::lock_guard lock(mutex);
-                    const auto payload = Bridge::convert(predict_arrive_pos);
+                    0 <= world_pos.y &&
+                    0 <= world_pos.z) {
 
-                    std::cout << "Predicted position: " << predict_arrive_pos << std::endl;
-                    std::cout << "Broadcast to hardware: " << std::endl
-                        << "\tx: " << payload.x << " cm" << std::endl
-                        << "\ttheta: " << payload.theta << " deg" << std::endl
-                        << "\tswing_length: " << payload.swing_length << " deg" << std::endl
-                        << "\twrist_angle: " << payload.wrist_angle << " deg" << std::endl;
+                if (0 <= predict_arrive_pos.x && predict_arrive_pos.x <= TABLE_WIDTH &&
+                    0 <= predict_arrive_pos.y && predict_arrive_pos.y <= TABLE_HEIGHT &&
+                    0 <= predict_arrive_pos.z &&
+                    !has_sent.load()) {
+                        {
+                            std::lock_guard lock(mutex);
+                            const auto payload = Bridge::convert(predict_arrive_pos);
 
-                    shared_payload = payload;
-                    has_sent = true;
+                            std::cout << "Predicted position: " << predict_arrive_pos << std::endl;
+                            std::cout << "Broadcast to hardware: " << std::endl
+                                << "\tx: " << payload.x << " cm" << std::endl
+                                << "\ttheta: " << payload.theta << " deg" << std::endl
+                                << "\tswing_length: " << payload.swing_length << " deg" << std::endl
+                                << "\twrist_angle: " << payload.wrist_angle << " deg" << std::endl;
+
+                            shared_payload = payload;
+                        }
                 }
             }
 
@@ -238,14 +245,14 @@ public:
             Draw::put_text_border(
                 frame_left,
                 Draw::to_string("pos", world_pos, "cm"),
-                {10, 50},
+                { 10, 50 },
                 COLOR_GREEN
             );
 
             Draw::put_text_border(
                 frame_left,
                 Draw::to_string("speed", world_speed, "cm/s"),
-                {10, 80},
+                { 10, 80 },
                 COLOR_WHITE
             );
 
@@ -253,11 +260,11 @@ public:
             Draw::put_circle(frame_top, predictor.pos_3d_to_2d(predict_arrive_pos, CameraType::TOP), 10, COLOR_BLUE);
             Draw::put_circle(frame_left, predictor.pos_3d_to_2d(predict_arrive_pos, CameraType::LEFT), 10, COLOR_BLUE);
             Draw::put_circle(frame_right, predictor.pos_3d_to_2d(predict_arrive_pos, CameraType::RIGHT), 10,
-                             COLOR_BLUE);
+                COLOR_BLUE);
             Draw::put_text_border(
                 frame_left,
                 Draw::to_string("predict", predict_arrive_pos, "cm"),
-                {10, 110},
+                { 10, 110 },
                 COLOR_BLUE
             );
 
@@ -268,7 +275,7 @@ public:
             Draw::put_text_border(
                 frame_left,
                 Draw::to_string("real", real_arrive_pos, "cm"),
-                {10, 140},
+                { 10, 140 },
                 COLOR_RED
             );
 
@@ -304,7 +311,7 @@ public:
             frame_left_resized.copyTo(final_frame(cv::Rect(0, 0, frame_left_resized.cols, frame_left_resized.rows)));
             // Copy right on top-right (next to left)
             frame_right_resized.copyTo(final_frame(cv::Rect(frame_left_resized.cols, 0, frame_right_resized.cols,
-                                                            frame_right_resized.rows)));
+                frame_right_resized.rows)));
             // Copy top centered below
             int x_offset = (max_width - frame_top_resized.cols) / 2;
             frame_top_resized.copyTo(final_frame(cv::Rect(

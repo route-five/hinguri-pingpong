@@ -30,6 +30,8 @@ using BridgePayload = struct BridgePayload_ {
 namespace Bridge {
     constexpr float rad = 180.0f / std::numbers::pi_v<float>;
 
+
+
     /**
      * h0 = 탁구 로봇 축 자체 높이
      * r = 탁구 로봇 구동 반지름
@@ -51,7 +53,7 @@ namespace Bridge {
 
         const bool use_right_hand = x_p >= TABLE_WIDTH / 2;
 
-        float theta = std::asin((z_p - h0) / r);
+        float theta = std::asin(std::clamp((z_p - h0) / r, -1.0f, 1.0f));
         if (!use_right_hand)
             theta = std::numbers::pi_v<float> - theta; // x_p가 테이블의 오른쪽에 있을 때, θ를 반전
 
@@ -60,7 +62,7 @@ namespace Bridge {
         return {
             x,
             theta * rad,
-            120.0f, // 스윙 길이 (몸통 돌리는 축) - TODO: 현재는 120도(-90도 ~ 30도)로 설정, 추후 계산 필요
+            90.0f, // 스윙 길이 (몸통 돌리는 축) - TODO: 현재는 120도(-60도 ~ 30도)로 설정, 추후 계산 필요
             35.0f, // 손목 각도 (탁구채를 얼마나 눕힐지) - TODO: 현재는 35도로 설정, 추후 계산 필요
             use_right_hand
         };

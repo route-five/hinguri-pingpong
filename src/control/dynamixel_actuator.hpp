@@ -83,11 +83,11 @@ public:
         return true;
     }
 
-    void bulk_move_by_degrees(const std::vector<double>& degree_offsets) const {
+    bool bulk_move_by_degrees(const std::vector<double>& degree_offsets) const {
         dynamixel::GroupBulkWrite groupBulkWrite(portHandler, packetHandler);
         if (degree_offsets.size() != ids.size()) {
             std::cerr << "Degree offsets size does not match motor IDs size" << std::endl;
-            return;
+            return false;
         }
 
         std::vector<int> target_positions;
@@ -99,7 +99,7 @@ public:
             if (target_position < MIN_POS_LIMIT || target_position > MAX_POS_LIMIT) {
                 std::cerr << "Movement out of range (" << target_position << "). Ignored."
                     << std::endl;
-                return;
+                return true;
             }
             target_positions.push_back(target_position);
         }
@@ -114,17 +114,19 @@ public:
             );
             if (!dxl_addparam_result) {
                 std::cerr << "Failed to add parameter for motor " << ids[i] << std::endl;
-                return;
+                return false;
             }
         }
 
         bool dxl_comm_result = groupBulkWrite.txPacket();
         if (dxl_comm_result != COMM_SUCCESS) {
             std::cerr << "Failed to write bulk data" << std::endl;
-            return;
+            return false;
         }
 
         groupBulkWrite.clearParam();
+
+        return true;
     }
 
     void close(int id) const {

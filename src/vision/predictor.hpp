@@ -583,17 +583,17 @@ public:
         const float ylim = TABLE_HEIGHT
     ) {
         if (world_pos.has_value() && world_speed.has_value()) {
-            float t_ylim = world_speed.value()[1] == 0
-                               ? std::numeric_limits<float>::max()
-                               : (ylim - world_pos->y) / world_speed.value()[1];
-            if (t_ylim <= 0) t_ylim = std::numeric_limits<float>::max(); // 이미 지나쳤다면 무한대
+            //float t_ylim = world_speed.value()[1] == 0
+            //                   ? std::numeric_limits<float>::max()
+            //                   : (ylim - world_pos->y) / world_speed.value()[1];
+            //if (t_ylim <= 0) t_ylim = std::numeric_limits<float>::max(); // 이미 지나쳤다면 무한대
 
             float t_y0 = world_speed.value()[1] == 0
                              ? std::numeric_limits<float>::max()
                              : world_pos->y / -world_speed.value()[1];
             if (t_y0 <= 0) t_y0 = std::numeric_limits<float>::max(); // 이미 지나쳤다면 무한대
 
-            return std::min(t_ylim, t_y0);
+            return t_y0;
         }
 
         return std::nullopt;
