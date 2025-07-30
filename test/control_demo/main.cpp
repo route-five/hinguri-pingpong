@@ -49,6 +49,10 @@
 #define START_SWING -90; // deg
 #define END_SWING 30; // deg
 
+constexpr int TOP_MOTOR_ID = 4;
+constexpr int MID_MOTOR_ID = 3;
+constexpr int BOT_MOTOR_ID = 2;
+
 double rad_to_deg(double rad) {
     return rad * 180.0 / M_PI;
 }
@@ -66,13 +70,13 @@ struct BridgePayload {
 
 std::mutex mutex;
 std::optional<BridgePayload> shared_payload;
-std::atomic<bool> has_sent{false};
+std::atomic<bool> has_sent{ false };
 
 class VisionEnd {
 public:
-    Camera cam_top = Camera(CameraType::TOP, {0, 1200}, 120);
-    Camera cam_left = Camera(CameraType::LEFT, {1, 1200}, 120);
-    Camera cam_right = Camera(CameraType::RIGHT, {2, 1200}, 120);
+    Camera cam_top = Camera(CameraType::TOP, { 0, 1400 }, 120);
+    Camera cam_left = Camera(CameraType::LEFT, { 1, 1400 }, 120);
+    Camera cam_right = Camera(CameraType::RIGHT, { 2, 1400 }, 120);
     Tracker tracker_left = Tracker(ORANGE_MIN, ORANGE_MAX);
     Tracker tracker_right = Tracker(ORANGE_MIN, ORANGE_MAX);
     Tracker tracker_top = Tracker(ORANGE_MIN, ORANGE_MAX);
@@ -100,7 +104,7 @@ public:
         Draw::put_text(
             frame,
             std::format("FPS: {:.1f}/{:.1f}", camera.get_fps(), camera.get_prop(cv::CAP_PROP_FPS)),
-            {10, 30}
+            { 10, 30 }
         );
     }
 
@@ -121,35 +125,35 @@ public:
 
         // (2) 탁구공 위치 검출
         cam_top.set_frame_callback([&](cv::Mat& frame) {
-            callback(frame, cam_top, tracker_top, [&predictor, this](const cv::Point2f& pt) {
+            callback(frame, cam_top, tracker_top, [this](const cv::Point2f& pt) {
                 predictor.set_point_top(pt);
+                });
             });
-        });
         cam_left.set_frame_callback([&](cv::Mat& frame) {
-            callback(frame, cam_left, tracker_left, [&predictor, this](const cv::Point2f& pt) {
+            callback(frame, cam_left, tracker_left, [this](const cv::Point2f& pt) {
                 predictor.set_point_left(pt);
+                });
             });
-        });
         cam_right.set_frame_callback([&](cv::Mat& frame) {
-            callback(frame, cam_right, tracker_right, [&predictor, this](const cv::Point2f& pt) {
+            callback(frame, cam_right, tracker_right, [this](const cv::Point2f& pt) {
                 predictor.set_point_right(pt);
+                });
             });
-        });
 
         cam_top.start();
         cam_left.start();
         cam_right.start();
 
         // TODO: 카메라에 공이 적어도 한 대라도 안 보일 경우 위치가 겁나 튀는 문제 해결 필요 - 이 때 kalman filter 같은 걸로 예측?
-        cv::Point3f world_pos;
+        cv::Point3f world_pos{ -1, -1, -1 };
         cv::Point3f predict_pos;
         cv::Point3f real_arrive_pos;
         std::deque<cv::Point3f> orbit;
 
         while (true) {
             cv::Mat frame_top = cam_top.read(),
-                    frame_left = cam_left.read(),
-                    frame_right = cam_right.read();
+                frame_left = cam_left.read(),
+                frame_right = cam_right.read();
 
             if (frame_top.empty() || frame_left.empty() || frame_right.empty())
                 continue;
@@ -164,16 +168,15 @@ public:
             if (orbit.size() > 100) {
                 orbit.pop_front();
             }
-
             Draw::put_text(
                 frame_top,
                 Draw::to_string("Pos", world_pos, "cm"),
-                {10, 70}
+                { 10, 70 }
             );
             Draw::put_text(
                 frame_left,
                 Draw::to_string("Pos", world_pos, "cm"),
-                {10, 70}
+                { 10, 70 }
             );
 
             if (predictor.get_world_positions_size() >= 2) {
@@ -181,21 +184,20 @@ public:
 
                 // (4) Kalman filter 등의 후처리로 결과 보정
                 // TODO: Kalman filter 적용 로직 구현 필요
-
                 Draw::put_text(
                     frame_left,
                     Draw::to_string("Speed", world_speed, "cm/s"),
-                    {10, 110}
+                    { 10, 110 }
                 );
 
                 // 네트를 3/4 넘길 때까지만 예측
-                if (0 <= world_pos.y && world_pos.y <= 3 * TABLE_HEIGHT / 4) {
+                if (TABLE_HEIGHT / 4 <= world_pos.y && world_pos.y <= TABLE_HEIGHT) {
                     const auto predict = predictor.get_arrive_pos();
                     if (predict.has_value()) {
                         predict_pos = predict.value();
                     }
                 }
-                else if (!has_sent.load()) {
+                else if (0 <= world_pos.x && world_pos.x <= TABLE_WIDTH && 0 <= world_pos.y && 0 <= world_pos.z && !has_sent.load()) {
                     {
                         std::lock_guard<std::mutex> lock(mutex);
                         BridgePayload input{
@@ -217,27 +219,26 @@ public:
             if (-5 <= world_pos.y && world_pos.y < 3) {
                 real_arrive_pos = world_pos;
             }
-
             Draw::put_text(
                 frame_top,
                 Draw::to_string("Predict", predict_pos, "cm"),
-                {10, 150}
+                { 10, 150 }
             );
             Draw::put_text(
                 frame_left,
                 Draw::to_string("Predict", predict_pos, "cm"),
-                {10, 150}
+                { 10, 150 }
             );
 
             Draw::put_text(
                 frame_top,
                 Draw::to_string("Arrive", real_arrive_pos, "cm"),
-                {10, 190}
+                { 10, 190 }
             );
             Draw::put_text(
                 frame_left,
                 Draw::to_string("Arrive", real_arrive_pos, "cm"),
-                {10, 190}
+                { 10, 190 }
             );
 
             // 궤적 그리기
@@ -249,6 +250,7 @@ public:
                 cv::circle(frame_right, predict_right, 3, COLOR_MAGENTA, -1, cv::LINE_AA);
                 cv::circle(frame_top, predict_top, 3, COLOR_MAGENTA, -1, cv::LINE_AA);
             }
+
 
             // 예상 도착 위치 그리기
             const auto predict_left = predictor.pos_3d_to_2d(predict_pos, CameraType::LEFT);
@@ -282,9 +284,9 @@ public:
 
 // Shared handlers for all Dynamixel actuators
 static dynamixel::PortHandler* sharedPortHandler =
-    dynamixel::PortHandler::getPortHandler(DEVICENAME);
+dynamixel::PortHandler::getPortHandler(DEVICENAME);
 static dynamixel::PacketHandler* sharedPacketHandler =
-    dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
+dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
 static bool sharedPortInitialized = false;
 
 class BulkDynamixelActuator {
@@ -294,7 +296,7 @@ private:
     std::vector<int> ids;
 
 public:
-    explicit BulkDynamixelActuator(const std::vector<int>& motor_ids) : ids{motor_ids} {
+    explicit BulkDynamixelActuator(const std::vector<int>& motor_ids) : ids{ motor_ids } {
         // Use shared handlers
         portHandler = sharedPortHandler;
         packetHandler = sharedPacketHandler;
@@ -327,14 +329,14 @@ public:
 
             int result =
                 packetHandler->write1ByteTxRx(portHandler, id, ADDR_OPERATING_MODE,
-                                              POSITION_CONTROL_MODE, &dxl_error);
+                    POSITION_CONTROL_MODE, &dxl_error);
             if (result != COMM_SUCCESS || dxl_error) {
                 std::cerr << "Failed to set operating mode for motor " << id << std::endl;
                 return false;
             }
 
             result = packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE,
-                                                   TORQUE_ENABLE, &dxl_error);
+                TORQUE_ENABLE, &dxl_error);
             if (result != COMM_SUCCESS || dxl_error) {
                 std::cerr << "Failed to enable torque for motor " << id << std::endl;
                 return false;
@@ -390,6 +392,7 @@ public:
     }
 
     void close(int id) const {
+        bulk_move_by_degrees({ 0, 0, 0 });
         uint8_t dxl_error = 0;
         packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE, 0, &dxl_error);
         std::cout << "Torque disabled for motor " << id << std::endl;
@@ -399,7 +402,7 @@ public:
 class ControlEnd {
 public:
     ControlEnd()
-        : actuators({TOP_MOTOR_ID, MID_MOTOR_ID, BOT_MOTOR_ID}) {
+        : actuators({ TOP_MOTOR_ID, MID_MOTOR_ID, BOT_MOTOR_ID }) {
     }
 
     ~ControlEnd() {
@@ -422,6 +425,7 @@ public:
                 if (!shared_payload.has_value()) continue;
                 input = shared_payload.value();
                 shared_payload.reset();
+                std::cout << "(" << input.x << ", " << input.z << ") 로 받음" << std::endl;
                 has_sent = false;
             }
             if (input.x == -1000) break;
@@ -444,14 +448,14 @@ private:
         double top_target = rad_to_deg(-input.angle * p);
         double mid_target = rad_to_deg(theta * p);
         double bot_target = p * START_SWING;
-        actuators.bulk_move_by_degrees({top_target, mid_target, bot_target});
+        actuators.bulk_move_by_degrees({ top_target, mid_target, bot_target });
         linearActuator.move_actu(IS_REVERSED ? -x : x);
         bot_target = p * END_SWING;
-        actuators.bulk_move_by_degrees({bot_target, bot_target, bot_target});
+        actuators.bulk_move_by_degrees({ bot_target, bot_target, bot_target });
     }
 
     void shutdown() {
-        actuators.bulk_move_by_degrees({0, 0, 0});
+        actuators.bulk_move_by_degrees({ 0, 0, 0 });
         linearActuator.move_actu(0);
         sharedPortHandler->closePort();
     }
