@@ -16,7 +16,7 @@ using Device = struct Device_ {
 };
 
 class Camera {
-  const CameraType camera_type;
+  const CameraType& camera_type;
   cv::VideoCapture stream;
   Device device;
   cv::Size frame_size;
@@ -33,7 +33,7 @@ public:
    * @param device camara source index, backend - get from <code>python -m cv2_enumerate_cameras</code>
    * @param fps when size {640, 480}, 120. when size {1280, 720}, 90.
    */
-  explicit Camera(const CameraType& camera_type, const Device device, const int fps = 120)
+  explicit Camera(const CameraType& camera_type, const Device& device, int fps = 120)
     : camera_type{camera_type},
       stream{device.source, device.backend},
       device{device},
@@ -89,7 +89,7 @@ public:
       if (!new_frame->empty()) {
         if (frame_callback) frame_callback(*new_frame);
         {
-          std::lock_guard<std::mutex> lock(frame_mutex);
+          std::lock_guard lock(frame_mutex);
           current_frame_ptr = new_frame;
         }
         frame_count++;
@@ -108,22 +108,27 @@ public:
   cv::Mat read() const {
     std::shared_ptr<cv::Mat> ptr;
     {
-      std::lock_guard<std::mutex> lock(frame_mutex);
+      std::lock_guard lock(frame_mutex);
       ptr = current_frame_ptr;
     }
     return ptr ? *ptr : cv::Mat();
+  }
+
+  friend Camera& operator>>(Camera& cam, cv::Mat& frame) {
+    frame = cam.read();
+    return cam;
   }
 
   void stop() {
     stopped.store(true);
     if (thread.joinable()) thread.join();
     {
-      std::lock_guard<std::mutex> lock(frame_mutex);
+      std::lock_guard lock(frame_mutex);
       current_frame_ptr = nullptr;
     }
   }
 
-  [[nodiscard]] Device get_device() const {
+  [[nodiscard]] const Device& get_device() const {
     return device;
   }
 

@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 23)
 add_executable(hinguri_pingpong
         src/simulation/simulator_side.hpp
         src/simulation/simulator_top.hpp
+        src/utils/draw.hpp
+        src/utils/constants.hpp
         src/vision/calibrator.hpp
         src/vision/camera.hpp
         src/vision/camera_type.hpp
@@ -14,7 +16,10 @@ add_executable(hinguri_pingpong
         src/vision/tracker.hpp
         src/vision/bridge.hpp
         src/vision/visualizer.hpp
-        src/utils/draw.hpp
+        src/vision/vision_end.hpp
+        src/control/dynamixel_actuator.hpp
+        src/control/linear_actuator.hpp
+        src/control/control_end.hpp
 
         #### preprocessing
         # 1. 탁구대 위의 World 좌표를 생성하는 코드
@@ -32,7 +37,10 @@ add_executable(hinguri_pingpong
         #### processing
         #        src/main.cpp
         src/vision.cpp
-        src/main.cpp
+
+        #### test
+        #        test/matplot++/bridge_convert_test.cpp
+        #        test/matplot++/visualize_pingpong.cpp
         #        test/opencv/top_camera_test.cpp
         #        test/opencv/get_world_pos.cpp
         #        test/opencv/triple_camera.cpp

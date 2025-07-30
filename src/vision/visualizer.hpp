@@ -21,12 +21,17 @@ private:
     const std::vector<double> net_x = {0,                 TABLE_WIDTH,      TABLE_WIDTH,      0,                0};
     const std::vector<double> net_y = {TABLE_HEIGHT / 2,  TABLE_HEIGHT / 2, TABLE_HEIGHT / 2, TABLE_HEIGHT / 2, TABLE_HEIGHT / 2};
     const std::vector<double> net_z = {0,                 0,                TABLE_NET_HEIGHT, TABLE_NET_HEIGHT, 0};
+    const std::vector<double> center_x = {TABLE_WIDTH / 2, TABLE_WIDTH / 2};
+    const std::vector<double> center_y = {0, TABLE_HEIGHT};
+    const std::vector<double> center_z = {0, 0};
     // clang-format on
 
     std::vector<double> target_x, target_y, target_z;
 
 public:
-    Visualizer() = default;
+    Visualizer() {
+        plt::hold(true);
+    }
 
     ~Visualizer() = default;
 
@@ -40,12 +45,13 @@ public:
     }
 
     void show() const {
-        plt::hold(true);
         plt::plot3(table_x, table_y, table_z)->line_width(2).color("r");
         plt::plot3(net_x, net_y, net_z)->line_width(2).color("r");
+        plt::plot3(center_x, center_y, center_z)->line_width(2).color("r");
 
         plt::scatter3(target_x, target_y, target_z)
             ->marker_face(true)
+            .marker_size(2)
             .marker_face_color("b")
             .marker_color("b");
 

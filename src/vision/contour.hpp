@@ -8,36 +8,40 @@
 #include "../utils/constants.hpp"
 #include <numbers>
 #include <opencv2/opencv.hpp>
-#include <ranges>
 
 class Contour {
 private:
   std::vector<cv::Point> points;
 
 public:
-  explicit Contour(const std::vector<cv::Point>& points) : points{points} {
+  explicit Contour(std::vector<cv::Point> pts) noexcept
+    : points(std::move(pts)) {
   }
 
-  Contour(const std::initializer_list<cv::Point>& list) : points{list} {
+  Contour(const std::initializer_list<cv::Point>& list) noexcept
+    : points(list.begin(), list.end()) {
   }
 
-  ~Contour() = default;
+  Contour(const Contour&) noexcept = default;
+  Contour(Contour&&) noexcept = default;
+  Contour& operator=(const Contour&) noexcept = default;
+  Contour& operator=(Contour&&) noexcept = default;
 
   void draw(cv::Mat& frame, const cv::Scalar& color) const {
-    for (const auto point : points) {
+    for (const auto& point : points) {
       cv::circle(frame, point, 1, color, 1, cv::LINE_AA);
     }
   }
 
-  [[nodiscard]] const std::vector<cv::Point>& get_points() const {
+  [[nodiscard]] const std::vector<cv::Point>& get_points() const noexcept {
     return points;
   }
 
-  [[nodiscard]] size_t size() const {
+  [[nodiscard]] size_t size() const noexcept {
     return points.size();
   }
 
-  [[nodiscard]] bool empty() const {
+  [[nodiscard]] bool empty() const noexcept {
     return points.empty();
   }
 
@@ -53,7 +57,7 @@ public:
     return cv::contourArea(points);
   }
 
-  [[nodiscard]] double perimeter(const bool closed = true) const {
+  [[nodiscard]] double perimeter(const bool closed = true) const noexcept {
     return cv::arcLength(points, closed);
   }
 
@@ -71,12 +75,12 @@ public:
     return 4 * std::numbers::pi_v<double> * area / (perimeter * perimeter);
   }
 
-  [[nodiscard]] double distance_circularity(const double threshold = std::numeric_limits<double>::max()) const {
+  [[nodiscard]] double
+  distance_circularity(const double threshold = std::numeric_limits<double>::max()) const noexcept {
     const double dist = std::abs(CIRCULARITY_PERFECT - this->circularity());
     if (dist > threshold)
       return std::numeric_limits<double>::max();
-    else
-      return dist;
+    return dist;
   }
 
   [[nodiscard]] std::pair<cv::Point2f, double> min_enclosing_circle() const {

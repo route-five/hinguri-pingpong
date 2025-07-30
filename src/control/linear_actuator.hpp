@@ -5,29 +5,25 @@
 #include <iostream>
 #include <conio.h>
 #include "../constants.hpp"
+#include "../utils/constants.hpp"
 #include "../utils/sleep.hpp"
 
 /// char mot_file[] = "src/mot/ajin20190628.mot";        // *.mot file Path
 char mot_file[] = "hinguri.mot";
 
 
-class LinearActuator
-{
+class LinearActuator {
 public:
-	LinearActuator()
-	{
+	LinearActuator() {
 		DWORD Code = AxlOpen(7);
-		if (Code == AXT_RT_SUCCESS)
-		{
+		if (Code == AXT_RT_SUCCESS) {
 			printf("Library Reset. \n");
 			//Check for Motion Module
 			DWORD uStatus;
 			Code = AxmInfoIsMotionModule(&uStatus);
-			if (Code == AXT_RT_SUCCESS)
-			{
+			if (Code == AXT_RT_SUCCESS) {
 				printf("Library Reset.\n");
-				if (uStatus == STATUS_EXIST)
-				{
+				if (uStatus == STATUS_EXIST) {
 					printf("Library Reset. Motion model exists. \n");
 
 					AxmMotLoadParaAll(mot_file);
@@ -45,25 +41,32 @@ public:
 		}
 	}
 
-	~LinearActuator()
-	{
+	~LinearActuator() {
 		AxmSignalServoOn(LINEAR_AXIS_NO, 0);
 		AxlClose();
 	}
 
-	void move_actu(int pos)
-	{
+	/**
+	 * @param pos 원점은 탁구대 왼쪽 꼭짓점, cm 단위
+	 */
+	void move_actu(int pos) {
+		pos += TABLE_WIDTH / 2; // 탁구대 중앙을 원점으로 설정
+
 		AxmMotSetMoveUnitPerPulse(LINEAR_AXIS_NO, 10, LINEAR_PULSE_PER_10_UNITS); // mm
 		AxmMovePos(0, pos, LINEAR_VEL, LINEAR_ACCEL, LINEAR_DECEL);
 		DWORD uStatus;
 		AxmStatusReadInMotion(LINEAR_AXIS_NO, &uStatus);
-		while (uStatus)
-		{
+		while (uStatus) {
 			AxmStatusReadInMotion(LINEAR_AXIS_NO, &uStatus);
 		}
 	}
 
+	/**
+	 * @param pos 원점은 탁구대 왼쪽 꼭짓점, cm 단위
+	 */
 	void move_to(int pos) {
+		pos += TABLE_WIDTH / 2; // 탁구대 중앙을 원점으로 설정
+
 		AxmMoveToAbsPos(LINEAR_AXIS_NO, pos, LINEAR_VEL, LINEAR_ACCEL, LINEAR_DECEL);
 	}
 

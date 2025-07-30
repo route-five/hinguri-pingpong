@@ -178,7 +178,6 @@ public:
         assert(rms < 0.4 && "카메라 보정 RMS 오차가 너무 높습니다. (rms >= 0.4)");
 
         if (init_undistort) {
-            // TODO: new_camera_matrix를 앞으로의 연산으로 사용하나? = camera_matrix를 덮어 씌우는게 맞나?
             const cv::Mat new_camera_matrix = cv::getOptimalNewCameraMatrix(
                 camera_matrix_, dist_coeffs_, image_size_,
                 alpha, image_size_, roi

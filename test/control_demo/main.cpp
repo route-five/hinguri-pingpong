@@ -70,13 +70,13 @@ struct BridgePayload {
 
 std::mutex mutex;
 std::optional<BridgePayload> shared_payload;
-std::atomic<bool> has_sent{ false };
+std::atomic<bool> has_sent{false};
 
 class VisionEnd {
 public:
-    Camera cam_top = Camera(CameraType::TOP, { 0, 1400 }, 120);
-    Camera cam_left = Camera(CameraType::LEFT, { 1, 1400 }, 120);
-    Camera cam_right = Camera(CameraType::RIGHT, { 2, 1400 }, 120);
+    Camera cam_top = Camera(CameraType::TOP, {0, 1400}, 120);
+    Camera cam_left = Camera(CameraType::LEFT, {1, 1400}, 120);
+    Camera cam_right = Camera(CameraType::RIGHT, {2, 1400}, 120);
     Tracker tracker_left = Tracker(ORANGE_MIN, ORANGE_MAX);
     Tracker tracker_right = Tracker(ORANGE_MIN, ORANGE_MAX);
     Tracker tracker_top = Tracker(ORANGE_MIN, ORANGE_MAX);
@@ -104,14 +104,11 @@ public:
         Draw::put_text(
             frame,
             std::format("FPS: {:.1f}/{:.1f}", camera.get_fps(), camera.get_prop(cv::CAP_PROP_FPS)),
-            { 10, 30 }
+            {10, 30}
         );
     }
 
     void run() {
-        // (1) 3대의 카메라 레이턴시 고려해서 동기화
-        // TODO: 카메라 동기화 로직 구현 필요 - 구현 거의 완료 at PONG#60
-
         if (!cam_top.is_opened() || !cam_left.is_opened() || !cam_right.is_opened()) {
             const std::string message = std::format(
                 "Failed to open camera: top={}, left={}, right={}",
@@ -127,33 +124,33 @@ public:
         cam_top.set_frame_callback([&](cv::Mat& frame) {
             callback(frame, cam_top, tracker_top, [this](const cv::Point2f& pt) {
                 predictor.set_point_top(pt);
-                });
             });
+        });
         cam_left.set_frame_callback([&](cv::Mat& frame) {
             callback(frame, cam_left, tracker_left, [this](const cv::Point2f& pt) {
                 predictor.set_point_left(pt);
-                });
             });
+        });
         cam_right.set_frame_callback([&](cv::Mat& frame) {
             callback(frame, cam_right, tracker_right, [this](const cv::Point2f& pt) {
                 predictor.set_point_right(pt);
-                });
             });
+        });
 
         cam_top.start();
         cam_left.start();
         cam_right.start();
 
         // TODO: 카메라에 공이 적어도 한 대라도 안 보일 경우 위치가 겁나 튀는 문제 해결 필요 - 이 때 kalman filter 같은 걸로 예측?
-        cv::Point3f world_pos{ -1, -1, -1 };
+        cv::Point3f world_pos{-1, -1, -1};
         cv::Point3f predict_pos;
         cv::Point3f real_arrive_pos;
         std::deque<cv::Point3f> orbit;
 
         while (true) {
             cv::Mat frame_top = cam_top.read(),
-                frame_left = cam_left.read(),
-                frame_right = cam_right.read();
+                    frame_left = cam_left.read(),
+                    frame_right = cam_right.read();
 
             if (frame_top.empty() || frame_left.empty() || frame_right.empty())
                 continue;
@@ -171,12 +168,12 @@ public:
             Draw::put_text(
                 frame_top,
                 Draw::to_string("Pos", world_pos, "cm"),
-                { 10, 70 }
+                {10, 70}
             );
             Draw::put_text(
                 frame_left,
                 Draw::to_string("Pos", world_pos, "cm"),
-                { 10, 70 }
+                {10, 70}
             );
 
             if (predictor.get_world_positions_size() >= 2) {
@@ -187,7 +184,7 @@ public:
                 Draw::put_text(
                     frame_left,
                     Draw::to_string("Speed", world_speed, "cm/s"),
-                    { 10, 110 }
+                    {10, 110}
                 );
 
                 // 네트를 3/4 넘길 때까지만 예측
@@ -197,7 +194,8 @@ public:
                         predict_pos = predict.value();
                     }
                 }
-                else if (0 <= world_pos.x && world_pos.x <= TABLE_WIDTH && 0 <= world_pos.y && 0 <= world_pos.z && !has_sent.load()) {
+                else if (0 <= world_pos.x && world_pos.x <= TABLE_WIDTH && 0 <= world_pos.y && 0 <= world_pos.z && !
+                    has_sent.load()) {
                     {
                         std::lock_guard<std::mutex> lock(mutex);
                         BridgePayload input{
@@ -222,23 +220,23 @@ public:
             Draw::put_text(
                 frame_top,
                 Draw::to_string("Predict", predict_pos, "cm"),
-                { 10, 150 }
+                {10, 150}
             );
             Draw::put_text(
                 frame_left,
                 Draw::to_string("Predict", predict_pos, "cm"),
-                { 10, 150 }
+                {10, 150}
             );
 
             Draw::put_text(
                 frame_top,
                 Draw::to_string("Arrive", real_arrive_pos, "cm"),
-                { 10, 190 }
+                {10, 190}
             );
             Draw::put_text(
                 frame_left,
                 Draw::to_string("Arrive", real_arrive_pos, "cm"),
-                { 10, 190 }
+                {10, 190}
             );
 
             // 궤적 그리기
@@ -284,9 +282,9 @@ public:
 
 // Shared handlers for all Dynamixel actuators
 static dynamixel::PortHandler* sharedPortHandler =
-dynamixel::PortHandler::getPortHandler(DEVICENAME);
+    dynamixel::PortHandler::getPortHandler(DEVICENAME);
 static dynamixel::PacketHandler* sharedPacketHandler =
-dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
+    dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
 static bool sharedPortInitialized = false;
 
 class BulkDynamixelActuator {
@@ -296,7 +294,7 @@ private:
     std::vector<int> ids;
 
 public:
-    explicit BulkDynamixelActuator(const std::vector<int>& motor_ids) : ids{ motor_ids } {
+    explicit BulkDynamixelActuator(const std::vector<int>& motor_ids) : ids{motor_ids} {
         // Use shared handlers
         portHandler = sharedPortHandler;
         packetHandler = sharedPacketHandler;
@@ -329,14 +327,14 @@ public:
 
             int result =
                 packetHandler->write1ByteTxRx(portHandler, id, ADDR_OPERATING_MODE,
-                    POSITION_CONTROL_MODE, &dxl_error);
+                                              POSITION_CONTROL_MODE, &dxl_error);
             if (result != COMM_SUCCESS || dxl_error) {
                 std::cerr << "Failed to set operating mode for motor " << id << std::endl;
                 return false;
             }
 
             result = packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE,
-                TORQUE_ENABLE, &dxl_error);
+                                                   TORQUE_ENABLE, &dxl_error);
             if (result != COMM_SUCCESS || dxl_error) {
                 std::cerr << "Failed to enable torque for motor " << id << std::endl;
                 return false;
@@ -392,7 +390,7 @@ public:
     }
 
     void close(int id) const {
-        bulk_move_by_degrees({ 0, 0, 0 });
+        bulk_move_by_degrees({0, 0, 0});
         uint8_t dxl_error = 0;
         packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE, 0, &dxl_error);
         std::cout << "Torque disabled for motor " << id << std::endl;
@@ -402,7 +400,7 @@ public:
 class ControlEnd {
 public:
     ControlEnd()
-        : actuators({ TOP_MOTOR_ID, MID_MOTOR_ID, BOT_MOTOR_ID }) {
+        : actuators({TOP_MOTOR_ID, MID_MOTOR_ID, BOT_MOTOR_ID}) {
     }
 
     ~ControlEnd() {
@@ -448,14 +446,14 @@ private:
         double top_target = rad_to_deg(-input.angle * p);
         double mid_target = rad_to_deg(theta * p);
         double bot_target = p * START_SWING;
-        actuators.bulk_move_by_degrees({ top_target, mid_target, bot_target });
+        actuators.bulk_move_by_degrees({top_target, mid_target, bot_target});
         linearActuator.move_actu(IS_REVERSED ? -x : x);
         bot_target = p * END_SWING;
-        actuators.bulk_move_by_degrees({ bot_target, bot_target, bot_target });
+        actuators.bulk_move_by_degrees({bot_target, bot_target, bot_target});
     }
 
     void shutdown() {
-        actuators.bulk_move_by_degrees({ 0, 0, 0 });
+        actuators.bulk_move_by_degrees({0, 0, 0});
         linearActuator.move_actu(0);
         sharedPortHandler->closePort();
     }

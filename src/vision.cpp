@@ -4,8 +4,8 @@
 
 #include <opencv2/opencv.hpp>
 #include <vector>
-#include <mutex>
 
+#include "vision/bridge.hpp"
 #include "utils/draw.hpp"
 #include "vision/calibrator.hpp"
 #include "vision/camera.hpp"
@@ -14,232 +14,217 @@
 #include "vision/tracker.hpp"
 #include "vision/visualizer.hpp"
 
-// TODO: 모두 통합하기
+#define DEBUG
+#define IMSHOW
 
-void callback(
+bool has_sent = false; // 전송 여부를 나타내는 플래그
+
+void frame_callback(
     cv::Mat& frame,
     const Camera& camera,
     Tracker& tracker,
-    const std::function<void(const cv::Point2f&)>& set_pt
+    Predictor& predictor,
+    void (Predictor::*set_pt)(const std::optional<cv::Point2f>&)
 ) {
     if (frame.empty()) return;
+    tracker << frame;
 
-    tracker.update(frame);
+    const auto camera_pos = tracker.get_camera_pos();
+    (predictor.*set_pt)(camera_pos.has_value() ? camera_pos.value().first : std::nullopt);
 
-    const auto ret = tracker.get_camera_pos();
-    if (ret.has_value()) {
-        auto [center, radius] = ret.value();
-
-        cv::circle(frame, center, radius, COLOR_GREEN, -1, cv::LINE_AA);
-        set_pt(center);
-    }
-
+#ifdef DEBUG
     Draw::put_text(
         frame,
         std::format("FPS: {:.1f}/{:.1f}", camera.get_fps(), camera.get_prop(cv::CAP_PROP_FPS)),
-        {10, 30}
+        {10, 20}
     );
+#endif
 }
 
 int main() {
     // (2) 3대의 카메라 타임라인 동기화
-    // TODO: 카메라 동기화 로직 구현 필요 - 구현 거의 완료 at PONG#60
+    // TODO: 카메라 레이턴시, 타임라인 동기화 로직 구현 필요 - 구현 거의 완료 at PONG#60
 
+#pragma region Initialization
     Camera cam_top(CameraType::TOP, {0, 1200}, 120);
     Camera cam_left(CameraType::LEFT, {1, 1200}, 120);
     Camera cam_right(CameraType::RIGHT, {2, 1200}, 120);
+    Tracker tracker_top(ORANGE_MIN, ORANGE_MAX);
+    Tracker tracker_left(ORANGE_MIN, ORANGE_MAX);
+    Tracker tracker_right(ORANGE_MIN, ORANGE_MAX);
+    Predictor predictor;
+#pragma endregion
 
+#pragma region Preparation
     if (!cam_top.is_opened() || !cam_left.is_opened() || !cam_right.is_opened()) {
         const std::string message = std::format(
             "Failed to open camera: top={}, left={}, right={}",
-            cam_top.is_opened() ? "true" : "false",
-            cam_left.is_opened() ? "true" : "false",
-            cam_right.is_opened() ? "true" : "false"
+            cam_top.is_opened() ? "opened" : "fail",
+            cam_left.is_opened() ? "opened" : "fail",
+            cam_right.is_opened() ? "opened" : "fail"
         );
         std::cerr << message << std::endl;
         return -1;
     }
-
-    Calibrator calibrator_top(cam_top);
-    Predictor predictor;
-    Tracker tracker_left(ORANGE_MIN, ORANGE_MAX);
-    Tracker tracker_right(ORANGE_MIN, ORANGE_MAX);
-    Tracker tracker_top(ORANGE_MIN, ORANGE_MAX);
-
-    // (3) 탁구공 센터 검출 (예: blob)
-    // TODO: 공 검출 로직 구현 필요 - 배경 제거, blob?
-    cam_top.set_frame_callback([&predictor, &cam_top, &tracker_top, &calibrator_top](cv::Mat& frame) {
-        callback(frame, cam_top, tracker_top, [&predictor](const cv::Point2f& pt) {
-            predictor.set_point_top(pt);
-        });
+    // (3) 탁구공 센터 검출
+    cam_top.set_frame_callback([&cam_top, &tracker_top, &predictor](cv::Mat& frame) {
+        frame_callback(frame, cam_top, tracker_top, predictor, &Predictor::set_point_top);
     });
-    cam_left.set_frame_callback([&predictor, &cam_left, &tracker_left](cv::Mat& frame) {
-        callback(frame, cam_left, tracker_left, [&predictor](const cv::Point2f& pt) {
-            predictor.set_point_left(pt);
-        });
+    cam_left.set_frame_callback([&cam_left, &tracker_left, &predictor](cv::Mat& frame) {
+        frame_callback(frame, cam_left, tracker_left, predictor, &Predictor::set_point_left);
     });
-    cam_right.set_frame_callback([&predictor, &cam_right, &tracker_right](cv::Mat& frame) {
-        callback(frame, cam_right, tracker_right, [&predictor](const cv::Point2f& pt) {
-            predictor.set_point_right(pt);
-        });
+    cam_right.set_frame_callback([&cam_right, &tracker_right, &predictor](cv::Mat& frame) {
+        frame_callback(frame, cam_right, tracker_right, predictor, &Predictor::set_point_right);
     });
 
     cam_top.start();
     cam_left.start();
     cam_right.start();
+#pragma endregion
 
-    // TODO: 카메라에 공이 적어도 한 대라도 안 보일 경우 위치가 겁나 튀는 문제 해결 필요 - 이 때 kalman filter 같은 걸로 예측?
-    cv::Point3f world_pos;
-    cv::Point3f predict_pos;
-    cv::Point3f real_arrive_pos;
+    cv::Point3f world_pos{-1, -1, -1};
+    cv::Vec3f world_speed{0, 0, 0};
+    cv::Point3f predict_arrive_pos{-1, -1, -1};
+    cv::Point3f real_arrive_pos{-1, -1, -1};
     std::deque<cv::Point3f> orbit;
     std::deque<cv::Point3f> predict_orbit;
 
     while (true) {
-        cv::Mat frame_top = cam_top.read(),
-                frame_left = cam_left.read(),
-                frame_right = cam_right.read();
+        cv::Mat frame_top, frame_left, frame_right;
+        cam_top >> frame_top;
+        cam_left >> frame_left;
+        cam_right >> frame_right;
 
         if (frame_top.empty() || frame_left.empty() || frame_right.empty())
             continue;
 
         // (4) 3D 위치 삼각측량
-        tracker_top.update(frame_top);
-        auto ret = tracker_top.get_camera_pos();
+        if (const auto new_world_pos = predictor.get_new_world_pos(1.0f / static_cast<float>(cam_top.get_fps()))) {
+            world_pos = new_world_pos.value();
 
-        world_pos = predictor.get_new_world_pos(ret.has_value() ? &ret.value().first : nullptr);
-        orbit.push_back(world_pos);
-        if (orbit.size() > 100) {
-            orbit.pop_front(); // 궤적이 너무 길어지지 않도록 제한
+#ifdef DEBUG
+            orbit.push_back(world_pos);
+            if (orbit.size() > 100) {
+                orbit.pop_front(); // 궤적이 너무 길어지지 않도록 제한
+            }
+#endif
         }
 
-        Draw::put_text(
-            frame_top,
-            Draw::to_string("Pos", world_pos, "cm"),
-            {10, 70}
-        );
-        Draw::put_text(
-            frame_left,
-            Draw::to_string("Pos", world_pos, "cm"),
-            {10, 70}
-        );
+        if (const auto new_world_speed = predictor.get_world_speed()) {
+            world_speed = new_world_speed.value();
+        }
 
-        if (predictor.get_world_positions_size() >= 2) {
-            auto world_speed = predictor.get_world_speed();
+        // 예측 구간 설정
+        if (PREDICT_MIN_Y <= world_pos.y && world_pos.y <= PREDICT_MAX_Y) {
+            if (const auto new_arrive_pos = predictor.get_arrive_pos()) {
+                predict_arrive_pos = new_arrive_pos.value();
+            }
+        }
+        // 하드웨어에 전송할 위치 계산
+        else if (0 <= world_pos.x && world_pos.x <= TABLE_WIDTH &&
+            0 <= world_pos.y &&
+            0 <= world_pos.z &&
+            !has_sent) {
+            {
+                auto [x, theta, swing_length, wrist_angle] = Bridge::convert(predict_arrive_pos);
 
-            // (6) Kalman filter 등의 후처리로 결과 보정
-            // TODO: Kalman filter 적용 로직 구현 필요
+                std::cout << "Predicted position: " << predict_arrive_pos << std::endl;
+                std::cout << "Broadcast to hardware: " << std::endl
+                    << "\tx: " << x << " cm" << std::endl
+                    << "\ttheta: " << theta << " deg" << std::endl
+                    << "\tswing_length: " << swing_length << " deg" << std::endl
+                    << "\twrist_angle: " << wrist_angle << " deg" << std::endl;
 
-            Draw::put_text(
-                frame_left,
-                Draw::to_string("Speed", world_speed, "cm/s"),
-                {10, 110}
-            );
-
-            // 네트를 넘길 때까지만 예측
-            if (0 <= world_pos.y && world_pos.y <= 3 * TABLE_HEIGHT / 4) {
-                const auto predict = predictor.get_arrive_pos();
-                if (predict.has_value()) {
-                    predict_pos = predict.value();
-                }
+                has_sent = true;
             }
         }
 
-        // 실제 도착 위치 저장
-        if (-10 <= world_pos.y && world_pos.y < 3) {
-            real_arrive_pos = world_pos;
+        // 탁구대 밖에 있으면 전송 여부 초기화
+        if (has_sent && !(0 <= world_pos.x && world_pos.x <= TABLE_WIDTH && 0 <= world_pos.y && world_pos.y <=
+            TABLE_HEIGHT)) {
+            has_sent = false;
         }
 
-        Draw::put_text(
-            frame_top,
-            Draw::to_string("Predict", predict_pos, "cm"),
-            {10, 150}
-        );
-        Draw::put_text(
+#ifdef DEBUG
+        // 실제 도착 위치 저장
+        if (std::abs(world_pos.y - TABLE_HEIGHT) < 5) {
+            real_arrive_pos = world_pos;
+        }
+#endif
+
+#pragma region Legend
+#ifdef DEBUG
+        Draw::put_text_border(
             frame_left,
-            Draw::to_string("Predict", predict_pos, "cm"),
-            {10, 150}
+            Draw::to_string("pos", world_pos, "cm"),
+            {10, 50},
+            COLOR_GREEN
         );
 
-        Draw::put_text(
-            frame_top,
-            Draw::to_string("Arrive", real_arrive_pos, "cm"),
-            {10, 190}
+        Draw::put_text_border(
+            frame_left,
+            Draw::to_string("speed", world_speed, "cm/s"),
+            {10, 80}
         );
+
+        // 예상 도착 위치 시각화
+        Draw::put_circle(frame_top, predictor.pos_3d_to_2d(predict_arrive_pos, CameraType::TOP), 10, COLOR_BLUE);
+        Draw::put_circle(frame_left, predictor.pos_3d_to_2d(predict_arrive_pos, CameraType::LEFT), 10, COLOR_BLUE);
+        Draw::put_circle(frame_right, predictor.pos_3d_to_2d(predict_arrive_pos, CameraType::RIGHT), 10, COLOR_BLUE);
+        Draw::put_text_border(
+            frame_left,
+            Draw::to_string("predict", predict_arrive_pos, "cm"),
+            {10, 110},
+            COLOR_BLUE
+        );
+
+        // 실제 도착 위치 시각화
+        Draw::put_circle(frame_top, predictor.pos_3d_to_2d(real_arrive_pos, CameraType::TOP), 10, COLOR_RED);
+        Draw::put_circle(frame_left, predictor.pos_3d_to_2d(real_arrive_pos, CameraType::LEFT), 10, COLOR_RED);
+        Draw::put_circle(frame_right, predictor.pos_3d_to_2d(real_arrive_pos, CameraType::RIGHT), 10, COLOR_RED);
         Draw::put_text(
             frame_left,
-            Draw::to_string("Arrive", real_arrive_pos, "cm"),
-            {10, 190}
+            Draw::to_string("real", real_arrive_pos, "cm"),
+            {10, 140},
+            COLOR_RED
         );
 
         // 궤적 그리기
         for (const auto& pos : orbit) {
-            cv::Point2f predict_left = predictor.pos_3d_to_2d(pos, CameraType::LEFT);
-            cv::Point2f predict_right = predictor.pos_3d_to_2d(pos, CameraType::RIGHT);
-            cv::Point2f predict_top = predictor.pos_3d_to_2d(pos, CameraType::TOP);
-            cv::circle(frame_left, predict_left, 3, COLOR_MAGENTA, -1, cv::LINE_AA);
-            cv::circle(frame_right, predict_right, 3, COLOR_MAGENTA, -1, cv::LINE_AA);
-            cv::circle(frame_top, predict_top, 3, COLOR_MAGENTA, -1, cv::LINE_AA);
+            Draw::put_circle(frame_top, predictor.pos_3d_to_2d(pos, CameraType::TOP), 3, COLOR_MAGENTA);
+            Draw::put_circle(frame_left, predictor.pos_3d_to_2d(pos, CameraType::LEFT), 3, COLOR_MAGENTA);
+            Draw::put_circle(frame_right, predictor.pos_3d_to_2d(pos, CameraType::RIGHT), 3, COLOR_MAGENTA);
         }
 
         // 예상 궤적 그리기
         for (const auto& pos : predict_orbit) {
-            cv::Point2f predict_left = predictor.pos_3d_to_2d(pos, CameraType::LEFT);
-            cv::Point2f predict_right = predictor.pos_3d_to_2d(pos, CameraType::RIGHT);
-            cv::Point2f predict_top = predictor.pos_3d_to_2d(pos, CameraType::TOP);
-            cv::circle(frame_left, predict_left, 3, COLOR_CYAN, -1, cv::LINE_AA);
-            cv::circle(frame_right, predict_right, 3, COLOR_CYAN, -1, cv::LINE_AA);
-            cv::circle(frame_top, predict_top, 3, COLOR_CYAN, -1, cv::LINE_AA);
+            Draw::put_circle(frame_top, predictor.pos_3d_to_2d(pos, CameraType::TOP), 3, COLOR_CYAN);
+            Draw::put_circle(frame_left, predictor.pos_3d_to_2d(pos, CameraType::LEFT), 3, COLOR_CYAN);
+            Draw::put_circle(frame_right, predictor.pos_3d_to_2d(pos, CameraType::RIGHT), 3, COLOR_CYAN);
         }
+#endif
+#pragma endregion
 
-        // 예상 도착 위치 그리기
-        const auto predict_left = predictor.pos_3d_to_2d(predict_pos, CameraType::LEFT);
-        const auto predict_right = predictor.pos_3d_to_2d(predict_pos, CameraType::RIGHT);
-        const auto predict_top = predictor.pos_3d_to_2d(predict_pos, CameraType::TOP);
-        cv::circle(frame_left, predict_left, 10, COLOR_BLUE, -1, cv::LINE_AA);
-        cv::circle(frame_right, predict_right, 10, COLOR_BLUE, -1, cv::LINE_AA);
-        cv::circle(frame_top, predict_top, 10, COLOR_BLUE, -1, cv::LINE_AA);
+#pragma region Imshow
+#ifdef IMSHOW
+        cv::Mat frame_top_resized, frame_left_resized, frame_right_resized;
+        cv::resize(frame_top, frame_top_resized, {}, 0.5, 0.5);
+        cv::resize(frame_left, frame_left_resized, {}, 0.5, 0.5);
+        cv::resize(frame_right, frame_right_resized, {}, 0.5, 0.5);
 
-        // 실제 도착 위치 그리기
-        const auto real_left = predictor.pos_3d_to_2d(real_arrive_pos, CameraType::LEFT);
-        const auto real_right = predictor.pos_3d_to_2d(real_arrive_pos, CameraType::RIGHT);
-        const auto real_top = predictor.pos_3d_to_2d(real_arrive_pos, CameraType::TOP);
-        cv::circle(frame_left, real_left, 10, COLOR_RED, -1, cv::LINE_AA);
-        cv::circle(frame_right, real_right, 10, COLOR_RED, -1, cv::LINE_AA);
-        cv::circle(frame_top, real_top, 10, COLOR_RED, -1, cv::LINE_AA);
-
-        cv::Mat concatenated;
-        cv::hconcat(frame_left, frame_right, concatenated);
-        cv::imshow("Left / Right", concatenated);
         cv::imshow("Top", frame_top);
+        cv::imshow("Left", frame_left_resized);
+        cv::imshow("Right", frame_right_resized);
 
         if (cv::waitKey(1) == 'q') break;
+#endif
+#pragma endregion
     }
 
     cam_top.stop();
     cam_left.stop();
     cam_right.stop();
     cv::destroyAllWindows();
-
-    // (8) 예상 도착 위치 및 각도 정보를 토대로 하드웨어에 전송할 인자 계산
-    // TODO: 하드웨어 제어 인자 계산 로직 구현 필요
-    /**
-     * h0 = 탁구 로봇 축 자체 높이
-     * r = 탁구 로봇 구동 반지름
-     * x_p = 탁구공의 예상 도착 위치 x 좌표
-     * z_p = 탁구공의 예상 도착 위치 z 좌표
-     *
-     * 탁구 로봇의 x, θ는 다음과 같음. (θ는 컴퓨터 의자 위치에서 본 좌표 평면 관점 θ, 오른쪽으로 90도 꺾인게 0)
-     * x_p = x + r * cos(θ)
-     * z_p = h0 + r * sin(θ)
-     * => θ = asin((z_p - h0) / r)
-     * => x = x_p - r * cos(θ)
-     *
-     * 어려운 것은, 탁구공을 얼마나 스윙을 길게 할지에 관한 (몸통 돌리는 축) 인자와 탁구채를 얼마나 눕힐지에 관한 (손목 축) 인자 계산
-     */
-
-    // (9) 하드웨어에 제어 인자 + 명령 전송
-    // TODO: 하드웨어 제어 명령 전송 로직 구현 필요
 
     return 0;
 }
