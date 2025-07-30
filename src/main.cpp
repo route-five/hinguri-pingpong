@@ -230,6 +230,7 @@ public:
                                 << "\twrist_angle: " << payload.wrist_angle << " deg" << std::endl;
 
                             shared_payload = payload;
+							has_sent = true;
                         }
                 }
             }
