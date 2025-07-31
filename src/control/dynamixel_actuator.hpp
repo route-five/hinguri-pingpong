@@ -1,7 +1,3 @@
-//
-// Created by Hyunseung Ryu on 2025. 7. 30..
-//
-
 #ifndef DYNAMIXEL_ACTUATOR_HPP
 #define DYNAMIXEL_ACTUATOR_HPP
 
@@ -30,22 +26,23 @@
 
 // Shared handlers
 static dynamixel::PortHandler* sharedPortHandler =
-dynamixel::PortHandler::getPortHandler(DEVICENAME);
+    dynamixel::PortHandler::getPortHandler(DEVICENAME);
 static dynamixel::PacketHandler* sharedPacketHandler =
-dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
+    dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
 static bool sharedPortInitialized = false;
 
 class BulkDynamixelActuator {
 private:
     dynamixel::PortHandler* portHandler;
     dynamixel::PacketHandler* packetHandler;
-    std::vector<int>        ids;
+    std::vector<int> ids;
 
 public:
     explicit BulkDynamixelActuator(const std::vector<int>& motor_ids)
         : portHandler(sharedPortHandler),
-        packetHandler(sharedPacketHandler),
-        ids(motor_ids) { }
+          packetHandler(sharedPacketHandler),
+          ids(motor_ids) {
+    }
 
     ~BulkDynamixelActuator() {
         for (int id : ids) close(id);
@@ -54,10 +51,12 @@ public:
     [[nodiscard]] bool initialize() const {
         if (!sharedPortInitialized) {
             if (!portHandler->openPort()) {
-                std::cerr << "Failed to open port\n"; return false;
+                std::cerr << "Failed to open port\n";
+                return false;
             }
             if (!portHandler->setBaudRate(BAUDRATE)) {
-                std::cerr << "Failed to set baudrate\n"; return false;
+                std::cerr << "Failed to set baudrate\n";
+                return false;
             }
             sharedPortInitialized = true;
         }
@@ -65,13 +64,13 @@ public:
             uint8_t err = 0;
             packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE, 0, &err);
             int res = packetHandler->write1ByteTxRx(portHandler, id, ADDR_OPERATING_MODE,
-                POSITION_CONTROL_MODE, &err);
+                                                    POSITION_CONTROL_MODE, &err);
             if (res != COMM_SUCCESS || err) {
                 std::cerr << "Failed to set operating mode for motor " << id << "\n";
                 return false;
             }
             res = packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE,
-                TORQUE_ENABLE, &err);
+                                                TORQUE_ENABLE, &err);
             if (res != COMM_SUCCESS || err) {
                 std::cerr << "Failed to enable torque for motor " << id << "\n";
                 return false;
@@ -140,9 +139,9 @@ public:
         dynamixel::GroupBulkWrite writer(portHandler, packetHandler);
         for (size_t i = 0; i < ids.size(); ++i) {
             if (!writer.addParam(ids[i],
-                ADDR_GOAL_POSITION,
-                4,
-                reinterpret_cast<uint8_t*>(&target_units[i]))) {
+                                 ADDR_GOAL_POSITION,
+                                 4,
+                                 reinterpret_cast<uint8_t*>(&target_units[i]))) {
                 std::cerr << "addParam failed for motor " << ids[i] << "\n";
                 return false;
             }
@@ -171,8 +170,8 @@ public:
             bool all_reached = true;
             for (size_t i = 0; i < ids.size(); ++i) {
                 int pos = reader.getData(ids[i],
-                    ADDR_PRESENT_POSITION,
-                    LEN_PRESENT_POSITION);
+                                         ADDR_PRESENT_POSITION,
+                                         LEN_PRESENT_POSITION);
                 if (std::abs(pos - target_units[i]) > MOVING_STATUS_THRESHOLD) {
                     all_reached = false;
                     break;
@@ -194,10 +193,10 @@ public:
     void close(int id) {
         uint8_t err = 0;
         packetHandler->write1ByteTxRx(portHandler,
-            id,
-            ADDR_TORQUE_ENABLE,
-            0,
-            &err);
+                                      id,
+                                      ADDR_TORQUE_ENABLE,
+                                      0,
+                                      &err);
         if (sharedPortInitialized) {
             sharedPortHandler->closePort();
             sharedPortInitialized = false;

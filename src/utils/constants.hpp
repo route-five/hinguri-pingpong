@@ -22,7 +22,7 @@ constexpr float TABLE_GRID_SIZE = 15.0; // cm
 constexpr float PREDICT_MAX_TIME = 10.0; // 최대 예측 시간 (초)
 constexpr float PREDICT_MIN_TIME = 0.05; // 최소 예측 시간 (초)
 constexpr float PREDICT_MAX_ITERATIONS = 20; // 최대 반복 횟수
-constexpr float PREDICT_MIN_Y = TABLE_HEIGHT * 1 / 2; // cm
+constexpr float PREDICT_MIN_Y = TABLE_HEIGHT * 1 / 4; // cm
 constexpr float PREDICT_MAX_Y = TABLE_HEIGHT; // cm
 
 constexpr int TOP_HISTORY_N = 5; // 탑 가메라 기준 최근 N개의 좌표를 저장함

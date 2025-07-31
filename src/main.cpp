@@ -14,339 +14,313 @@
 #include "utils/constants.hpp"
 #include "utils/draw.hpp"
 
-//#define DEBUG
-#define IMSHOW
-
 inline std::mutex mutex;
 inline std::atomic has_sent{false};
 inline std::atomic stop_all{false};
 inline std::optional<Bridge::Payload> shared_payload;
 
-constexpr float START_SWING = -60.0; // deg
 constexpr int TOP_MOTOR_ID = 4;
 constexpr int MID_MOTOR_ID = 3;
 constexpr int BOT_MOTOR_ID = 2;
 
 class ControlEnd {
 public:
-    ControlEnd()
-        : actuators({TOP_MOTOR_ID, MID_MOTOR_ID, BOT_MOTOR_ID}) {
-    }
+	ControlEnd() : actuators({TOP_MOTOR_ID, MID_MOTOR_ID, BOT_MOTOR_ID}) {
+	}
 
-    ~ControlEnd() {
-        shutdown();
-    }
+	~ControlEnd() {
+		shutdown();
+	}
 
-    [[noreturn]] void run() {
-        if (!actuators.initialize()) {
-            std::cerr << "Failed to initialize actuators" << std::endl;
-            return;
-        }
-        while (!stop_all.load()) {
-            if (!has_sent.load()) {
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
-                continue;
-            }
+	[[noreturn]] void run() {
+		if (!actuators.initialize()) {
+			std::cerr << "Failed to initialize actuators" << std::endl;
+			return;
+		}
+		while (!stop_all.load()) {
+			Bridge::Payload payload;
+			{
+				std::lock_guard lock(mutex);
+				if (!shared_payload.has_value())
+					continue;
 
-            Bridge::Payload payload;
-            {
-                std::lock_guard lock(mutex);
-                if (!shared_payload.has_value())
-                    continue;
+				payload = shared_payload.value();
+				shared_payload.reset();
 
-                payload = shared_payload.value();
-                shared_payload.reset();
+				std::cout << "Received from vision:\n"
+					<< "\tx: " << payload.x << " cm\n"
+					<< "\ttheta: " << payload.theta << " deg\n"
+					<< "\tswing_start: " << payload.swing_start << " deg\n"
+					<< "\tswing_end: " << payload.swing_end << " deg\n"
+					<< "\twrist_angle: " << payload.wrist_angle << " deg\n"
+					<< "=========================\n";
+			}
 
-                std::cout << "Received from vision: " << std::endl
-                    << "\tx: " << payload.x << " cm" << std::endl
-                    << "\ttheta: " << payload.theta << " deg" << std::endl
-                    << "\tswing_start: " << payload.swing_start << " deg" << std::endl
-                    << "\tswing_end: " << payload.swing_end << " deg" << std::endl
-                    << "\twrist_angle: " << payload.wrist_angle << " deg" << std::endl
-                    << "=========================" << std::endl;
-            }
+			execute(payload);
+		}
 
-            execute(payload);
-        }
-
-        shutdown();
-    }
+		shutdown();
+	}
 
 private:
-    BulkDynamixelActuator actuators;
-    LinearActuator linearActuator;
+	BulkDynamixelActuator actuators;
+	LinearActuator linearActuator;
 
-    void execute(const Bridge::Payload& payload) {
-        if (has_sent.load()) {
-            const auto& [x, theta, swing_start, swing_end, wrist_angle, use_right_hand] = payload;
+	void execute(const Bridge::Payload& payload) {
+		const auto& [x, theta, swing_start, swing_end, wrist_angle, use_right_hand] = payload;
 
-            const float top_target = wrist_angle;
-            const float mid_target = theta;
-            float bot_target = swing_start;
+		// 1) Move the linear actuator
+		linearActuator.move_actu(x);
 
-            actuators.bulk_move_by_degrees({top_target, mid_target, bot_target});
-            linearActuator.move_actu(-x);
+		// 2) Move to swing_start and wait
+		bool swing_start_done = false;
+		actuators.move_and_wait_by_degrees(
+			{wrist_angle, theta, swing_start},
+			&swing_start_done
+		);
+		// swing_start_done == true here
 
-            bot_target = swing_end;
-            actuators.bulk_move_by_degrees({top_target, mid_target, bot_target});
-        }
-    }
+		// 3) Only after swing_start is done, move to swing_end and wait
+		bool swing_end_done = false;
+		actuators.move_and_wait_by_degrees(
+			{wrist_angle, theta, swing_end},
+			&swing_end_done
+		);
+		// swing_end_done == true here
+	}
 
-    void shutdown() {
-        actuators.bulk_move_by_degrees({90, 90, 90});
-        linearActuator.move_actu(TABLE_WIDTH / 2);
-        sharedPortHandler->closePort();
-    }
+	void shutdown() {
+		Bridge::Payload init{TABLE_WIDTH / 2, 90, 90, 90, 90};
+		actuators.bulk_move_by_degrees({init.wrist_angle, init.theta, init.swing_start});
+		linearActuator.move_actu(init.x);
+		if (sharedPortInitialized)
+			sharedPortHandler->closePort();
+	}
 };
 
 class VisionEnd {
-private:
-    Camera cam_top = Camera(CameraType::TOP, {0, cv::CAP_MSMF}, 60);
-    Camera cam_left = Camera(CameraType::LEFT, {1, cv::CAP_MSMF}, 60);
-    Camera cam_right = Camera(CameraType::RIGHT, {2, cv::CAP_MSMF}, 60);
-    Tracker tracker_top = Tracker(ORANGE_MIN, ORANGE_MAX);
-    Tracker tracker_left = Tracker(ORANGE_MIN, ORANGE_MAX);
-    Tracker tracker_right = Tracker(ORANGE_MIN, ORANGE_MAX);
-    Predictor predictor;
-
-    std::mutex frame_mutex;
-    cv::Mat latest_top_frame, latest_left_frame, latest_right_frame;
-
 public:
-    VisionEnd() {
-        cam_top.set_frame_callback([this](const cv::Mat& frame) {
-            std::lock_guard lock(frame_mutex);
-            frame.copyTo(latest_top_frame);
-            tracker_top << frame;
-            const auto pos = tracker_top.get_camera_pos();
-            predictor.set_point_top(pos ? std::make_optional(pos.value().first) : std::nullopt);
-        });
-        cam_left.set_frame_callback([this](const cv::Mat& frame) {
-            std::lock_guard lock(frame_mutex);
-            frame.copyTo(latest_left_frame);
-            tracker_left << frame;
-            const auto pos = tracker_left.get_camera_pos();
-            predictor.set_point_left(pos ? std::make_optional(pos.value().first) : std::nullopt);
-        });
-        cam_right.set_frame_callback([this](const cv::Mat& frame) {
-            std::lock_guard lock(frame_mutex);
-            frame.copyTo(latest_right_frame);
-            tracker_right << frame;
-            const auto pos = tracker_right.get_camera_pos();
-            predictor.set_point_right(pos ? std::make_optional(pos.value().first) : std::nullopt);
-        });
-    }
+	Camera cam_top = Camera(CameraType::TOP, {0, cv::CAP_MSMF}, 60);
+	Camera cam_left = Camera(CameraType::LEFT, {1, cv::CAP_MSMF}, 60);
+	Camera cam_right = Camera(CameraType::RIGHT, {2, cv::CAP_MSMF}, 60);
+	Tracker tracker_top = Tracker(ORANGE_MIN, ORANGE_MAX);
+	Tracker tracker_left = Tracker(ORANGE_MIN, ORANGE_MAX);
+	Tracker tracker_right = Tracker(ORANGE_MIN, ORANGE_MAX);
+	Predictor predictor;
 
-    ~VisionEnd() {
-        cam_top.stop();
-        cam_left.stop();
-        cam_right.stop();
-        cv::destroyAllWindows();
-    }
+	std::mutex frame_mutex;
+	cv::Mat latest_top_frame, latest_left_frame, latest_right_frame;
 
-    void run() {
-        // TODO: 카메라 레이턴시, 타임라인 동기화 로직 구현 필요 - 구현 거의 완료 at PONG#60
+	VisionEnd() {
+		cam_top.set_frame_callback([this](cv::Mat& frame) {
+			std::lock_guard lock(frame_mutex);
+			tracker_top << frame;
+			Draw::put_text_border(
+				frame, std::format("FPS: {:.2f}/{:.2f}", cam_top.get_fps(), cam_top.get_prop(cv::CAP_PROP_FPS)),
+				{10, 20}, COLOR_WHITE);
 
-        if (!cam_top.is_opened() || !cam_left.is_opened() || !cam_right.is_opened()) {
-            const std::string message = std::format(
-                "Failed to open camera: top={}, left={}, right={}",
-                cam_top.is_opened() ? "opened" : "fail",
-                cam_left.is_opened() ? "opened" : "fail",
-                cam_right.is_opened() ? "opened" : "fail"
-            );
-            std::cerr << message << std::endl;
-            return;
-        }
+			if (const auto pos = tracker_top.get_camera_pos()) {
+				predictor.set_point_top(pos.value());
+				Draw::put_circle(frame, pos.value(), 5, COLOR_GREEN);
+			}
 
-        cam_top.start();
-        cam_left.start();
-        cam_right.start();
+			frame.copyTo(latest_top_frame);
+		});
+		cam_left.set_frame_callback([this](cv::Mat& frame) {
+			std::lock_guard lock(frame_mutex);
+			tracker_left << frame;
+			Draw::put_text_border(
+				frame, std::format("FPS: {:.2f}/{:.2f}", cam_top.get_fps(), cam_top.get_prop(cv::CAP_PROP_FPS)),
+				{10, 20}, COLOR_WHITE);
 
-        cv::Point3f world_pos{-1, -1, -1};
-        cv::Vec3f world_speed{0, 0, 0};
-        cv::Point3f predict_arrive_pos{-1, -1, -1};
-        cv::Point3f real_arrive_pos{-1, -1, -1};
-#ifdef DEBUG
-        std::deque<cv::Point3f> orbit;
-        std::deque<cv::Point3f> predict_orbit;
-#endif
+			if (const auto pos = tracker_left.get_camera_pos()) {
+				predictor.set_point_left(pos.value());
+				Draw::put_circle(frame, pos.value(), 5, COLOR_GREEN);
+			}
 
-        while (true) {
-            predict_arrive_pos = {-1, -1, -1};
+			frame.copyTo(latest_left_frame);
+		});
+		cam_right.set_frame_callback([this](cv::Mat& frame) {
+			std::lock_guard lock(frame_mutex);
+			tracker_right << frame;
+			Draw::put_text_border(
+				frame, std::format("FPS: {:.2f}/{:.2f}", cam_top.get_fps(), cam_top.get_prop(cv::CAP_PROP_FPS)),
+				{10, 20}, COLOR_WHITE);
 
-            cv::Mat frame_top, frame_left, frame_right;
-            {
-                std::lock_guard lock(frame_mutex);
-                if (latest_top_frame.empty() || latest_left_frame.empty() || latest_right_frame.empty())
-                    continue;
+			if (const auto pos = tracker_right.get_camera_pos()) {
+				predictor.set_point_right(pos.value());
+				Draw::put_circle(frame, pos.value(), 5, COLOR_GREEN);
+			}
 
-                latest_top_frame.copyTo(frame_top);
-                latest_left_frame.copyTo(frame_left);
-                latest_right_frame.copyTo(frame_right);
-            }
+			frame.copyTo(latest_right_frame);
+		});
+	}
 
-            if (frame_top.empty() || frame_left.empty() || frame_right.empty())
-                continue;
+	~VisionEnd() {
+		cam_top.stop();
+		cam_left.stop();
+		cam_right.stop();
+		cv::destroyAllWindows();
+	}
 
-            if (const auto new_world_pos = predictor.get_new_world_pos(1.0f / static_cast<float>(cam_top.get_fps()))) {
-                world_pos = new_world_pos.value();
+	void run() {
+		if (!cam_top.is_opened() || !cam_left.is_opened() || !cam_right.is_opened()) {
+			const std::string message = std::format(
+				"Failed to open camera: top={}, left={}, right={}",
+				cam_top.is_opened() ? "true" : "false",
+				cam_left.is_opened() ? "true" : "false",
+				cam_right.is_opened() ? "true" : "false"
+			);
+			std::cerr << message << std::endl;
+			return;
+		}
 
-                //std::cout << "world_pos: " << world_pos << std::endl;
+		cam_top.start();
+		cam_left.start();
+		cam_right.start();
 
-#ifdef DEBUG
-                orbit.push_back(world_pos);
-                if (orbit.size() > 100) {
-                    orbit.pop_front();
-                }
-#endif
-            }
+		std::deque<cv::Point3f> orbit;
+		cv::Point3f world_pos{-1, -1, -1};
+		cv::Vec3f world_speed{0, 0, 0};
+		cv::Point3f predict_pos{-1, -1, -1};
+		cv::Point3f real_arrive_pos{-1, -1, -1};
 
-            if (const auto new_world_speed = predictor.get_world_speed()) {
-                world_speed = new_world_speed.value();
-            }
+		while (!stop_all.load()) {
+#pragma region FRAME_READ
+			cv::Mat frame_top, frame_left, frame_right;
+			{
+				std::lock_guard lock(frame_mutex);
+				if (latest_top_frame.empty() || latest_left_frame.empty() || latest_right_frame.empty())
+					continue;
 
-            // 예측 구간 설정
-            if (PREDICT_MIN_Y <= world_pos.y && world_pos.y <= PREDICT_MAX_Y) {
-                if (const auto new_arrive_pos = predictor.get_arrive_pos()) {
-                    predict_arrive_pos.z = new_arrive_pos.value().z;
-                }
-                has_sent = false;
-                //std::cout << "has_sent = false;" << std::endl;
-            }
-            else if (0 <= world_pos.x && world_pos.x <= TABLE_WIDTH &&
-                0 <= world_pos.y &&
-                0 <= world_pos.z) {
-                if (0 <= predict_arrive_pos.x && predict_arrive_pos.x <= TABLE_WIDTH &&
-                    0 <= predict_arrive_pos.y && predict_arrive_pos.y <= TABLE_HEIGHT &&
-                    0 <= predict_arrive_pos.z &&
-                    !has_sent.load()) {
-                    {
-                        std::lock_guard lock(mutex);
-                        auto payload = Bridge::convert(predict_arrive_pos);
+				latest_top_frame.copyTo(frame_top);
+				latest_left_frame.copyTo(frame_left);
+				latest_right_frame.copyTo(frame_right);
+			}
 
-                        std::cout << "Predicted position: " << predict_arrive_pos << std::endl;
-                        std::cout << "Broadcast to hardware: " << std::endl
-                            << "\tx: " << payload.x << " cm" << std::endl
-                            << "\ttheta: " << payload.theta << " deg" << std::endl
-                            << "\tswing_start: " << payload.swing_start << " deg" << std::endl
-                            << "\tswing_end: " << payload.swing_end << " deg" << std::endl
-                            << "\twrist_angle: " << payload.wrist_angle << " deg" << std::endl;
+			if (frame_top.empty() || frame_left.empty() || frame_right.empty())
+				continue;
+#pragma endregion
 
-                        shared_payload = payload;
-                        has_sent = true;
-                        //std::cout << "has_sent = true;" << std::endl;
-                    }
-                }
-            }
+#pragma region DATA_PROCESSING
+			// TODO: 한 번 탑 카메라 아예 안 써보는 건 어떰?
+			// world_pos 구하기
+			const double fallback_dt = 1.0 / std::min({cam_top.get_fps(), cam_left.get_fps(), cam_right.get_fps()});
+			if (const auto find_world_pos = predictor.get_new_world_pos(static_cast<float>(fallback_dt))) {
+				world_pos = find_world_pos.value();
 
-#ifdef DEBUG
-            // 실제 도착 위치 저장
-            if (std::abs(world_pos.y) < 5) {
-                real_arrive_pos = world_pos;
-            }
-#endif
+				orbit.push_back(world_pos);
+				if (orbit.size() > 100)
+					orbit.pop_front();
+			}
 
-#ifdef DEBUG
-            Draw::put_text_border(
-                frame_left,
-                Draw::to_string("pos", world_pos, "cm"),
-                { 10, 50 },
-                COLOR_GREEN
-            );
+			// world_speed 구하기
+			if (const auto find_world_speed = predictor.get_world_pos()) {
+				world_speed = find_world_speed.value();
+			}
 
-            Draw::put_text_border(
-                frame_left,
-                Draw::to_string("speed", world_speed, "cm/s"),
-                { 10, 80 },
-                COLOR_WHITE
-            );
+			// TODO: predict 실패하는 경우 조사하기 + 로그 상세히
+			// 예상 도착 위치 구하기
+			if (PREDICT_MIN_Y <= world_pos.y && world_pos.y <= PREDICT_MAX_Y) {
+				if (const auto find_predict_pos = predictor.get_arrive_pos()) {
+					predict_pos = find_predict_pos.value();
+				}
+				has_sent = false;
+			}
+			else if (0 <= world_pos.x && world_pos.x <= TABLE_WIDTH && 0 <= world_pos.y && 0 <= world_pos.z && !has_sent.load()) {
+				std::lock_guard lock(mutex);
 
-            // 예상 도착 위치 시각화
-            Draw::put_circle(frame_top, predictor.pos_3d_to_2d(predict_arrive_pos, CameraType::TOP), 10, COLOR_BLUE);
-            Draw::put_circle(frame_left, predictor.pos_3d_to_2d(predict_arrive_pos, CameraType::LEFT), 10, COLOR_BLUE);
-            Draw::put_circle(frame_right, predictor.pos_3d_to_2d(predict_arrive_pos, CameraType::RIGHT), 10,
-                COLOR_BLUE);
-            Draw::put_text_border(
-                frame_left,
-                Draw::to_string("predict", predict_arrive_pos, "cm"),
-                { 10, 110 },
-                COLOR_BLUE
-            );
+				// TODO: angle 계산 & 마지막 도착 직전 속도 넣기? 근데 이건 불가능 로봇 반응속도가 그래도 계산은 가능하지
+				auto payload = Bridge::convert(predict_pos, world_speed, 35);
 
-            // 실제 도착 위치 시각화
-            Draw::put_circle(frame_top, predictor.pos_3d_to_2d(real_arrive_pos, CameraType::TOP), 10, COLOR_RED);
-            Draw::put_circle(frame_left, predictor.pos_3d_to_2d(real_arrive_pos, CameraType::LEFT), 10, COLOR_RED);
-            Draw::put_circle(frame_right, predictor.pos_3d_to_2d(real_arrive_pos, CameraType::RIGHT), 10, COLOR_RED);
-            Draw::put_text_border(
-                frame_left,
-                Draw::to_string("real", real_arrive_pos, "cm"),
-                { 10, 140 },
-                COLOR_RED
-            );
+				std::cout << "Predicted position: " << predict_pos << std::endl;
+				std::cout << "Broadcast to hardware: " << std::endl
+					<< "\tx: " << payload.x << " cm" << std::endl
+					<< "\ttheta: " << payload.theta << " deg" << std::endl
+					<< "\tswing_start: " << payload.swing_start << " deg" << std::endl
+					<< "\tswing_end: " << payload.swing_end << " deg" << std::endl
+					<< "\twrist_angle: " << payload.wrist_angle << " deg" << std::endl;
 
-            // 궤적 그리기
-            for (const auto& pos : orbit) {
-                Draw::put_circle(frame_top, predictor.pos_3d_to_2d(pos, CameraType::TOP), 3, COLOR_MAGENTA);
-                Draw::put_circle(frame_left, predictor.pos_3d_to_2d(pos, CameraType::LEFT), 3, COLOR_MAGENTA);
-                Draw::put_circle(frame_right, predictor.pos_3d_to_2d(pos, CameraType::RIGHT), 3, COLOR_MAGENTA);
-            }
+				shared_payload = payload;
+				has_sent = true;
+			}
 
-            // 예상 궤적 그리기
-            for (const auto& pos : predict_orbit) {
-                Draw::put_circle(frame_top, predictor.pos_3d_to_2d(pos, CameraType::TOP), 3, COLOR_CYAN);
-                Draw::put_circle(frame_left, predictor.pos_3d_to_2d(pos, CameraType::LEFT), 3, COLOR_CYAN);
-                Draw::put_circle(frame_right, predictor.pos_3d_to_2d(pos, CameraType::RIGHT), 3, COLOR_CYAN);
-            }
-#endif
+			// 실제 도착 위치 구하기
+			if (0 <= world_pos.x && world_pos.x <= TABLE_WIDTH && std::abs(world_pos.y) < 5 && world_pos.z >= 0) {
+				real_arrive_pos = world_pos;
+			}
+#pragma endregion
 
-#ifdef IMSHOW
-            cv::Mat frame_top_resized, frame_left_resized, frame_right_resized;
-            cv::resize(frame_top, frame_top_resized, {}, 0.4, 0.4);
-            cv::resize(frame_left, frame_left_resized, {}, 0.5, 0.5);
-            cv::resize(frame_right, frame_right_resized, {}, 0.5, 0.5);
+#pragma region DRAW
+			// 궤적 그리기
+			for (const auto& pos : orbit) {
+				Draw::put_circle(frame_top, predictor.pos_3d_to_2d(pos, CameraType::TOP), 3, COLOR_MAGENTA);
+				Draw::put_circle(frame_left, predictor.pos_3d_to_2d(pos, CameraType::LEFT), 3, COLOR_MAGENTA);
+				Draw::put_circle(frame_right, predictor.pos_3d_to_2d(pos, CameraType::RIGHT), 3, COLOR_MAGENTA);
+			}
 
-            // Create a final frame with left/right on top and top frame centered below
-            int top_width = frame_left_resized.cols + frame_right_resized.cols;
-            int max_width = std::max(top_width, frame_top_resized.cols);
-            int total_height = std::max(frame_left_resized.rows, frame_right_resized.rows) + frame_top_resized.rows;
+			// 예측 도착 위치 그리기
+			if (0 <= predict_pos.x && predict_pos.x <= TABLE_WIDTH && predict_pos.z >= 0) {
+				Draw::put_circle(frame_top, predictor.pos_3d_to_2d(predict_pos, CameraType::TOP), 10, COLOR_BLUE);
+				Draw::put_circle(frame_left, predictor.pos_3d_to_2d(predict_pos, CameraType::LEFT), 10, COLOR_BLUE);
+				Draw::put_circle(frame_right, predictor.pos_3d_to_2d(predict_pos, CameraType::RIGHT), 10, COLOR_BLUE);
+			}
 
-            cv::Mat final_frame = cv::Mat::zeros(total_height, max_width, frame_left_resized.type());
+			// 실제 도착 위치 그리기
+			if (0 <= real_arrive_pos.x && real_arrive_pos.x <= TABLE_WIDTH && real_arrive_pos.z >= 0) {
+				Draw::put_circle(frame_top, predictor.pos_3d_to_2d(real_arrive_pos, CameraType::TOP), 10, COLOR_RED);
+				Draw::put_circle(frame_left, predictor.pos_3d_to_2d(real_arrive_pos, CameraType::LEFT), 10, COLOR_RED);
+				Draw::put_circle(frame_right, predictor.pos_3d_to_2d(real_arrive_pos, CameraType::RIGHT), 10, COLOR_RED);
+			}
+#pragma endregion
 
-            // Copy left on top-left
-            frame_left_resized.copyTo(final_frame(cv::Rect(0, 0, frame_left_resized.cols, frame_left_resized.rows)));
-            // Copy right on top-right (next to left)
-            frame_right_resized.copyTo(final_frame(cv::Rect(frame_left_resized.cols, 0, frame_right_resized.cols,
-                                                            frame_right_resized.rows)));
-            // Copy top centered below
-            int x_offset = (max_width - frame_top_resized.cols) / 2;
-            frame_top_resized.copyTo(final_frame(cv::Rect(
-                x_offset, std::max(frame_left_resized.rows, frame_right_resized.rows), frame_top_resized.cols,
-                frame_top_resized.rows)));
+#pragma region IMSHOW
+			cv::Mat frame_top_resized, frame_left_resized, frame_right_resized;
+			cv::resize(frame_top, frame_top_resized, {}, 0.7, 0.7);
+			cv::resize(frame_left, frame_left_resized, {}, 0.8, 0.8);
+			cv::resize(frame_right, frame_right_resized, {}, 0.8, 0.8);
 
-            cv::imshow("Combined", final_frame);
-            if (cv::waitKey(1) == 'q') {
-                stop_all = true;
-                break;
-            }
-#endif
-        }
+			int max_width = std::max(frame_left_resized.cols + frame_right_resized.cols, frame_top_resized.cols);
+			int total_height = frame_top_resized.rows + std::max(frame_left_resized.rows, frame_right_resized.rows);
 
-        cam_top.stop();
-        cam_left.stop();
-        cam_right.stop();
-        cv::destroyAllWindows();
-    }
+			cv::Mat final_frame = cv::Mat::zeros(total_height, max_width, frame_left_resized.type());
+#pragma region LEGEND
+			Draw::put_text_border(final_frame, Draw::to_string("World Pos", world_pos, "cm"), {10, 50}, COLOR_GREEN);
+			Draw::put_text_border(final_frame, Draw::to_string("World Speed", world_speed, "cm/s"), {10, 80},
+			                      COLOR_CYAN);
+			Draw::put_text_border(final_frame, Draw::to_string("Predict Pos", predict_pos, "cm"), {10, 110},
+			                      COLOR_BLUE);
+			Draw::put_text_border(final_frame, Draw::to_string("Real Arrive Pos", real_arrive_pos, "cm"), {10, 140},
+			                      COLOR_RED);
+#pragma endregion
+			int top_x_offset = (max_width - frame_top_resized.cols) / 2;
+
+			frame_top_resized.copyTo(final_frame(cv::Rect(
+				top_x_offset, 0, frame_top_resized.cols, frame_top_resized.rows)));
+			frame_left_resized.copyTo(final_frame(cv::Rect(
+				0, frame_top_resized.rows, frame_left_resized.cols, frame_left_resized.rows)));
+			frame_right_resized.copyTo(final_frame(cv::Rect(
+				frame_left_resized.cols, frame_top_resized.rows, frame_right_resized.cols, frame_right_resized.rows)));
+
+			cv::imshow("Combined", final_frame);
+#pragma endregion
+			if (cv::waitKey(1) == 'q') {
+				stop_all = true;
+				break;
+			}
+		}
+	}
 };
 
 int main() {
-    VisionEnd vision_end;
-    ControlEnd control_end;
+	VisionEnd vision_end;
+	ControlEnd control_end;
 
-    std::thread vision_thread(&VisionEnd::run, &vision_end);
-    std::thread control_thread(&ControlEnd::run, &control_end);
+	std::thread vision_thread(&VisionEnd::run, &vision_end);
+	std::thread control_thread(&ControlEnd::run, &control_end);
 
-    vision_thread.join();
-    control_thread.join();
+	vision_thread.join();
+	control_thread.join();
 
-    return 0;
+	return 0;
 }
