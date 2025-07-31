@@ -13,6 +13,7 @@
 namespace Bridge {
     constexpr float pi = std::numbers::pi_v<float>;
     constexpr float rad = 180.0f / pi;
+    float last_pos = TABLE_WIDTH / 2;
 
     /**
      * 0 -> -90도
@@ -20,37 +21,37 @@ namespace Bridge {
      * 2048 -> 90도
      * 3072 -> 180도
      */
-    inline int to_dynamixel_unit_from_deg(const float deg) {
+    inline int to_dynamixel_unit_from_deg(float deg) {
         return static_cast<int>(std::round(1024.0f * (deg + 90.0f) / 90.0f)) % 4096;
     }
 
     class Payload {
     public:
         // linear actuator의 x 좌표
-        float x{};
+        float x;
 
         // 탁구 로봇의 회전 각도 (컴퓨터 의자 위치에서 본 좌표 평면 관점)
-        float theta{};
+        float theta;
 
         // 스윙 시작 각도 (몸통 돌리는 축)
-        float swing_start{};
+        float swing_start;
 
-        // 스윙 끝 각도 
-        float swing_end{};
+        // 스윙 끝 각도
+        float swing_end;
 
         // 손목 각도 (탁구채를 얼마나 눕힐지)
-        float wrist_angle{};
+        float wrist_angle;
 
         // 오른손잡이 여부, 기본값은 true
         bool use_right_hand = true;
 
-        Payload(const float x, const float theta, const float swing_start, const float swing_end,
-                const float wrist_angle, const bool use_right_hand = true)
+        Payload(const float x, const float theta, const float swing_start, const float swing_end, const float wrist_angle,
+                const bool use_right_hand = true)
             : x{x},
-              theta{90 - theta}, // mid
+              theta{90 - theta}, // top
+              wrist_angle{90 - wrist_angle}, // mid
               swing_start{swing_start}, // bot
               swing_end{swing_end}, // bot
-              wrist_angle{90 - wrist_angle}, // top
               use_right_hand{use_right_hand} {
         }
 
@@ -75,40 +76,45 @@ namespace Bridge {
      *
      * 어려운 것은, 탁구공을 얼마나 스윙을 길게 할지에 관한 (몸통 돌리는 축) 인자와 탁구채를 얼마나 눕힐지에 관한 (손목 축) 인자 계산
      */
-    inline Payload convert(const cv::Point3f& arrive_pos) {
+    Payload convert(const cv::Point3f& arrive_pos, const cv::Vec3f& arrive_speed, const float arrive_angle) {
         constexpr float h0 = BASE_AXIS_HEIGHT;
         constexpr float r = AXIS_RADIUS;
         constexpr float pi = std::numbers::pi_v<float>;
 
         const auto& [x_p, _, z_p] = arrive_pos;
 
-        const bool use_right_hand = x_p >= TABLE_WIDTH / 2;
+        const bool use_right_hand = x_p >= last_pos;
 
         float theta = std::asin(std::clamp((z_p - h0) / r, -1.0f, 1.0f));
-        float swing_start = -pi / 3; // TODO:
-        float swing_end = pi / 6; // TODO: 
-        float wrist_angle = pi / 6;
+        float swing_start = use_right_hand ? 0 : 180;
+        float swing_end = use_right_hand ? 150 : 30;
+        float wrist_angle = use_right_hand ? 90 + arrive_angle : 90 - arrive_angle;
 
         if (!use_right_hand) {
             theta = pi - theta; //x_p가 테이블의 오른쪽에 있을 때, θ를 반전
-            swing_start = pi - swing_start;
+            /*swing_start = pi - swing_start;
             swing_end = pi - swing_end;
-            wrist_angle = pi - wrist_angle;
+            wrist_angle = pi - wrist_angle;*/
         }
 
         const float x = x_p - r * std::cos(theta);
+        last_pos = x;
+
+        std::cout << "[Bridge] Conversion ============" << std::endl;
+        std::cout << "Last x: " << last_pos << ", while current x_p is " << x_p << ". So use_right hand is " << (
+            use_right_hand ? "true." : "false.") << std::endl;
+        std::cout << std::format("Returning - theta: {} rad => {}deg, swing_start: {}deg, swing_end: {}deg, wrist_angle: {}deg", theta,
+                                 theta * rad, swing_start, swing_end, wrist_angle) << std::endl;
 
         return {
             x,
             theta * rad,
-            swing_start * rad,
-            swing_end * rad,
-            wrist_angle * rad,
+            swing_start,
+            swing_end,
+            wrist_angle,
             use_right_hand
         };
     }
-
-    // TODO: matplot++로 테스트하기
 }
 
 #endif //BRIDGE_HPP

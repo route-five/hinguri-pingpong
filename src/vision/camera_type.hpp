@@ -54,8 +54,8 @@ private:
   }
 };
 
-const CameraType CameraType::TOP{"top", {1920, 1080}};
-const CameraType CameraType::LEFT{"left", {1280, 720}};
-const CameraType CameraType::RIGHT{"right", {1280, 720}};
+const CameraType CameraType::TOP{"top", {960, 540}};
+const CameraType CameraType::LEFT{"left", {640, 360}};
+const CameraType CameraType::RIGHT{"right", {640, 360}};
 
 #endif  // CAMERA_TYPE_HPP
