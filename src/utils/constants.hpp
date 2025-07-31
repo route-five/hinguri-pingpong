@@ -21,7 +21,12 @@ constexpr float TABLE_GRID_SIZE = 15.0; // cm
 // Predictor Config
 constexpr float PREDICT_MAX_TIME = 10.0; // 최대 예측 시간 (초)
 constexpr float PREDICT_MIN_TIME = 0.05; // 최소 예측 시간 (초)
-constexpr float PREDICT_MAX_ITERATIONS = 10; // 최대 반복 횟수
+constexpr float PREDICT_MAX_ITERATIONS = 20; // 최대 반복 횟수
+constexpr float PREDICT_MIN_Y = TABLE_HEIGHT * 1 / 2; // cm
+constexpr float PREDICT_MAX_Y = TABLE_HEIGHT; // cm
+
+constexpr int TOP_HISTORY_N = 5; // 탑 가메라 기준 최근 N개의 좌표를 저장함
+constexpr int PREDICTOR_HISTORY_N = 10; // 예측 궤적을 저장할 최대 개수
 
 // Environment
 constexpr float GRAVITY = 981.0; // 중력 가속도 (cm/s^2)
@@ -56,6 +61,7 @@ constexpr double TARGET_FRAME_WIDTH = 640;
 constexpr double TARGET_FRAME_HEIGHT = 480;
 constexpr double TARGET_FPS = 240;
 constexpr double CONTOUR_AREA_MIN = 100;
+
 // constexpr double CIRCULARITY_MIN = 0.5;
 constexpr double CIRCULARITY_PERFECT = 0.89;
 constexpr double CIRCULARITY_THRESHOLD = 0.4;
@@ -63,6 +69,9 @@ constexpr double RADIUS_MIN = 3;
 constexpr double TOUCHED_MIN = 225;
 constexpr double TOUCHED_MAX = 243;
 constexpr int TRAILS_SIZE = 30;
+
+constexpr double BASE_AXIS_HEIGHT = 19.1; // cm
+constexpr double AXIS_RADIUS = 21.6; // cm
 
 // Colors
 const cv::Scalar COLOR_RED(0, 0, 255);
@@ -73,6 +82,12 @@ const cv::Scalar COLOR_CYAN(255, 255, 0);
 const cv::Scalar COLOR_MAGENTA(255, 0, 255);
 const cv::Scalar COLOR_WHITE(255, 255, 255);
 const cv::Scalar COLOR_BLACK(0, 0, 0);
+
+// Dynamixel Actuator
+constexpr float CENTER_POS = 2048;
+constexpr float MIN_POS_LIMIT = 1024;
+constexpr float MAX_POS_LIMIT = 3072;
+constexpr float DEGREES_PER_UNIT = 360.0 / 4096.0;
 
 // Linear Motor
 constexpr int LINEAR_VEL = 700; // 700
@@ -85,6 +100,7 @@ constexpr long LINEAR_AXIS_NO = 0;
 // 1->unsymetric trapezode, 2->reserved, 3->symetric S Curve, 4->unsymetric S
 // Curve
 
-constexpr long LINEAR_PULSE_PER_10_UNITS = 2439; // heuristic value for mm
+constexpr long LINEAR_PULSE_PER_10_UNITS = 24390; // heuristic value for cm
+constexpr long LINEAR_PULSE_PER_UNIT = 2439;
 
 #endif  // CONSTANTS_HPP
