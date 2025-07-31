@@ -5,92 +5,82 @@
 #ifndef DYNAMIXEL_ACTUATOR_HPP
 #define DYNAMIXEL_ACTUATOR_HPP
 
-#include <numbers>
-
+#include <vector>
+#include <cmath>
+#include <iostream>
 #include "dynamixel_sdk.h"
 #include "utils/constants.hpp"
 #include "vision/bridge.hpp"
 
-#define ADDR_TORQUE_ENABLE 64
-#define ADDR_OPERATING_MODE 11
-#define ADDR_GOAL_POSITION 116
-#define PROTOCOL_VERSION 2.0
-#define BAUDRATE 57600
-#define DEVICENAME "COM4"
+// Control table addresses
+#define ADDR_TORQUE_ENABLE    64
+#define ADDR_OPERATING_MODE   11
+#define ADDR_GOAL_POSITION    116
+#define PROTOCOL_VERSION      2.0
+#define BAUDRATE              57600
+#define DEVICENAME            "COM4"
 
-#define TORQUE_ENABLE 1
+#define TORQUE_ENABLE         1
 #define POSITION_CONTROL_MODE 3
 
-// Shared handlers for all Dynamixel actuators
+// For monitoring when each motor reaches its goal
+#define ADDR_PRESENT_POSITION      132
+#define LEN_PRESENT_POSITION       4
+#define MOVING_STATUS_THRESHOLD    20  // units
+
+// Shared handlers
 static dynamixel::PortHandler* sharedPortHandler =
-    dynamixel::PortHandler::getPortHandler(DEVICENAME);
+dynamixel::PortHandler::getPortHandler(DEVICENAME);
 static dynamixel::PacketHandler* sharedPacketHandler =
-    dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
+dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
 static bool sharedPortInitialized = false;
 
 class BulkDynamixelActuator {
 private:
     dynamixel::PortHandler* portHandler;
     dynamixel::PacketHandler* packetHandler;
-    std::vector<int> ids;
+    std::vector<int>        ids;
 
 public:
-    explicit BulkDynamixelActuator(const std::vector<int>& motor_ids) : ids{ motor_ids } {
-        // Use shared handlers
-        portHandler = sharedPortHandler;
-        packetHandler = sharedPacketHandler;
-    }
+    explicit BulkDynamixelActuator(const std::vector<int>& motor_ids)
+        : portHandler(sharedPortHandler),
+        packetHandler(sharedPacketHandler),
+        ids(motor_ids) { }
 
     ~BulkDynamixelActuator() {
-        for (const auto& id : ids) {
-            close(id);
-        }
+        for (int id : ids) close(id);
     }
 
     [[nodiscard]] bool initialize() const {
         if (!sharedPortInitialized) {
             if (!portHandler->openPort()) {
-                std::cerr << "Failed to open port" << std::endl;
-                return false;
+                std::cerr << "Failed to open port\n"; return false;
             }
             if (!portHandler->setBaudRate(BAUDRATE)) {
-                std::cerr << "Failed to set baudrate" << std::endl;
-                return false;
+                std::cerr << "Failed to set baudrate\n"; return false;
             }
             sharedPortInitialized = true;
-            std::cout << "open port" << std::endl;
         }
-
-        for (const auto& id : ids) {
-            uint8_t dxl_error = 0;
-
-            // Ensure torque is disabled before changing operating mode
-            packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE, 0, &dxl_error);
-
-            int result =
-                packetHandler->write1ByteTxRx(portHandler, id, ADDR_OPERATING_MODE,
-                    POSITION_CONTROL_MODE, &dxl_error);
-            if (result != COMM_SUCCESS || dxl_error) {
-                std::cerr << "Failed to set operating mode for motor " << id << std::endl;
+        for (int id : ids) {
+            uint8_t err = 0;
+            packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE, 0, &err);
+            int res = packetHandler->write1ByteTxRx(portHandler, id, ADDR_OPERATING_MODE,
+                POSITION_CONTROL_MODE, &err);
+            if (res != COMM_SUCCESS || err) {
+                std::cerr << "Failed to set operating mode for motor " << id << "\n";
                 return false;
             }
-
-            result = packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE,
-                TORQUE_ENABLE, &dxl_error);
-            if (result != COMM_SUCCESS || dxl_error) {
-                std::cerr << "Failed to enable torque for motor " << id << std::endl;
+            res = packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE,
+                TORQUE_ENABLE, &err);
+            if (res != COMM_SUCCESS || err) {
+                std::cerr << "Failed to enable torque for motor " << id << "\n";
                 return false;
             }
         }
-
-        std::cout << "All motors initialized successfully" << std::endl;
+        std::cout << "All motors initialized successfully\n";
         return true;
     }
 
-    /*
-     * 기존 좌표계: y=0이 0도, 반시계가 +
-     * dynamixel 좌표계: x=0이 0도, 시계가 +
-     */
     bool bulk_move_by_degrees(const std::vector<float>& degrees) {
         dynamixel::GroupBulkWrite groupBulkWrite(portHandler, packetHandler);
         if (degrees.size() != ids.size()) {
@@ -137,24 +127,83 @@ public:
         return true;
     }
 
+    // New: move to 'degrees' then poll PRESENT_POSITION until within threshold,
+    //      set *done_flag = true when reached.
+    bool move_and_wait_by_degrees(const std::vector<float>& degrees, bool* done_flag) {
+        // 1) Convert to dynamixel units
+        std::vector<int> target_units;
+        for (float deg : degrees) {
+            target_units.push_back(Bridge::to_dynamixel_unit_from_deg(deg));
+        }
+
+        // 2) Bulk-write goal positions
+        dynamixel::GroupBulkWrite writer(portHandler, packetHandler);
+        for (size_t i = 0; i < ids.size(); ++i) {
+            if (!writer.addParam(ids[i],
+                ADDR_GOAL_POSITION,
+                4,
+                reinterpret_cast<uint8_t*>(&target_units[i]))) {
+                std::cerr << "addParam failed for motor " << ids[i] << "\n";
+                return false;
+            }
+        }
+        if (writer.txPacket() != COMM_SUCCESS) {
+            std::cerr << "BulkWrite failed, attempting restart\n";
+            if (!restart()) return false;
+        }
+        writer.clearParam();
+
+        // 3) Setup bulk-read for PRESENT_POSITION
+        dynamixel::GroupBulkRead reader(portHandler, packetHandler);
+        for (int id : ids) {
+            if (!reader.addParam(id, ADDR_PRESENT_POSITION, LEN_PRESENT_POSITION)) {
+                std::cerr << "addParam(PRESENT) failed for " << id << "\n";
+                return false;
+            }
+        }
+
+        // 4) Poll until all motors are within threshold
+        while (true) {
+            if (reader.txRxPacket() != COMM_SUCCESS) {
+                std::cerr << "BulkRead failed, attempting restart\n";
+                if (!restart()) return false;
+            }
+            bool all_reached = true;
+            for (size_t i = 0; i < ids.size(); ++i) {
+                int pos = reader.getData(ids[i],
+                    ADDR_PRESENT_POSITION,
+                    LEN_PRESENT_POSITION);
+                if (std::abs(pos - target_units[i]) > MOVING_STATUS_THRESHOLD) {
+                    all_reached = false;
+                    break;
+                }
+            }
+            if (all_reached) break;
+        }
+
+        if (done_flag) *done_flag = true;
+        return true;
+    }
+
     bool restart() {
         sharedPortHandler->closePort();
         sharedPortInitialized = false;
-        std::cout << "close port" << std::endl;
         return initialize();
     }
 
     void close(int id) {
-        // bulk_move_by_degrees({90, 90, 90});
-        uint8_t dxl_error = 0;
-        packetHandler->write1ByteTxRx(portHandler, id, ADDR_TORQUE_ENABLE, 0, &dxl_error);
+        uint8_t err = 0;
+        packetHandler->write1ByteTxRx(portHandler,
+            id,
+            ADDR_TORQUE_ENABLE,
+            0,
+            &err);
         if (sharedPortInitialized) {
             sharedPortHandler->closePort();
             sharedPortInitialized = false;
-            std::cout << "close port" << std::endl;
         }
-        std::cout << "Torque disabled for motor " << id << std::endl;
+        std::cout << "Torque disabled for motor " << id << "\n";
     }
 };
 
-#endif //DYNAMIXEL_ACTUATOR_HPP
+#endif // DYNAMIXEL_ACTUATOR_HPP
