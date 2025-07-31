@@ -48,9 +48,6 @@ private:
 
 public:
     explicit Predictor() : kalman_filter(6, 3) {
-        world_positions.clear();
-        world_positions = std::deque<PositionWithTime>();
-
         cv::FileStorage fs_left(CameraType::LEFT.projection_matrix_path(), cv::FileStorage::READ);
         fs_left["R"] >> R_left;
         fs_left["t"] >> t_left;
@@ -215,16 +212,23 @@ public:
      */
     [[nodiscard]] inline cv::Point3f
     triangulate(const cv::Point2f& pt_left, const cv::Point2f& pt_right) const noexcept {
-        const cv::Mat pts1(1, 1, CV_32FC2, cv::Scalar(pt_left.x, pt_left.y));
-        const cv::Mat pts2(1, 1, CV_32FC2, cv::Scalar(pt_right.x, pt_right.y));
+        // Avoid unnecessary cv::Mat allocations and use cv::Vec4f directly
+        float pts1_data[2] = {pt_left.x, pt_left.y};
+        float pts2_data[2] = {pt_right.x, pt_right.y};
+        const cv::Mat pts1(1, 1, CV_32FC2, pts1_data);
+        const cv::Mat pts2(1, 1, CV_32FC2, pts2_data);
 
         cv::Mat pts4d;
         cv::triangulatePoints(P_left, P_right, pts1, pts2, pts4d);
 
-        cv::Mat p = pts4d.col(0);
-        p /= p.at<float>(3); // 동차 좌표 정규화
-
-        return {p.at<float>(0), p.at<float>(1), p.at<float>(2)};
+        // Use cv::Vec4f to avoid creating a new Mat and .col()
+        cv::Vec4f p(
+            pts4d.at<float>(0),
+            pts4d.at<float>(1),
+            pts4d.at<float>(2),
+            pts4d.at<float>(3)
+        );
+        return {p[0] / p[3], p[1] / p[3], p[2] / p[3]};
     }
 
     /**
@@ -234,21 +238,28 @@ public:
      * @return 탁구대 기준 평면(z=z_plane)에서의 3D 월드 좌표
      */
     [[nodiscard]] inline cv::Point3f birds_eye_view(const cv::Point2f& pt, const float z_plane = 0.0f) const noexcept {
+        // Avoid heap allocations, use cv::Vec3d and stack memory
         const std::array<cv::Point2f, 1> src{pt};
         std::array<cv::Point2f, 1> dst;
         cv::undistortPoints(src, dst, K_top, dist_coeffs_top);
         const cv::Point2f& pt_undistorted = dst[0];
-        const cv::Mat ray_cam = (cv::Mat_<double>(3, 1) << pt_undistorted.x, pt_undistorted.y, 1.0);
-        cv::Mat ray_world = R_top.t() * ray_cam; // 카메라 좌표계를 월드 좌표계로 변환
-        cv::Mat origin_world = -R_top.t() * t_top; // 카메라 원점을 월드 좌표계로 변환
-
-        const double s = (z_plane - origin_world.at<double>(2)) / ray_world.at<double>(2); // z=z_plane 평면과의 교차점 계산
-        cv::Mat world_pos = origin_world + s * ray_world;
-
+        // Use cv::Vec3d for ray vector
+        const cv::Vec3d ray_cam{pt_undistorted.x, pt_undistorted.y, 1.0};
+        // Use cv::Matx33d and cv::Vec3d for R_top and t_top for performance (if possible, preconvert at load time)
+        cv::Matx33d R_topx;
+        R_top.convertTo(R_topx, CV_64F);
+        cv::Vec3d t_topx;
+        t_top.convertTo(t_topx, CV_64F);
+        // ray_world = R_top.t() * ray_cam;
+        cv::Vec3d ray_world = R_topx.t() * ray_cam;
+        cv::Vec3d origin_world = -R_topx.t() * t_topx;
+        // z=z_plane 평면과의 교차점 계산
+        const double s = (z_plane - origin_world[2]) / ray_world[2];
+        cv::Vec3d world_pos = origin_world + s * ray_world;
         return {
-            static_cast<float>(world_pos.at<double>(0)),
-            static_cast<float>(world_pos.at<double>(1)),
-            static_cast<float>(world_pos.at<double>(2))
+            static_cast<float>(world_pos[0]),
+            static_cast<float>(world_pos[1]),
+            static_cast<float>(world_pos[2])
         };
     }
 
@@ -456,50 +467,40 @@ public:
         const int N = std::min(TOP_HISTORY_N, static_cast<int>(world_positions.size()) - 1);
 
         if (N >= 1) {
-            const auto &[pos_N, time_N] = world_positions[N];
-            const auto& [pos_N_1, time_N_1] = world_positions[N - 1];
+            std::vector<cv::Vec3f> valid_vs;
 
-            return cv::Vec3f(pos_N - pos_N_1) / std::chrono::duration<float>(time_N - time_N_1).count();
+            for (int i = world_positions.size() - N - 1; i < world_positions.size() - 1; ++i) {
+                const auto& [p1, t1] = world_positions[i];
+                const auto& [p2, t2] = world_positions[i + 1];
+                const float dt = std::chrono::duration<float>(t2 - t1).count();
+                if (1e-5f < dt && dt < 0.2f) {
+                    const auto v = cv::Vec3f(p2 - p1) / dt;
+                    if (cv::norm(v) < 1500.0f && v[1] < 0.0f) {
+                        valid_vs.push_back(v);
+                    }
+                }
+            }
 
-            //// v_x, v_y는 평균
-            //cv::Vec2f sum_speed_xy{0, 0};
-            //for (int i = world_positions.size() - N - 1; i < world_positions.size() - 1; ++i) {
-            //    const auto& [pos1, time1] = world_positions[i];
-            //    const auto& [pos2, time2] = world_positions[i + 1];
-            //    const float dt = std::chrono::duration<float>(time2 - time1).count();
-            //    if (dt > 1e-6f) {
-            //        sum_speed_xy += cv::Vec2f(pos2.x - pos1.x, pos2.y - pos1.y) / dt;
-            //    }
-            //}
-            //cv::Vec2f avg_speed_xy = sum_speed_xy / static_cast<float>(N);
+            if (!valid_vs.empty()) {
+                // 기준 벡터 = 가장 최근 벡터
+                const auto ref = valid_vs.back() / cv::norm(valid_vs.back());
+                cv::Vec3f sum{0, 0, 0};
+                int count = 0;
 
-            //// v_z는 가중 평균
-            //const std::vector<float> weights = {0.6f, 0.3f, 0.1f};
-            //float weighted_vz = 0.0f;
-            //float total_weight = 0.0f;
+                for (const auto& v : valid_vs) {
+                    const float cos_theta = ref.dot(v / cv::norm(v));
+                    if (cos_theta > 0.5f) { // 방향이 60도 이내로 유사
+                        sum += v;
+                        count++;
+                    }
+                }
 
-            //const int vz_N = std::min(static_cast<int>(weights.size()), static_cast<int>(world_positions.size()) - 1);
-            //for (int i = 0; i < vz_N; ++i) {
-            //    const int idx = static_cast<int>(world_positions.size()) - 1 - i;
-            //    const auto& [pos1, time1] = world_positions[idx - 1];
-            //    const auto& [pos2, time2] = world_positions[idx];
-            //    float dt = std::chrono::duration<float>(time2 - time1).count();
-            //    if (dt > 1e-6f) {
-            //        float vz = (pos2.z - pos1.z) / dt;
-            //        weighted_vz += vz * weights[i];
-            //        total_weight += weights[i];
-            //    }
-            //}
-
-            //const float avg_vz = total_weight > 0.0f ? weighted_vz / total_weight : 0.0f;
-
-            //return cv::Vec3f{avg_speed_xy[0], avg_speed_xy[1], avg_vz};
+                if (count > 0) return sum / static_cast<float>(count);
+            }
         }
 
         return std::nullopt;
     }
-
-    // [[nodiscard]] cv::Vec3f get_av
 
     /**
      * @brief 현재 위치를 반환합니다.
@@ -616,14 +617,18 @@ public:
         const auto t_arrive = get_arrive_time(world_pos, world_speed, ylim);
 
         if (!(world_pos.has_value() && world_speed.has_value() && t_arrive.has_value())) {
-            std::cerr << std::boolalpha << "Invalid: all optionals should to has_value(); world_pos=" << world_pos.has_value() << ", world_speed=" << world_speed.has_value() << ", t_arrive=" << t_arrive.has_value() << std::endl;
+            std::cerr << std::boolalpha << "Invalid: all optionals should to has_value(); world_pos=" << world_pos.
+                has_value() << ", world_speed=" << world_speed.has_value() << ", t_arrive=" << t_arrive.has_value() <<
+                std::endl;
             return std::nullopt;
         }
 
         if (PREDICT_MIN_TIME <= t_arrive.value() && t_arrive.value() <= PREDICT_MAX_TIME)
             return predict_world_pos(world_pos.value(), world_speed.value(), t_arrive.value());
 
-        std::cerr << std::format("Invalid t_arrive: not satisfies {} <= t_arrive(={}) <= {} when speed: [{}, {}, {}]", PREDICT_MIN_TIME, t_arrive.value(), PREDICT_MAX_TIME, world_speed.value()[0], world_speed.value()[1], world_speed.value()[2]) << std::endl;
+        std::cerr << std::format("Invalid t_arrive: not satisfies {} <= t_arrive(={}) <= {} when speed: [{}, {}, {}]",
+                                 PREDICT_MIN_TIME, t_arrive.value(), PREDICT_MAX_TIME, world_speed.value()[0],
+                                 world_speed.value()[1], world_speed.value()[2]) << std::endl;
         return std::nullopt;
     }
 };
