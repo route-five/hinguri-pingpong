@@ -62,6 +62,8 @@ private:
 
         const float top_target = wrist_angle;
         const float mid_target = theta;
+        // 0) Move the linear actuator
+        linearActuator.move_actu(x);
 
         // 1) Move to swing_start and wait
         bool swing_start_done = false;
@@ -71,10 +73,8 @@ private:
         );
         // swing_start_done == true here
 
-        // 2) Meanwhile move the linear actuator
-        linearActuator.move_actu(x);
 
-        // 3) Only after swing_start is done, move to swing_end and wait
+        // 2) Only after swing_start is done, move to swing_end and wait
         bool swing_end_done = false;
         actuators.move_and_wait_by_degrees(
             { top_target, mid_target, swing_end },
