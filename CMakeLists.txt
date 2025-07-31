@@ -21,7 +21,7 @@ add_executable(hinguri_pingpong
         #        src/vision/pre/world_points.cpp
 
         # 2. 체커보드 이미지를 수집하는 코드
-        #        src/vision/pre/chessboard_images.cpp
+                src/vision/pre/chessboard_images.cpp
 
         # 3. 탁구대 위의 Camera 좌표를 수집하는 코드
         #        src/vision/pre/camera_points.cpp
@@ -33,7 +33,7 @@ add_executable(hinguri_pingpong
         #        src/main.cpp
         #        src/vision.cpp
         #        src/main.cpp
-        test/matplot++/visualize_pingpong.cpp
+        #        test/matplot++/visualize_pingpong.cpp
         #        test/opencv/top_camera_test.cpp
         #        test/opencv/get_world_pos.cpp
         #        test/opencv/triple_camera.cpp
