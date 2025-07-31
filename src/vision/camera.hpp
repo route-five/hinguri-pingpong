@@ -40,6 +40,8 @@ public:
       frame_size{camera_type.resolution()},
       current_frame_ptr{nullptr},
       stopped{false} {
+    stream.set(cv::CAP_PROP_BUFFERSIZE, 1);
+    stream.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M','J','P','G'));
     stream.set(cv::CAP_PROP_FRAME_WIDTH, frame_size.width);
     stream.set(cv::CAP_PROP_FRAME_HEIGHT, frame_size.height);
     stream.set(cv::CAP_PROP_FPS, fps);
