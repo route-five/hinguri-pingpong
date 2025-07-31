@@ -31,8 +31,9 @@ add_executable(hinguri_pingpong
 
         #### processing
         #        src/main.cpp
-        src/vision.cpp
-        src/main.cpp
+        #        src/vision.cpp
+        #        src/main.cpp
+        test/matplot++/visualize_pingpong.cpp
         #        test/opencv/top_camera_test.cpp
         #        test/opencv/get_world_pos.cpp
         #        test/opencv/triple_camera.cpp

@@ -19,8 +19,9 @@
 
 inline std::mutex mutex;
 inline std::atomic has_sent{false};
-inline std::atomic stop_all{false};
+inline std::atomic<bool> stop_all{false};
 inline std::optional<Bridge::Payload> shared_payload;
+int i = 0;
 
 constexpr float START_SWING = -60.0; // deg
 constexpr int TOP_MOTOR_ID = 4;
@@ -89,6 +90,9 @@ private:
 
             bot_target = swing_end;
             actuators.bulk_move_by_degrees({top_target, mid_target, bot_target});
+
+            std::cout << "i = " << i << std::endl;
+            i++;
         }
     }
 
@@ -109,31 +113,40 @@ private:
     Tracker tracker_right = Tracker(ORANGE_MIN, ORANGE_MAX);
     Predictor predictor;
 
-    std::mutex frame_mutex;
-    cv::Mat latest_top_frame, latest_left_frame, latest_right_frame;
+    static void frame_callback(
+        cv::Mat& frame,
+        const Camera& camera,
+        Tracker& tracker,
+        Predictor& predictor,
+        void (Predictor::*set_pt)(const std::optional<cv::Point2f>&)
+    ) {
+        if (frame.empty()) return;
+        tracker << frame;
+
+        const auto camera_pos = tracker.get_camera_pos();
+        (predictor.*set_pt)(camera_pos.has_value() ? std::make_optional(camera_pos.value().first) : std::nullopt);
+
+        if (camera_pos.has_value()) {
+            Draw::put_circle(frame, camera_pos.value().first, camera_pos.value().second, COLOR_GREEN);
+        }
+
+        Draw::put_text(
+            frame,
+            std::format("FPS: {:.1f}/{:.1f}", camera.get_fps(), camera.get_prop(cv::CAP_PROP_FPS)),
+            {10, 20}
+        );
+    }
 
 public:
     VisionEnd() {
-        cam_top.set_frame_callback([this](const cv::Mat& frame) {
-            std::lock_guard lock(frame_mutex);
-            frame.copyTo(latest_top_frame);
-            tracker_top << frame;
-            const auto pos = tracker_top.get_camera_pos();
-            predictor.set_point_top(pos ? std::make_optional(pos.value().first) : std::nullopt);
+        cam_top.set_frame_callback([this](cv::Mat& frame) {
+            frame_callback(frame, cam_top, tracker_top, predictor, &Predictor::set_point_top);
         });
-        cam_left.set_frame_callback([this](const cv::Mat& frame) {
-            std::lock_guard lock(frame_mutex);
-            frame.copyTo(latest_left_frame);
-            tracker_left << frame;
-            const auto pos = tracker_left.get_camera_pos();
-            predictor.set_point_left(pos ? std::make_optional(pos.value().first) : std::nullopt);
+        cam_left.set_frame_callback([this](cv::Mat& frame) {
+            frame_callback(frame, cam_left, tracker_left, predictor, &Predictor::set_point_left);
         });
-        cam_right.set_frame_callback([this](const cv::Mat& frame) {
-            std::lock_guard lock(frame_mutex);
-            frame.copyTo(latest_right_frame);
-            tracker_right << frame;
-            const auto pos = tracker_right.get_camera_pos();
-            predictor.set_point_right(pos ? std::make_optional(pos.value().first) : std::nullopt);
+        cam_right.set_frame_callback([this](cv::Mat& frame) {
+            frame_callback(frame, cam_right, tracker_right, predictor, &Predictor::set_point_right);
         });
     }
 
@@ -175,15 +188,9 @@ public:
             predict_arrive_pos = {-1, -1, -1};
 
             cv::Mat frame_top, frame_left, frame_right;
-            {
-                std::lock_guard lock(frame_mutex);
-                if (latest_top_frame.empty() || latest_left_frame.empty() || latest_right_frame.empty())
-                    continue;
-
-                latest_top_frame.copyTo(frame_top);
-                latest_left_frame.copyTo(frame_left);
-                latest_right_frame.copyTo(frame_right);
-            }
+            cam_top >> frame_top;
+            cam_left >> frame_left;
+            cam_right >> frame_right;
 
             if (frame_top.empty() || frame_left.empty() || frame_right.empty())
                 continue;
@@ -207,15 +214,25 @@ public:
 
             // 예측 구간 설정
             if (PREDICT_MIN_Y <= world_pos.y && world_pos.y <= PREDICT_MAX_Y) {
-                if (const auto new_arrive_pos = predictor.get_arrive_pos()) {
+                /*if (const auto new_arrive_pos = predictor.get_arrive_pos()) {
                     predict_arrive_pos.z = new_arrive_pos.value().z;
-                }
+                }*/
                 has_sent = false;
                 //std::cout << "has_sent = false;" << std::endl;
             }
             else if (0 <= world_pos.x && world_pos.x <= TABLE_WIDTH &&
                 0 <= world_pos.y &&
                 0 <= world_pos.z) {
+                if (i < 10) {
+                    predict_arrive_pos = {TABLE_WIDTH / 4, 0, BASE_AXIS_HEIGHT + AXIS_RADIUS / 2};
+                }
+                else if (i < 20) {
+                    predict_arrive_pos = {0, 0, BASE_AXIS_HEIGHT + AXIS_RADIUS / 2};
+                }
+                else if (i < 30) {
+                    predict_arrive_pos = {TABLE_WIDTH * 3 / 4, 0, BASE_AXIS_HEIGHT + AXIS_RADIUS / 2};
+                }
+
                 if (0 <= predict_arrive_pos.x && predict_arrive_pos.x <= TABLE_WIDTH &&
                     0 <= predict_arrive_pos.y && predict_arrive_pos.y <= TABLE_HEIGHT &&
                     0 <= predict_arrive_pos.z &&

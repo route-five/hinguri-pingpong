@@ -18,16 +18,15 @@
 
 void callback(
     cv::Mat& frame,
-    const Camera& camera,
+    Camera& camera,
     Tracker& tracker,
     const std::function<void(const cv::Point2f&)>& set_pt
 ) {
     if (frame.empty()) return;
 
-    tracker.update(frame);
+    tracker << frame;
 
-    const auto ret = tracker.get_camera_pos();
-    if (ret.has_value()) {
+    if (const auto ret = tracker.get_camera_pos()) {
         auto [center, radius] = ret.value();
 
         cv::circle(frame, center, radius, COLOR_GREEN, -1, cv::LINE_AA);
