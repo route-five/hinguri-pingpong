@@ -1,33 +1,29 @@
 #pragma once
-#include "stddef.h"
+
+#include <conio.h>
+
 #include "AXL.h"
 #include "AXM.h"
-#include <iostream>
-#include <conio.h>
-#include "../constants.hpp"
-#include "../utils/sleep.hpp"
+#include "utils/constants.hpp"
+#include "utils/sleep.hpp"
 
-/// char mot_file[] = "src/mot/ajin20190628.mot";        // *.mot file Path
-char mot_file[] = "hinguri.mot";
+char mot_file[] = "src/mot/ajin20190628.mot"; // *.mot file Path
+// char mot_file[] = "hinguri.mot";
+constexpr DWORD LINEAR_ABS_REL_MODE = 0; //0->abs, 1->Rel
+constexpr DWORD LINEAR_PROFILE_MODE = 3; //0->symetric trapezode,
 
-
-class LinearActuator
-{
+class LinearActuator {
 public:
-	LinearActuator()
-	{
+	LinearActuator() {
 		DWORD Code = AxlOpen(7);
-		if (Code == AXT_RT_SUCCESS)
-		{
+		if (Code == AXT_RT_SUCCESS) {
 			printf("Library Reset. \n");
 			//Check for Motion Module
 			DWORD uStatus;
 			Code = AxmInfoIsMotionModule(&uStatus);
-			if (Code == AXT_RT_SUCCESS)
-			{
+			if (Code == AXT_RT_SUCCESS) {
 				printf("Library Reset.\n");
-				if (uStatus == STATUS_EXIST)
-				{
+				if (uStatus == STATUS_EXIST) {
 					printf("Library Reset. Motion model exists. \n");
 
 					AxmMotLoadParaAll(mot_file);
@@ -45,25 +41,44 @@ public:
 		}
 	}
 
-	~LinearActuator()
-	{
+	~LinearActuator() {
 		AxmSignalServoOn(LINEAR_AXIS_NO, 0);
 		AxlClose();
 	}
 
-	void move_actu(int pos)
-	{
-		AxmMotSetMoveUnitPerPulse(LINEAR_AXIS_NO, 10, LINEAR_PULSE_PER_10_UNITS); // mm
+	/**
+	 * @param pos 원점은 탁구대 왼쪽 꼭짓점, cm 단위
+	 */
+	void move_actu(float pos) {
+		pos -= TABLE_WIDTH / 2; // 탁구대 중앙을 원점으로 설정
+		pos *= -1;
+
+		if (pos > 55) {
+			std::cerr << "Linear Actuator move error: out of safe range (-55 ~ 55 expected, but " << pos << " received. Clamped.)" << std::endl;
+			pos = 55.0f;
+		}
+		else if (pos < -55) {
+			std::cerr << "Linear Actuator move error: out of safe range (-55 ~ 55 expected, but " << pos << " received. Clamped.)" << std::endl;
+			pos = -55.0f;
+		}
+
+		AxmMotSetMoveUnitPerPulse(LINEAR_AXIS_NO, 1, LINEAR_PULSE_PER_UNIT); // cm
+		std::cout << std::format("Linear Actuator moved to absolute position: {:.2f}", pos) << std::endl;
 		AxmMovePos(0, pos, LINEAR_VEL, LINEAR_ACCEL, LINEAR_DECEL);
 		DWORD uStatus;
 		AxmStatusReadInMotion(LINEAR_AXIS_NO, &uStatus);
-		while (uStatus)
-		{
+		while (uStatus) {
 			AxmStatusReadInMotion(LINEAR_AXIS_NO, &uStatus);
 		}
 	}
 
+	/**
+	 * @param pos 원점은 탁구대 왼쪽 꼭짓점, cm 단위
+	 */
 	void move_to(int pos) {
+		pos -= TABLE_WIDTH / 2; // 탁구대 중앙을 원점으로 설정
+		pos *= -1;
+
 		AxmMoveToAbsPos(LINEAR_AXIS_NO, pos, LINEAR_VEL, LINEAR_ACCEL, LINEAR_DECEL);
 	}
 
