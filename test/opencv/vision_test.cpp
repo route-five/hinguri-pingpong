@@ -6,13 +6,13 @@
 #include <vector>
 #include <mutex>
 
-#include "utils/draw.hpp"
-#include "vision/calibrator.hpp"
-#include "vision/camera.hpp"
-#include "vision/camera_type.hpp"
-#include "vision/predictor.hpp"
-#include "vision/tracker.hpp"
-#include "vision/visualizer.hpp"
+#include "../../src/utils/draw.hpp"
+#include "../../src/vision/calibrator.hpp"
+#include "../../src/vision/camera.hpp"
+#include "../../src/vision/camera_type.hpp"
+#include "../../src/vision/predictor.hpp"
+#include "../../src/vision/tracker.hpp"
+#include "../../src/vision/visualizer.hpp"
 
 // TODO: 모두 통합하기
 
