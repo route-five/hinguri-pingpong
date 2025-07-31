@@ -27,17 +27,13 @@ add_executable(hinguri_pingpong
         #        src/vision/pre/camera_points.cpp
 
         # 4. 모든 generate된 데이터를 이용하여 카메라를 보정하는 코드
-        #        src/vision/pre/calibrate.cpp
+                src/vision/pre/calibrate.cpp
 
         #### processing
         #        src/main.cpp
-        #        src/vision_test.cpp
-        src/vision_end.cpp
-        src/control_end.cpp
+        #        src/vision.cpp
         #        src/main.cpp
         #        test/matplot++/visualize_pingpong.cpp
-        #        src/vision/pre/resize_chessboard_images.cpp
-        #        src/vision/pre/resize_camera_points.cpp
         #        test/opencv/top_camera_test.cpp
         #        test/opencv/get_world_pos.cpp
         #        test/opencv/triple_camera.cpp

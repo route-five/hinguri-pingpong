@@ -13,12 +13,12 @@
 #define IMSHOW
 
 int main() {
-    Calibrator calibrator(CameraType::LEFT);
+    Calibrator calibrator(CameraType::TOP);
 
     std::cout << "🔁 finding chessboard corners..." << std::endl;
     std::vector<std::vector<cv::Point2f>> image_points;
     std::vector<std::vector<cv::Point3f>> object_points;
-    calibrator.find_chessboard_corners(image_points, object_points, true);
+    calibrator.find_chessboard_corners(image_points, object_points, false);
     cv::destroyAllWindows();
     std::cout << "✅ find chessboard corners done." << std::endl << std::endl;
 

@@ -29,7 +29,7 @@
 int main() {
     std::vector<cv::Point2f> camera_points;
 
-    Camera cam(CameraType::TOP, {0, 1200}, 120);
+    Camera cam(CameraType::LEFT, {1, 1200}, 120);
     if (!cam.is_opened()) {
         std::cerr << "Failed to open camera" << std::endl;
         return -1;
