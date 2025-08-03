@@ -14,7 +14,11 @@ add_executable(hinguri_pingpong
         src/vision/tracker.hpp
         src/vision/bridge.hpp
         src/vision/visualizer.hpp
+        src/utils/random.hpp
+        src/utils/constants.hpp
+        src/utils/sleep.hpp
         src/utils/draw.hpp
+        src/utils/log.hpp
 
         #### preprocessing
         # 1. 탁구대 위의 World 좌표를 생성하는 코드
@@ -35,7 +39,8 @@ add_executable(hinguri_pingpong
         #        src/vision_end.cpp
         #        src/control_end.cpp
         #        src/main.cpp
-        test/matplot++/visualize_pingpong.cpp
+        #        test/matplot++/visualize_pingpong.cpp
+        test/thread_test.cpp
         #        src/vision/pre/resize_chessboard_images.cpp
         #        src/vision/pre/resize_camera_points.cpp
         #        test/opencv/top_camera_test.cpp

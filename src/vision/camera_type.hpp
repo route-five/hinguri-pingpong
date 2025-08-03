@@ -46,6 +46,10 @@ public:
     return name_ == other.name_;
   }
 
+  std::string to_string() const {
+    return name_ + " (" + std::to_string(resolution_.width) + "x" + std::to_string(resolution_.height) + ")";
+  }
+
 private:
   std::string name_;
   cv::Size resolution_;

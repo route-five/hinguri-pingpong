@@ -4,6 +4,7 @@
 
 #include "AXL.h"
 #include "AXM.h"
+#include "../utils/log.hpp"
 #include "utils/constants.hpp"
 #include "utils/sleep.hpp"
 
@@ -17,14 +18,14 @@ public:
 	LinearActuator() {
 		DWORD Code = AxlOpen(7);
 		if (Code == AXT_RT_SUCCESS) {
-			printf("Library Reset. \n");
+			Log::info("[LinearActuator::LinearActuator] Library Reset.");
 			//Check for Motion Module
 			DWORD uStatus;
 			Code = AxmInfoIsMotionModule(&uStatus);
 			if (Code == AXT_RT_SUCCESS) {
-				printf("Library Reset.\n");
+				Log::info("[LinearActuator::LinearActuator] Library Reset 2.");
 				if (uStatus == STATUS_EXIST) {
-					printf("Library Reset. Motion model exists. \n");
+					Log::info("[LinearActuator::LinearActuator] Library Reset 3. Motion model exists.");
 
 					AxmMotLoadParaAll(mot_file);
 
@@ -53,17 +54,14 @@ public:
 		pos -= TABLE_WIDTH / 2; // 탁구대 중앙을 원점으로 설정
 		pos *= -1;
 
-		if (pos > 55) {
-			std::cerr << "Linear Actuator move error: out of safe range (-55 ~ 55 expected, but " << pos << " received. Clamped.)" << std::endl;
-			pos = 55.0f;
-		}
-		else if (pos < -55) {
-			std::cerr << "Linear Actuator move error: out of safe range (-55 ~ 55 expected, but " << pos << " received. Clamped.)" << std::endl;
-			pos = -55.0f;
+		if (std::abs(pos) > 55) {
+			Log::warn(std::format(
+				"[LinearActuator::move_actu] move error: out of safe range (-55 ~ 55 expected, but {} received. Clamped.)", pos));
+			pos = std::clamp(pos, -55.0f, 55.0f);
 		}
 
 		AxmMotSetMoveUnitPerPulse(LINEAR_AXIS_NO, 1, LINEAR_PULSE_PER_UNIT); // cm
-		std::cout << std::format("Linear Actuator moved to absolute position: {:.2f}", pos) << std::endl;
+		Log::debug(std::format("[LinearActuator::move_actu] moved to absolute position: {:.2f} cm", pos));;
 		AxmMovePos(0, pos, LINEAR_VEL, LINEAR_ACCEL, LINEAR_DECEL);
 		DWORD uStatus;
 		AxmStatusReadInMotion(LINEAR_AXIS_NO, &uStatus);

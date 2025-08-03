@@ -9,6 +9,7 @@
 #include <mutex>
 
 #include "camera_type.hpp"
+#include "../utils/log.hpp"
 
 using Device = struct Device_ {
   int source = 0;
@@ -192,7 +193,9 @@ public:
     stream.set(cv::CAP_PROP_FPS, fps);
 
     if (!stream.isOpened()) {
-      throw std::runtime_error("Failed to open camera");
+      Log::error(std::format("[Camera::Camera] Failed to open camera: type={}, source={}, backend={}", camera_type.to_string(),
+                             device.source, device.backend));
+      throw;
     }
   }
 

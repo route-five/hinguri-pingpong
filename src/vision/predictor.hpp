@@ -9,6 +9,7 @@
 #include <array>
 #include "camera_type.hpp"
 #include "../utils/constants.hpp"
+#include "../utils/log.hpp"
 
 using PositionWithTime = struct PositionWithTime {
     cv::Point3f position;
@@ -617,18 +618,19 @@ public:
         const auto t_arrive = get_arrive_time(world_pos, world_speed, ylim);
 
         if (!(world_pos.has_value() && world_speed.has_value() && t_arrive.has_value())) {
-            std::cerr << std::boolalpha << "Invalid: all optionals should to has_value(); world_pos=" << world_pos.
-                has_value() << ", world_speed=" << world_speed.has_value() << ", t_arrive=" << t_arrive.has_value() <<
-                std::endl;
+            Log::error(std::format(
+                "[Predictor::get_arrive_pos] all optionals should to has_value(). world_pos={}, world_speed={}, t_arrive={}",
+                world_pos.has_value() ? "exist" : "nullopt", world_speed.has_value() ? "exist" : "nullopt",
+                t_arrive.has_value() ? "exist" : "nullopt"));
             return std::nullopt;
         }
 
         if (PREDICT_MIN_TIME <= t_arrive.value() && t_arrive.value() <= PREDICT_MAX_TIME)
             return predict_world_pos(world_pos.value(), world_speed.value(), t_arrive.value());
 
-        std::cerr << std::format("Invalid t_arrive: not satisfies {} <= t_arrive(={}) <= {} when speed: [{}, {}, {}]",
-                                 PREDICT_MIN_TIME, t_arrive.value(), PREDICT_MAX_TIME, world_speed.value()[0],
-                                 world_speed.value()[1], world_speed.value()[2]) << std::endl;
+        Log::error(std::format(
+            "[Predictor::get_arrive_pos] invalid t_arrive: not satisfies {} <= t_arrive(={}) <= {} when speed: [{}, {}, {}]",
+            PREDICT_MIN_TIME, t_arrive.value(), PREDICT_MAX_TIME, world_speed.value()[0], world_speed.value()[1], world_speed.value()[2]));
         return std::nullopt;
     }
 };

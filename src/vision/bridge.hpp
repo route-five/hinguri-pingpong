@@ -86,9 +86,10 @@ namespace Bridge {
         const bool use_right_hand = x_p >= last_pos;
 
         float theta = std::asin(std::clamp((z_p - h0) / r, -1.0f, 1.0f));
-        float swing_start = use_right_hand ? 0 : 180;
-        float swing_end = use_right_hand ? 150 : 30;
-        float wrist_angle = use_right_hand ? 90 + arrive_angle : 90 - arrive_angle;
+        float swing_start = use_right_hand ? 45 : 135;
+        float swing_end = use_right_hand ? 135 : 45;
+        // float wrist_angle = use_right_hand ? 90 + arrive_angle : 90 - arrive_angle;
+        float wrist_angle = 90;
 
         if (!use_right_hand) {
             theta = pi - theta; //x_p가 테이블의 오른쪽에 있을 때, θ를 반전
@@ -99,12 +100,6 @@ namespace Bridge {
 
         const float x = x_p - r * std::cos(theta);
         last_pos = x;
-
-        std::cout << "[Bridge] Conversion ============" << std::endl;
-        std::cout << "Last x: " << last_pos << ", while current x_p is " << x_p << ". So use_right hand is " << (
-            use_right_hand ? "true." : "false.") << std::endl;
-        std::cout << std::format("Returning - theta: {} rad => {}deg, swing_start: {}deg, swing_end: {}deg, wrist_angle: {}deg", theta,
-                                 theta * rad, swing_start, swing_end, wrist_angle) << std::endl;
 
         return {
             x,

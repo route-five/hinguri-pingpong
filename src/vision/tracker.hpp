@@ -11,6 +11,8 @@
 #include <iostream>
 #include <utility>
 
+#include "../utils/log.hpp"
+
 // class Tracker {
 // protected:
 //     const cv::Scalar lower_color_bound;
@@ -217,44 +219,111 @@ public:
         return color_mask;
     }
 
-    /**
-     * @brief Computes the centroid of the largest-area contour in the current color mask
-     * @return Optional centroid point, or nullopt if no valid contour found
-     */
-    [[nodiscard]] std::optional<cv::Point2f> get_camera_pos() const {
-        if (color_mask.empty()) {
-            return std::nullopt;
+    [[nodiscard]] std::vector<Contour> find_contours() const {
+        std::vector<std::vector<cv::Point>> contour_list;
+        try {
+            cv::findContours(color_mask, contour_list, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
         }
-
-        std::vector<std::vector<cv::Point>> contours;
-        cv::findContours(color_mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-        if (contours.empty()) {
-            return std::nullopt;
+        catch (const cv::Exception& e) {
+            Log::error("[Tracker::find_contours] OpenCV Error in findContours: " + std::string(e.what()));
+            return std::vector<Contour>{};
         }
+        std::vector<Contour> contours;
+        contours.reserve(contour_list.size());
+        for (const auto& c : contour_list) {
+            contours.emplace_back(c);
+        }
+        return contours;
+    }
 
-        // Find the largest contour by area
-        double max_area = 0.0;
-        int best_idx = -1;
-        for (int i = 0; i < (int)contours.size(); ++i) {
-            double area = cv::contourArea(contours[i]);
-            if (area > max_area) {
-                max_area = area;
-                best_idx = i;
+    static std::optional<Contour> most_circular_contour(
+        const std::vector<Contour>& contours,
+        const double threshold = CIRCULARITY_THRESHOLD
+    ) {
+        std::optional<Contour> most_contour = std::nullopt;
+        for (const auto& contour : contours) {
+            if (contour.empty() || contour.zero())
+                continue;
+            const double dist = contour.distance_circularity(threshold);
+            if (dist < threshold && (!most_contour.has_value() || most_contour->distance_circularity() > dist)) {
+                most_contour = contour;
             }
         }
-        if (best_idx < 0) {
-            return std::nullopt;
+        return most_contour;
+    }
+
+    static std::optional<Contour> largest_contour(const std::vector<Contour>& contours) {
+        std::optional<Contour> largest_contour = std::nullopt;
+        for (const auto& contour : contours) {
+            if (contour.empty() || contour.zero())
+                continue;
+            if (!largest_contour.has_value() || largest_contour->area() < contour.area()) {
+                largest_contour = contour;
+            }
+        }
+        return largest_contour;
+    }
+
+    /**
+       * @brief 타겟의 위치를 카메라 좌표계에서 찾습니다.
+       * @return 가장 원형에 가까운 컨투어의 (최소 외접원 중심 좌표, 반지름)
+       */
+    [[nodiscard]] std::optional<std::pair<cv::Point2f, double>> get_camera_pos() const {
+        const std::vector<Contour> contours = find_contours();
+        if (const auto most_contour = most_circular_contour(contours)) {
+            try {
+                const auto ret = most_contour->min_enclosing_circle();
+                if (ret.second > RADIUS_MIN) {
+                    return ret;
+                }
+            }
+            catch (const std::exception& e) {
+                Log::error("[Tracker::get_camera_pos] Error in Contour::min_enclosing_circle: " + std::string(e.what()));
+                return std::nullopt;
+            }
         }
 
-        // Compute centroid via moments
-        const auto& cnt = contours[best_idx];
-        cv::Moments m = cv::moments(cnt);
-        if (m.m00 <= 0.0) {
-            return std::nullopt;
-        }
-        return cv::Point2f(static_cast<float>(m.m10 / m.m00),
-                           static_cast<float>(m.m01 / m.m00));
+        return std::nullopt;
     }
+
+    ///**
+    // * @brief Computes the centroid of the largest-area contour in the current color mask
+    // * @return Optional centroid point, or nullopt if no valid contour found
+    // */
+    //[[nodiscard]] std::optional<cv::Point2f> get_camera_pos() const {
+    //    if (color_mask.empty()) {
+    //        return std::nullopt;
+    //    }
+
+    //    std::vector<std::vector<cv::Point>> contours;
+    //    cv::findContours(color_mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    //    if (contours.empty()) {
+    //        return std::nullopt;
+    //    }
+
+    //    // Find largest contour by area
+    //    double max_area = 0.0;
+    //    int best_idx = -1;
+    //    for (int i = 0; i < (int)contours.size(); ++i) {
+    //        double area = cv::contourArea(contours[i]);
+    //        if (area > max_area) {
+    //            max_area = area;
+    //            best_idx = i;
+    //        }
+    //    }
+    //    if (best_idx < 0) {
+    //        return std::nullopt;
+    //    }
+
+    //    // Compute centroid via moments
+    //    const auto& cnt = contours[best_idx];
+    //    cv::Moments m = cv::moments(cnt);
+    //    if (m.m00 <= 0.0) {
+    //        return std::nullopt;
+    //    }
+    //    return cv::Point2f(static_cast<float>(m.m10 / m.m00),
+    //        static_cast<float>(m.m01 / m.m00));
+    //}
 };
 
 #endif // TRACKER_HPP
