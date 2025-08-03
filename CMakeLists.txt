@@ -32,10 +32,10 @@ add_executable(hinguri_pingpong
         #### processing
         #        src/main.cpp
         #        src/vision_test.cpp
-        src/vision_end.cpp
-        src/control_end.cpp
+        #        src/vision_end.cpp
+        #        src/control_end.cpp
         #        src/main.cpp
-        #        test/matplot++/visualize_pingpong.cpp
+        test/matplot++/visualize_pingpong.cpp
         #        src/vision/pre/resize_chessboard_images.cpp
         #        src/vision/pre/resize_camera_points.cpp
         #        test/opencv/top_camera_test.cpp
