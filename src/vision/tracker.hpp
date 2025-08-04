@@ -180,9 +180,9 @@ class Tracker {
 protected:
     const cv::Scalar lower_color_bound;
     const cv::Scalar upper_color_bound;
-    cv::Mat frame;
-    cv::Mat hsv; // reused HSV buffer
-    cv::Mat color_mask; // reused color mask
+    cv::UMat frame;
+    cv::UMat hsv;
+    cv::UMat color_mask;
 
 public:
     explicit Tracker(
@@ -192,8 +192,8 @@ public:
         upper_color_bound(std::move(upper_color_bound)) {
     }
 
-    void update(const cv::Mat& new_frame) {
-        assert(!new_frame.empty() && "Frame cannot be empty - at Tracker::update");
+    void update(const cv::UMat& new_frame) {
+        assert(!new_frame.empty() && "[Tracker::update] Frame cannot be empty");
         // Only copy header (shallow)
         frame = new_frame;
 
@@ -206,16 +206,16 @@ public:
         cv::inRange(hsv, lower_color_bound, upper_color_bound, color_mask);
     }
 
-    friend Tracker& operator<<(Tracker& tracker, const cv::Mat& new_frame) noexcept {
+    friend Tracker& operator<<(Tracker& tracker, const cv::UMat& new_frame) noexcept {
         tracker.update(new_frame);
         return tracker;
     }
 
-    [[nodiscard]] const cv::Mat& get_frame() const noexcept {
+    [[nodiscard]] const cv::UMat& get_frame() const noexcept {
         return frame;
     }
 
-    [[nodiscard]] const cv::Mat& get_color_mask() const noexcept {
+    [[nodiscard]] const cv::UMat& get_color_mask() const noexcept {
         return color_mask;
     }
 

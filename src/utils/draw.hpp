@@ -11,23 +11,23 @@
 
 namespace Draw {
     inline void put_text(
-        cv::Mat& frame,
+        cv::UMat& frame,
         const std::string& text,
         const cv::Point& position,
         const cv::Scalar& color = COLOR_BLACK,
         const int thickness = 2,
-        const double font_scale = 0.8
+        const double font_scale = 0.7
     ) {
         cv::putText(frame, text, position, cv::FONT_HERSHEY_SIMPLEX, font_scale, color, thickness, cv::LINE_AA);
     }
 
     inline void put_text_border(
-        cv::Mat& frame,
+        cv::UMat& frame,
         const std::string& text,
         const cv::Point& position,
         const cv::Scalar& color = COLOR_WHITE,
         const int thickness = 2,
-        const double font_scale = 0.8
+        const double font_scale = 0.7
     ) {
         cv::putText(frame, text, position, cv::FONT_HERSHEY_SIMPLEX, font_scale, COLOR_BLACK, thickness + 2,
                     cv::LINE_AA);
@@ -35,13 +35,24 @@ namespace Draw {
     }
 
     inline void put_circle(
-        cv::Mat& frame,
+        cv::UMat& frame,
         const cv::Point2f& center,
         const int radius,
         const cv::Scalar& color = COLOR_MAGENTA,
         const int thickness = -1
     ) {
         cv::circle(frame, center, radius, color, thickness, cv::LINE_AA);
+    }
+
+    inline void put_arrow(
+        cv::UMat& frame,
+        const cv::Point2f& start,
+        const cv::Point2f& end,
+        const cv::Scalar& color = COLOR_GREEN,
+        const int thickness = 1,
+        const double tip_length = 0.3
+    ) {
+        cv::arrowedLine(frame, start, end, color, thickness, cv::LINE_AA, 0, tip_length);
     }
 
     inline std::string to_string(const std::string& prefix, const cv::Point2f& pt, const std::string& unit = "px") {

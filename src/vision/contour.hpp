@@ -23,7 +23,7 @@ public:
 
   ~Contour() = default;
 
-  void draw(cv::Mat& frame, const cv::Scalar& color) const {
+  void draw(cv::UMat& frame, const cv::Scalar& color) const {
     for (const auto point : points) {
       cv::circle(frame, point, 1, color, 1, cv::LINE_AA);
     }
