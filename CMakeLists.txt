@@ -34,19 +34,10 @@ add_executable(hinguri_pingpong
         #        src/vision/pre/calibrate.cpp
 
         #### processing
-        #        src/main.cpp
-        #        src/vision_test.cpp
-        #        src/vision_end.cpp
-        #        src/control_end.cpp
-        #        src/main.cpp
-        #        test/matplot++/visualize_pingpong.cpp
-        test/thread_test.cpp
-        #        src/vision/pre/resize_chessboard_images.cpp
-        #        src/vision/pre/resize_camera_points.cpp
-        #        test/opencv/top_camera_test.cpp
-        #        test/opencv/get_world_pos.cpp
-        #        test/opencv/triple_camera.cpp
-        #        test/matplot++/predict_world_pos_test.cpp
+        src/version_left_right_pnp.cpp
+        src/version_top_stereo.cpp
+        src/vision/vision_end.cpp
+        src/control/control_end.cpp
 )
 
 #set(OpenCV_DIR "C:/OpenCV/x64/mingw/lib")

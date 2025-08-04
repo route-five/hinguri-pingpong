@@ -12,11 +12,6 @@
 #include "../utils/random.hpp"
 #include "simulator_property.hpp"
 
-// TODO: init_pos, init_vel, init_angle 없이 점 3개로 quadratic regression을
-//  하는 것도 구현하기
-
-// TODO: 대각 포물선 그리기
-
 namespace Simulator {
   class Side {
   private:

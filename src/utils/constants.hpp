@@ -31,6 +31,7 @@
 
 // Path
 const std::string PATH_WORLD_POINTS = "data/points/world.yml";
+const std::string PATH_ORBIT = "data/orbit.yml";
 
 // Table Size
 constexpr float TABLE_WIDTH = 152.5; // cm
@@ -92,8 +93,8 @@ constexpr double TOUCHED_MIN = 225;
 constexpr double TOUCHED_MAX = 243;
 constexpr int TRAILS_SIZE = 30;
 
-constexpr double BASE_AXIS_HEIGHT = 19.1; // cm
-constexpr double AXIS_RADIUS = 21.6; // cm
+constexpr double BASE_AXIS_HEIGHT = 15; // cm
+constexpr double AXIS_RADIUS = 12; // cm
 
 // Colors
 const cv::Scalar COLOR_RED(0, 0, 255);
@@ -110,6 +111,11 @@ constexpr float CENTER_POS = 2048;
 constexpr float MIN_POS_LIMIT = 1024;
 constexpr float MAX_POS_LIMIT = 3072;
 constexpr float DEGREES_PER_UNIT = 360.0 / 4096.0;
+
+// Dynamixel IDs
+// TODO: 시리얼 포트 알아내기
+constexpr int MID_SERIAL_PORT = 3; // Mid Camera Serial Port
+constexpr int BOT_SERIAL_PORT = 2; // Bot Camera Serial Port
 
 // Linear Motor
 constexpr int LINEAR_VEL = 700; // 700

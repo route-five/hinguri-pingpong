@@ -17,9 +17,7 @@ using PositionWithTime = struct PositionWithTime {
 };
 
 class Predictor {
-    // TODO: Predictor
-    //  2. stereo calibration으로 3D 위치 추정하기까지 구현하기
-    //  4. Kalman filter로 보정
+    // TODO: stereo calibration으로부터 depth 구하기
 
 private:
     cv::KalmanFilter kalman_filter;

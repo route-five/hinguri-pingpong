@@ -141,7 +141,6 @@ public:
         cam_left.start();
         cam_right.start();
 
-        // TODO: 카메라에 공이 적어도 한 대라도 안 보일 경우 위치가 겁나 튀는 문제 해결 필요 - 이 때 kalman filter 같은 걸로 예측?
         cv::Point3f world_pos{-1, -1, -1};
         cv::Point3f predict_pos;
         cv::Point3f real_arrive_pos;
@@ -180,7 +179,6 @@ public:
                 auto world_speed = predictor.get_world_speed();
 
                 // (4) Kalman filter 등의 후처리로 결과 보정
-                // TODO: Kalman filter 적용 로직 구현 필요
                 Draw::put_text(
                     frame_left,
                     Draw::to_string("Speed", world_speed, "cm/s"),
@@ -201,8 +199,8 @@ public:
                         BridgePayload input{
                             predict_pos.x - TABLE_WIDTH / 2,
                             predict_pos.z,
-                            deg_to_rad(35), // TODO: 추후 예측각도 계산 필요
-                            0.0 // TODO: 추후 속도 계산 필요
+                            deg_to_rad(35),
+                            0.0
                         };
 
                         std::cout << "(" << world_pos.x << ", " << world_pos.z << ") 로 호출" << std::endl;

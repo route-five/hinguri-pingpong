@@ -28,31 +28,31 @@ namespace Bridge {
     class Payload {
     public:
         // linear actuator의 x 좌표
-        float x;
+        float x{};
 
         // 탁구 로봇의 회전 각도 (컴퓨터 의자 위치에서 본 좌표 평면 관점)
-        float theta;
+        float theta{};
 
         // 스윙 시작 각도 (몸통 돌리는 축)
-        float swing_start;
+        float swing_start{};
 
         // 스윙 끝 각도
-        float swing_end;
-
-        // 손목 각도 (탁구채를 얼마나 눕힐지)
-        float wrist_angle;
+        float swing_end{};
 
         // 오른손잡이 여부, 기본값은 true
         bool use_right_hand = true;
 
-        Payload(const float x, const float theta, const float swing_start, const float swing_end, const float wrist_angle,
-                const bool use_right_hand = true)
-            : x{x},
-              theta{90 - theta}, // top
-              wrist_angle{90 - wrist_angle}, // mid
-              swing_start{swing_start}, // bot
-              swing_end{swing_end}, // bot
-              use_right_hand{use_right_hand} {
+        Payload(
+            const float x,
+            const float theta,
+            const float swing_start,
+            const float swing_end,
+            const bool use_right_hand = true
+        ) : x{x},
+            theta{90 - theta}, // top
+            swing_start{swing_start}, // bot
+            swing_end{swing_end}, // bot
+            use_right_hand{use_right_hand} {
         }
 
         Payload() = default;
@@ -76,7 +76,7 @@ namespace Bridge {
      *
      * 어려운 것은, 탁구공을 얼마나 스윙을 길게 할지에 관한 (몸통 돌리는 축) 인자와 탁구채를 얼마나 눕힐지에 관한 (손목 축) 인자 계산
      */
-    Payload convert(const cv::Point3f& arrive_pos, const cv::Vec3f& arrive_speed, const float arrive_angle) {
+    Payload convert(const cv::Point3f& arrive_pos, const cv::Vec3f& arrive_speed) {
         constexpr float h0 = BASE_AXIS_HEIGHT;
         constexpr float r = AXIS_RADIUS;
         constexpr float pi = std::numbers::pi_v<float>;
@@ -85,14 +85,13 @@ namespace Bridge {
 
         const bool use_right_hand = x_p >= last_pos;
 
+        // TODO: arrive_speed를 이용해서 스윙 시작과 끝 각도를 계산하는 로직 추가
         float theta = std::asin(std::clamp((z_p - h0) / r, -1.0f, 1.0f));
         float swing_start = use_right_hand ? 45 : 135;
         float swing_end = use_right_hand ? 135 : 45;
-        // float wrist_angle = use_right_hand ? 90 + arrive_angle : 90 - arrive_angle;
-        float wrist_angle = 90;
 
         if (!use_right_hand) {
-            theta = pi - theta; //x_p가 테이블의 오른쪽에 있을 때, θ를 반전
+            theta = pi - theta; // x_p가 테이블의 오른쪽에 있을 때, θ를 반전
             /*swing_start = pi - swing_start;
             swing_end = pi - swing_end;
             wrist_angle = pi - wrist_angle;*/
@@ -106,7 +105,6 @@ namespace Bridge {
             theta * rad,
             swing_start,
             swing_end,
-            wrist_angle,
             use_right_hand
         };
     }
