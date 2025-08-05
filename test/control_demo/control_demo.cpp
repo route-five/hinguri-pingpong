@@ -1,116 +1,178 @@
-#include "control/dynamixel_actuator.hpp"
-#include "control/linear_actuator.hpp"
-#include "vision/bridge.hpp"
-#include "utils/constants.hpp"
+#define _CRT_SECURE_NO_WARNINGS
 #include <thread>
 #include <mutex>
 #include <optional>
 #include <atomic>
 #include <iostream>
+#include <cstdio>
 
-inline std::mutex mutex;
-inline std::atomic<bool> stop_all{ false };
-inline std::optional<Bridge::Payload> shared_payload;
+#include "dynamixel_actuator.hpp"
+#include "linear_actuator.hpp"
+#include "../vision/bridge.hpp"
+#include "../utils/constants.hpp"
 
-constexpr int TOP_MOTOR_ID = 4;
-constexpr int MID_MOTOR_ID = 3;
-constexpr int BOT_MOTOR_ID = 2;
+/*constexpr int MID_MOTOR_ID = 3;
+constexpr int BOT_MOTOR_ID = 2;*/
 
 class ControlEnd {
+private:
+    BulkDynamixelActuator actuators;
+    LinearActuator linearActuator;
+
+    void execute(const Bridge::Payload& payload,
+        bool& execute_done,
+        std::mutex& execute_done_mutex,
+        std::condition_variable& execute_done_flag
+    ) {
+        const auto& [x, theta, swing_start, swing_end, use_right_hand] = payload;
+
+        // 1) Move the linear actuator
+        linearActuator.move_actu(x);
+
+        // 2) Move to swing_start and wait
+        bool swing_start_done = false;
+        actuators.move_and_wait_by_degrees(
+            { theta, swing_start },
+            &swing_start_done
+        );
+        Log::debug(std::format("swing start done - success: {}", swing_start_done));
+        // swing_start_done == true here
+
+        // 3) Only after swing_start is done, move to swing_end and wait
+        bool swing_end_done = false;
+        actuators.move_and_wait_by_degrees(
+            { theta, swing_end },
+            &swing_end_done
+        );
+        Log::debug(std::format("swing end done - success: {}", swing_end_done));
+        // swing_end_done == true here
+
+        {
+            std::lock_guard lock(execute_done_mutex);
+            execute_done = true;
+        }
+        execute_done_flag.notify_one();
+    }
+
+    void shutdown() {
+        Bridge::Payload init{ TABLE_WIDTH / 2, 90, 90, 90 };
+        actuators.bulk_move_by_degrees({ init.theta, init.swing_start });
+        linearActuator.move_actu(init.x);
+        if (sharedPortInitialized)
+            sharedPortHandler->closePort();
+    }
+
 public:
-    ControlEnd()
-        : actuators({ TOP_MOTOR_ID, MID_MOTOR_ID, BOT_MOTOR_ID }) {
+    ControlEnd() : actuators({ MID_SERIAL_PORT, BOT_SERIAL_PORT }) {
     }
 
     ~ControlEnd() {
         shutdown();
     }
 
-    [[noreturn]] void run() {
+    void run(
+        std::queue<Bridge::Payload>& queue,
+        std::mutex& queue_mutex,
+        std::condition_variable& queue_push_flag,
+        bool& execute_done,
+        std::mutex& execute_done_mutex,
+        std::condition_variable& execute_done_flag,
+        std::atomic<bool>& stop
+    ) {
         if (!actuators.initialize()) {
-            std::cerr << "Failed to initialize actuators" << std::endl;
+            Log::error("[ControlEnd::run] Failed to initialize actuators.");
+            stop = true;
             return;
         }
-        while (!stop_all.load()) {
-            Bridge::Payload payload;
-            {
-                std::lock_guard lock(mutex);
-                if (!shared_payload.has_value())
-                    continue;
-                payload = *shared_payload;
-                shared_payload.reset();
 
-                std::cout << "Received from vision:\n"
-                    << "\tx: " << payload.x << " cm\n"
-                    << "\ttheta: " << payload.theta << " deg\n"
-                    << "\tswing_start: " << payload.swing_start << " deg\n"
-                    << "\tswing_end: " << payload.swing_end << " deg\n"
-                    << "\twrist_angle: " << payload.wrist_angle << " deg\n"
-                    << "=========================\n";
+        while (true) {
+            std::unique_lock lock(queue_mutex);
+            queue_push_flag.wait(lock, [&] {
+                return !queue.empty() || stop;
+            });
+
+            if (!queue.empty()) {
+                Bridge::Payload payload = queue.front();
+                queue.pop();
+                lock.unlock();
+
+                Log::debug(std::format(
+                    "[ControlEnd::run] Received Payload with x: {}, theta: {}, swing_start: {}, swing_end: {}, use_right_hand: {}",
+                    payload.x, payload.theta, payload.swing_start, payload.swing_end, payload.use_right_hand));
+                execute(payload, execute_done, execute_done_mutex, execute_done_flag);
             }
-            execute(payload);
+            else if (stop) {
+                lock.unlock();
+
+                Log::info("[ControlEnd::run] Stopping as stop signal received.");
+                break;
+            }
         }
-        shutdown();
-    }
-
-private:
-    BulkDynamixelActuator actuators;
-    LinearActuator        linearActuator;
-
-    void execute(const Bridge::Payload& payload) {
-        const auto& [x, theta, swing_start, swing_end, wrist_angle, use_right_hand] = payload;
-
-        const float top_target = wrist_angle;
-        const float mid_target = theta;
-        // 0) Move the linear actuator
-        linearActuator.move_actu(x);
-
-        // 1) Move to swing_start and wait
-        bool swing_start_done = false;
-        actuators.move_and_wait_by_degrees(
-            { top_target, mid_target, swing_start },
-            &swing_start_done
-        );
-        // swing_start_done == true here
-
-
-        // 2) Only after swing_start is done, move to swing_end and wait
-        bool swing_end_done = false;
-        actuators.move_and_wait_by_degrees(
-            { top_target, mid_target, swing_end },
-            &swing_end_done
-        );
-        // swing_end_done == true here
-    }
-
-    void shutdown() {
-        Bridge::Payload init{ TABLE_WIDTH / 2, 90, 90, 90, 90 };
-        actuators.bulk_move_by_degrees({ init.wrist_angle, init.theta, init.swing_start });
-        linearActuator.move_actu(init.x);
-        if (sharedPortInitialized)
-            sharedPortHandler->closePort();
     }
 };
 
 int main() {
     ControlEnd control_end;
-    std::thread control_thread(&ControlEnd::run, &control_end);
+
+    std::atomic stop = false;
+
+    std::queue<Bridge::Payload> queue;
+    std::mutex queue_mutex;
+    std::condition_variable queue_push_flag;
+
+    bool execute_done = true;
+    std::mutex execute_done_mutex;
+    std::condition_variable execute_done_flag;
+
+    auto consumer = std::thread(
+        &ControlEnd::run, &control_end,
+        std::ref(queue),
+        std::ref(queue_mutex),
+        std::ref(queue_push_flag),
+        std::ref(execute_done),
+        std::ref(execute_done_mutex),
+        std::ref(execute_done_flag),
+        std::ref(stop)
+    );
 
     while (true) {
-        std::this_thread::sleep_for(std::chrono::seconds(2));
+        {
+            std::unique_lock lock(execute_done_mutex);
+            execute_done_flag.wait(lock, [&execute_done]() { return execute_done; });
+            execute_done = false;
+        }
 
-        float x, theta, swing_start, swing_end, wrist_angle;
-        std::cout << "x: ";           std::cin >> x;
-        if (x == -1000) { stop_all = true; break; }
+        //cv::Point3f target_pos;
+        //cv::Vec3f target_speed;
+        //float target_angle;
 
-        std::cout << "theta: ";      std::cin >> theta;
-        std::cout << "swing_start: "; std::cin >> swing_start;
-        std::cout << "swing_end: ";  std::cin >> swing_end;
-        std::cout << "wrist_angle: "; std::cin >> wrist_angle;
+        //std::printf("Enter target pos (x, y, z): ");
+        //std::scanf("%f %f %f", &target_pos.x, &target_pos.y, &target_pos.z);
+        //if (target_pos.x <= -1 || target_pos.y <= -1 || target_pos.z <= -1) { // escape
+        //    stop = true;
+        //    queue_push_flag.notify_all();
+        //    break;
+        //}
 
-        shared_payload = Bridge::Payload{ x, theta, swing_start, swing_end, wrist_angle };
+        float swing_start, swing_end;
+        std::printf("Enter swing start and end: ");
+        std::scanf("%f %f", &swing_start, &swing_end);
+        if (swing_start == -1 && swing_end == -1) {
+            stop = true;
+            queue_push_flag.notify_all();
+            break;
+        }
+
+        {
+            std::lock_guard lock(queue_mutex);
+            // Bridge::Payload payload = Bridge::convert(target_pos, { 1.f, 1.f, 1.f });
+            queue.push(Bridge::Payload{0.f, 30.f, swing_start, swing_end, true});
+            Log::info(std::format("[main] Queue: {} items.", queue.size()));
+        }
+        queue_push_flag.notify_one();
     }
 
-    control_thread.join();
+    consumer.join();
+
     return 0;
 }
