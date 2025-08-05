@@ -319,9 +319,9 @@ public:
     return "data/stereo_projection/" + name() + ".yml";
   }
 
-  bool read_calibration_matrix(cv::UMat* R = nullptr, cv::UMat* T = nullptr, cv::UMat* E = nullptr, cv::UMat* F = nullptr, cv::UMat* map1x,
-                               cv::UMat* map1y,
-                               cv::UMat* map2x, cv::UMat* map2y) const {
+  bool read_calibration_matrix(cv::UMat* R = nullptr, cv::UMat* T = nullptr, cv::UMat* E = nullptr, cv::UMat* F = nullptr, cv::UMat* map1x = nullptr,
+                               cv::UMat* map1y = nullptr,
+                               cv::UMat* map2x = nullptr, cv::UMat* map2y = nullptr) const {
     cv::FileStorage fs(calibration_matrix_path(), cv::FileStorage::READ);
     if (!fs.isOpened())
       return false;
