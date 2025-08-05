@@ -168,8 +168,8 @@ public:
      * @return 계산된 3D 좌표(Pinhole world coordinates, 동차 좌표 정규화 완료).
      * @note pt_left와 pt_right는 동일한 물체에 대응되는 2D 좌표여야 합니다.
      */
-    [[nodiscard]] cv::Point3f triangulate(const Camera& camera_left, const cv::Point2f& pt_left, const Camera& camera_right,
-                                          const cv::Point2f& pt_right) const noexcept {
+    [[nodiscard]] static cv::Point3f triangulate(const Camera& camera_left, const cv::Point2f& pt_left, const Camera& camera_right,
+                                          const cv::Point2f& pt_right) noexcept {
         // Avoid unnecessary cv::UMat allocations and use cv::Vec4f directly
         float pts1_data[2] = {pt_left.x, pt_left.y};
         float pts2_data[2] = {pt_right.x, pt_right.y};
@@ -196,19 +196,22 @@ public:
      * @param z_plane 교차할 평면의 z 값 (기본값: 0.0f)
      * @return 탁구대 기준 평면(z=z_plane)에서의 3D 월드 좌표
      */
-    [[nodiscard]] cv::Point3f birds_eye_view(const Camera& camera_top, const cv::Point2f& pt, const float z_plane = 0.0f) const noexcept {
+    [[nodiscard]] static cv::Point3f birds_eye_view(const Camera& camera_top, const cv::Point2f& pt, const float z_plane = 0.0f) noexcept {
         // Avoid heap allocations, use cv::Vec3d and stack memory
-        const std::array<cv::Point2f, 1> src{pt};
+        const std::array src{pt};
         std::array<cv::Point2f, 1> dst;
         cv::undistortPoints(src, dst, camera_top.get_camera_matrix(), camera_top.get_dist_coeffs());
         const cv::Point2f& pt_undistorted = dst[0];
+
         // Use cv::Vec3d for ray vector
         const cv::Vec3d ray_cam{pt_undistorted.x, pt_undistorted.y, 1.0};
+
         // Use cv::Matx33d and cv::Vec3d for R_top and t_top for performance (if possible, preconvert at load time)
         cv::Matx33d R_topx;
         camera_top.get_R().convertTo(R_topx, CV_64F);
         cv::Vec3d t_topx;
         camera_top.get_t().convertTo(t_topx, CV_64F);
+
         // ray_world = R_top.t() * ray_cam;
         cv::Vec3d ray_world = R_topx.t() * ray_cam;
         cv::Vec3d origin_world = -R_topx.t() * t_topx;
@@ -259,7 +262,7 @@ public:
      * @return 계산된 3D 좌표
      * @note pt_left와 pt_right, pt_top은 동일한 물체에 대응되는 2D 좌표여야 합니다. 또한, pt_top은 선택 사항입니다.
      */
-    [[nodiscard]] std::optional<cv::Point3f> pos_2d_to_3d(
+    [[nodiscard]] static std::optional<cv::Point3f> pos_2d_to_3d(
         const Camera& camera_left,
         const std::optional<cv::Point2f>& pt_left,
         const Camera& camera_right,
@@ -267,7 +270,7 @@ public:
         const Camera& camera_top,
         const std::optional<cv::Point2f>& pt_top,
         const float dt
-    ) const noexcept {
+    ) noexcept {
         if (pt_left.has_value() && pt_right.has_value()) {
             const auto world_pos_lr = triangulate(camera_left, pt_left.value(), camera_right, pt_right.value());
 
@@ -359,10 +362,10 @@ public:
      * @param world_pos 월드 좌표 (cm 단위)
      * @return 카메라 좌표 (픽셀 좌표계).
      */
-    [[nodiscard]] cv::Point2f pos_3d_to_2d(
+    [[nodiscard]] static cv::Point2f pos_3d_to_2d(
         const Camera& camera,
         const cv::Point3f& world_pos
-    ) const {
+    ) {
         std::array<cv::Point3f, 1> objectPoints{world_pos};
         std::array<cv::Point2f, 1> image_points;
 

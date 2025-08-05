@@ -98,7 +98,9 @@ public:
     }
 };
 
-class VisionEnd {
+class VisionEndPnP {
+    // TODO: top을 쓰는 것과 안 쓰는 것의 정확도 비교하기
+
 private:
     Camera cam_top{CameraType::TOP, {0, cv::CAP_MSMF}, 90};
     Camera cam_left{CameraType::LEFT, {1, cv::CAP_MSMF}, 90};
@@ -114,7 +116,7 @@ private:
     std::atomic<bool> use_top_camera{true};
 
 public:
-    VisionEnd() {
+    explicit VisionEndPnP(const bool use_top_camera) : use_top_camera{use_top_camera} {
         cam_top.set_frame_callback([this](cv::UMat& frame) {
             if (frame.empty()) return;
 
@@ -167,7 +169,7 @@ public:
         });
     }
 
-    ~VisionEnd() {
+    ~VisionEndPnP() {
         cam_top.stop();
         cam_left.stop();
         cam_right.stop();
@@ -198,13 +200,14 @@ public:
         std::deque<cv::Point2f> orbit_2d_right
     ) {
         const double fallback_dt = 1.0 / std::min({cam_top.get_fps(), cam_left.get_fps(), cam_right.get_fps()});
-        if (const auto find_world_pos = predictor.get_new_world_pos(static_cast<float>(fallback_dt), use_top_camera)) {
+        if (const auto find_world_pos = predictor.get_new_world_pos(cam_top, cam_left, cam_right, static_cast<float>(fallback_dt),
+                                                                    use_top_camera)) {
             world_pos = find_world_pos.value();
 
             orbit_3d.push_back(world_pos);
-            orbit_2d_top.push_back(predictor.pos_3d_to_2d(world_pos, CameraType::TOP));
-            orbit_2d_left.push_back(predictor.pos_3d_to_2d(world_pos, CameraType::LEFT));
-            orbit_2d_right.push_back(predictor.pos_3d_to_2d(world_pos, CameraType::RIGHT));
+            orbit_2d_top.push_back(Predictor::pos_3d_to_2d(cam_top, world_pos));
+            orbit_2d_left.push_back(Predictor::pos_3d_to_2d(cam_left, world_pos));
+            orbit_2d_right.push_back(Predictor::pos_3d_to_2d(cam_right, world_pos));
             if (orbit_3d.size() > 100) {
                 orbit_3d.pop_front();
                 orbit_2d_top.pop_front();
@@ -228,6 +231,7 @@ public:
         ) {
             std::lock_guard lock(queue_mutex);
             if (queue.empty()) {
+                // TODO: 마지막 도착 직전 속도 예측해서 넣기 - 회귀 식에서 같이 리턴하기
                 Bridge::Payload payload = Bridge::convert(predict_arrive_pos, world_speed);
                 queue.push(payload);
                 flag.notify_one();
@@ -264,29 +268,29 @@ public:
             Draw::put_circle(frame_right, orbit_2d_right[i], 3, COLOR_MAGENTA);
         }
 
-        const auto world_pos_2d_top = predictor.pos_3d_to_2d(world_pos, CameraType::TOP);
-        const auto world_pos_2d_left = predictor.pos_3d_to_2d(world_pos, CameraType::LEFT);
-        const auto world_pos_2d_right = predictor.pos_3d_to_2d(world_pos, CameraType::RIGHT);
+        const auto world_pos_2d_top = Predictor::pos_3d_to_2d(cam_top, world_pos);
+        const auto world_pos_2d_left = Predictor::pos_3d_to_2d(cam_left, world_pos);
+        const auto world_pos_2d_right = Predictor::pos_3d_to_2d(cam_right, world_pos);
 
         Draw::put_circle(frame_top, world_pos_2d_top, 8, COLOR_GREEN);
         Draw::put_circle(frame_left, world_pos_2d_left, 8, COLOR_GREEN);
         Draw::put_circle(frame_right, world_pos_2d_right, 8, COLOR_GREEN);
 
-        const auto world_speed_2d_top = predictor.pos_3d_to_2d(world_speed, CameraType::TOP);
-        const auto world_speed_2d_left = predictor.pos_3d_to_2d(world_speed, CameraType::LEFT);
-        const auto world_speed_2d_right = predictor.pos_3d_to_2d(world_speed, CameraType::RIGHT);
+        const auto world_speed_2d_top = Predictor::pos_3d_to_2d(cam_top, world_speed);
+        const auto world_speed_2d_left = Predictor::pos_3d_to_2d(cam_left, world_speed);
+        const auto world_speed_2d_right = Predictor::pos_3d_to_2d(cam_right, world_speed);
 
         Draw::put_arrow(frame_top, world_pos_2d_top, world_pos_2d_top + world_speed_2d_top, COLOR_GREEN);
         Draw::put_arrow(frame_left, world_pos_2d_left, world_pos_2d_left + world_speed_2d_left, COLOR_GREEN);
         Draw::put_arrow(frame_right, world_pos_2d_right, world_pos_2d_right + world_speed_2d_right, COLOR_GREEN);
 
-        Draw::put_circle(frame_top, predictor.pos_3d_to_2d(predict_arrive_pos, CameraType::TOP), 8, COLOR_BLUE);
-        Draw::put_circle(frame_left, predictor.pos_3d_to_2d(predict_arrive_pos, CameraType::LEFT), 8, COLOR_BLUE);
-        Draw::put_circle(frame_right, predictor.pos_3d_to_2d(predict_arrive_pos, CameraType::RIGHT), 8, COLOR_BLUE);
+        Draw::put_circle(frame_top, Predictor::pos_3d_to_2d(cam_top, predict_arrive_pos), 8, COLOR_BLUE);
+        Draw::put_circle(frame_left, Predictor::pos_3d_to_2d(cam_left, predict_arrive_pos), 8, COLOR_BLUE);
+        Draw::put_circle(frame_right, Predictor::pos_3d_to_2d(cam_right, predict_arrive_pos), 8, COLOR_BLUE);
 
-        Draw::put_circle(frame_top, predictor.pos_3d_to_2d(real_arrive_pos, CameraType::TOP), 8, COLOR_RED);
-        Draw::put_circle(frame_left, predictor.pos_3d_to_2d(real_arrive_pos, CameraType::LEFT), 8, COLOR_RED);
-        Draw::put_circle(frame_right, predictor.pos_3d_to_2d(real_arrive_pos, CameraType::RIGHT), 8, COLOR_RED);
+        Draw::put_circle(frame_top, Predictor::pos_3d_to_2d(cam_top, real_arrive_pos), 8, COLOR_RED);
+        Draw::put_circle(frame_left, Predictor::pos_3d_to_2d(cam_left, real_arrive_pos), 8, COLOR_RED);
+        Draw::put_circle(frame_right, Predictor::pos_3d_to_2d(cam_right, real_arrive_pos), 8, COLOR_RED);
     }
 
     void legend(
@@ -393,7 +397,7 @@ public:
 };
 
 int main() {
-    VisionEnd vision_end;
+    VisionEndPnP vision_end(true);
     ControlEnd control_end;
 
     std::queue<Bridge::Payload> queue;
@@ -401,7 +405,7 @@ int main() {
     std::condition_variable flag;
     std::atomic stop = false;
 
-    auto producer = std::thread(&VisionEnd::run, &vision_end, std::ref(queue), std::ref(queue_mutex), std::ref(flag), std::ref(stop));
+    auto producer = std::thread(&VisionEndPnP::run, &vision_end, std::ref(queue), std::ref(queue_mutex), std::ref(flag), std::ref(stop));
     auto consumer = std::thread(&ControlEnd::run, &control_end, std::ref(queue), std::ref(queue_mutex), std::ref(flag), std::ref(stop));
 
     producer.join();
