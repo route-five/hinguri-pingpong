@@ -7,8 +7,8 @@
 
 #include <opencv2/opencv.hpp>
 #include <array>
-#include "camera_type.hpp"
 #include "../utils/constants.hpp"
+#include "../utils/log.hpp"
 
 using PositionWithTime = struct PositionWithTime {
     cv::Point3f position;
@@ -16,71 +16,20 @@ using PositionWithTime = struct PositionWithTime {
 };
 
 class Predictor {
-    // TODO: Predictor
-    //  2. stereo calibration으로 3D 위치 추정하기까지 구현하기
-    //  4. Kalman filter로 보정
+    // TODO: stereo calibration으로부터 depth 구하기
 
 private:
     cv::KalmanFilter kalman_filter;
 
-    cv::Mat R_left, R_right, R_top;
-    cv::Mat t_left, t_right, t_top;
-    cv::Mat P_left, P_right, P_top;
-    cv::Mat K_left, K_right, K_top;
-    cv::Mat dist_coeffs_left, dist_coeffs_right, dist_coeffs_top;
-
     std::optional<cv::Point2f> now_pt_left, now_pt_right, now_pt_top;
     std::optional<cv::Point2f> prev_pt_left, prev_pt_right, prev_pt_top;
-    bool is_initialized_left = false,
-         is_initialized_right = false,
-         is_initialized_top = false;
-    std::chrono::time_point<std::chrono::steady_clock>
-        t_prev_left, t_prev_right, t_prev_top, t_now_left, t_now_right, t_now_top;
+    std::chrono::time_point<std::chrono::steady_clock> t_prev_left, t_prev_right, t_prev_top, t_now_left, t_now_right, t_now_top;
+    bool is_initialized_left = false, is_initialized_right = false, is_initialized_top = false;
 
     std::deque<PositionWithTime> world_positions;
 
-    void add_world_pos(const cv::Point3f& pos) {
-        world_positions.emplace_back(pos, std::chrono::steady_clock::now());
-        if (world_positions.size() > PREDICTOR_HISTORY_N) {
-            world_positions.pop_front();
-        }
-    }
-
 public:
     explicit Predictor() : kalman_filter(6, 3) {
-        cv::FileStorage fs_left(CameraType::LEFT.projection_matrix_path(), cv::FileStorage::READ);
-        fs_left["R"] >> R_left;
-        fs_left["t"] >> t_left;
-        fs_left["projection_matrix"] >> P_left;
-        fs_left.release();
-
-        cv::FileStorage fs_left_2(CameraType::LEFT.calibration_matrix_path(), cv::FileStorage::READ);
-        fs_left_2["camera_matrix"] >> K_left;
-        fs_left_2["dist_coeffs"] >> dist_coeffs_left;
-        fs_left_2.release();
-
-        cv::FileStorage fs_right(CameraType::RIGHT.projection_matrix_path(), cv::FileStorage::READ);
-        fs_right["R"] >> R_right;
-        fs_right["t"] >> t_right;
-        fs_right["projection_matrix"] >> P_right;
-        fs_right.release();
-
-        cv::FileStorage fs_right_2(CameraType::RIGHT.calibration_matrix_path(), cv::FileStorage::READ);
-        fs_right_2["camera_matrix"] >> K_right;
-        fs_right_2["dist_coeffs"] >> dist_coeffs_right;
-        fs_right_2.release();
-
-        cv::FileStorage fs_top(CameraType::TOP.projection_matrix_path(), cv::FileStorage::READ);
-        fs_top["R"] >> R_top;
-        fs_top["t"] >> t_top;
-        fs_top["projection_matrix"] >> P_top;
-        fs_top.release();
-
-        cv::FileStorage fs_top_2(CameraType::TOP.calibration_matrix_path(), cv::FileStorage::READ);
-        fs_top_2["camera_matrix"] >> K_top;
-        fs_top_2["dist_coeffs"] >> dist_coeffs_top;
-        fs_top_2.release();
-
         const auto now = std::chrono::steady_clock::now();
         t_prev_left = now;
         t_prev_right = now;
@@ -105,6 +54,13 @@ public:
     }
 
     ~Predictor() = default;
+
+    void add_world_pos(const cv::Point3f& pos) {
+        world_positions.emplace_back(pos, std::chrono::steady_clock::now());
+        if (world_positions.size() > PREDICTOR_HISTORY_N) {
+            world_positions.pop_front();
+        }
+    }
 
     void set_point_left(const std::optional<cv::Point2f>& left) {
         is_initialized_left = true;
@@ -205,21 +161,23 @@ public:
 
     /**
      * @brief 두 카메라 projection 행렬을 사용해 2D 대응점으로부터 삼각측량으로 3D 위치를 계산합니다.
+     * @param camera_left 왼쪽 카메라
      * @param pt_left 왼쪽 카메라에서의 2D 점 (픽셀 좌표계).
+     * @param camera_right 오른쪽 카메라
      * @param pt_right 오른쪽 카메라에서의 2D 점 (픽셀 좌표계).
      * @return 계산된 3D 좌표(Pinhole world coordinates, 동차 좌표 정규화 완료).
      * @note pt_left와 pt_right는 동일한 물체에 대응되는 2D 좌표여야 합니다.
      */
-    [[nodiscard]] inline cv::Point3f
-    triangulate(const cv::Point2f& pt_left, const cv::Point2f& pt_right) const noexcept {
-        // Avoid unnecessary cv::Mat allocations and use cv::Vec4f directly
+    [[nodiscard]] cv::Point3f triangulate(const Camera& camera_left, const cv::Point2f& pt_left, const Camera& camera_right,
+                                          const cv::Point2f& pt_right) const noexcept {
+        // Avoid unnecessary cv::UMat allocations and use cv::Vec4f directly
         float pts1_data[2] = {pt_left.x, pt_left.y};
         float pts2_data[2] = {pt_right.x, pt_right.y};
         const cv::Mat pts1(1, 1, CV_32FC2, pts1_data);
         const cv::Mat pts2(1, 1, CV_32FC2, pts2_data);
 
         cv::Mat pts4d;
-        cv::triangulatePoints(P_left, P_right, pts1, pts2, pts4d);
+        cv::triangulatePoints(camera_left.get_projection_matrix(), camera_right.get_projection_matrix(), pts1, pts2, pts4d);
 
         // Use cv::Vec4f to avoid creating a new Mat and .col()
         cv::Vec4f p(
@@ -233,29 +191,32 @@ public:
 
     /**
      * @brief Top 카메라의 픽셀 좌표를 탁구대 기준 평면(z=z_plane)에서의 3D 월드 좌표로 변환합니다.
+     * @param camera_top 위쪽 카메라 객체
      * @param pt 왜곡된 이미지 평면 상에서의 픽셀 좌표
      * @param z_plane 교차할 평면의 z 값 (기본값: 0.0f)
      * @return 탁구대 기준 평면(z=z_plane)에서의 3D 월드 좌표
      */
-    [[nodiscard]] inline cv::Point3f birds_eye_view(const cv::Point2f& pt, const float z_plane = 0.0f) const noexcept {
+    [[nodiscard]] cv::Point3f birds_eye_view(const Camera& camera_top, const cv::Point2f& pt, const float z_plane = 0.0f) const noexcept {
         // Avoid heap allocations, use cv::Vec3d and stack memory
         const std::array<cv::Point2f, 1> src{pt};
         std::array<cv::Point2f, 1> dst;
-        cv::undistortPoints(src, dst, K_top, dist_coeffs_top);
+        cv::undistortPoints(src, dst, camera_top.get_camera_matrix(), camera_top.get_dist_coeffs());
         const cv::Point2f& pt_undistorted = dst[0];
         // Use cv::Vec3d for ray vector
         const cv::Vec3d ray_cam{pt_undistorted.x, pt_undistorted.y, 1.0};
         // Use cv::Matx33d and cv::Vec3d for R_top and t_top for performance (if possible, preconvert at load time)
         cv::Matx33d R_topx;
-        R_top.convertTo(R_topx, CV_64F);
+        camera_top.get_R().convertTo(R_topx, CV_64F);
         cv::Vec3d t_topx;
-        t_top.convertTo(t_topx, CV_64F);
+        camera_top.get_t().convertTo(t_topx, CV_64F);
         // ray_world = R_top.t() * ray_cam;
         cv::Vec3d ray_world = R_topx.t() * ray_cam;
         cv::Vec3d origin_world = -R_topx.t() * t_topx;
+
         // z=z_plane 평면과의 교차점 계산
         const double s = (z_plane - origin_world[2]) / ray_world[2];
         cv::Vec3d world_pos = origin_world + s * ray_world;
+
         return {
             static_cast<float>(world_pos[0]),
             static_cast<float>(world_pos[1]),
@@ -288,27 +249,33 @@ public:
 
     /**
      * @brief 세 카메라의 projection 행렬을 사용해 2D 대응점으로부터 3D 위치를 계산합니다.
+     * @param camera_left 왼쪽 카메라 객체
      * @param pt_left 왼쪽 카메라에서의 2D 점 (픽셀 좌표계)
+     * @param camera_right 오른쪽 카메라 객체
      * @param pt_right 오른쪽 카메라에서의 2D 점 (픽셀 좌표계)
+     * @param camera_top 위쪽 카메라 객체
      * @param pt_top 위쪽 카메라에서의 2D 점 (픽셀 좌표계). 생략 시 삼각측량으로만 구함
      * @param dt 프레임 간 시간 차이 (초 단위). 현재 시간과 이전 시간 사이의 차이를 사용합니다.
      * @return 계산된 3D 좌표
      * @note pt_left와 pt_right, pt_top은 동일한 물체에 대응되는 2D 좌표여야 합니다. 또한, pt_top은 선택 사항입니다.
      */
     [[nodiscard]] std::optional<cv::Point3f> pos_2d_to_3d(
+        const Camera& camera_left,
         const std::optional<cv::Point2f>& pt_left,
+        const Camera& camera_right,
         const std::optional<cv::Point2f>& pt_right,
+        const Camera& camera_top,
         const std::optional<cv::Point2f>& pt_top,
         const float dt
     ) const noexcept {
         if (pt_left.has_value() && pt_right.has_value()) {
-            const auto world_pos_lr = triangulate(pt_left.value(), pt_right.value());
+            const auto world_pos_lr = triangulate(camera_left, pt_left.value(), camera_right, pt_right.value());
 
             // 탁구공이 탁구대 범위 내에 있는 경우 = 공을 던진 것, z는 삼각측량의 값을 사용하고, x, y는 선형 회귀로 보정 (등속 운동이므로)
             static std::deque<std::pair<float, float>> top_xy_history;
 
             if (pt_top.has_value()) {
-                const auto world_pos_top = birds_eye_view(pt_top.value(), world_pos_lr.z);
+                const auto world_pos_top = birds_eye_view(camera_top, pt_top.value(), world_pos_lr.z);
 
                 // Add new point to history
                 top_xy_history.emplace_back(world_pos_top.x, world_pos_top.y);
@@ -366,13 +333,13 @@ public:
         //         0, 0, 0, 0, 0, 1);
         //
         //     // predict with gravity correction
-        //     cv::Mat prediction = kalman_filter.predict();
+        //     cv::UMat prediction = kalman_filter.predict();
         //     prediction.at<float>(2) -= 0.5f * GRAVITY * dt * dt; // z -= 0.5 * g * dt^2
         //     prediction.at<float>(5) -= GRAVITY * dt; // v_z -= g * dt
         //
         //     // correct with measurement
-        //     const cv::Mat measurement = (cv::Mat_<float>(3, 1) << world_pos_lr.x, world_pos_lr.y, world_pos_lr.z);
-        //     cv::Mat estimated = kalman_filter.correct(measurement);
+        //     const cv::UMat measurement = (cv::Mat_<float>(3, 1) << world_pos_lr.x, world_pos_lr.y, world_pos_lr.z);
+        //     cv::UMat estimated = kalman_filter.correct(measurement);
         //
         //     return {
         //         estimated.at<float>(0),
@@ -388,55 +355,41 @@ public:
 
     /**
      * @brief 주어진 3D 월드 좌표를 카메라 좌표로 변환합니다.
+     * @param camera 카메라 객체
      * @param world_pos 월드 좌표 (cm 단위)
-     * @param camera_type 카메라 타입 (LEFT, RIGHT, TOP 등)
      * @return 카메라 좌표 (픽셀 좌표계).
      */
     [[nodiscard]] cv::Point2f pos_3d_to_2d(
-        const cv::Point3f& world_pos,
-        const CameraType& camera_type
+        const Camera& camera,
+        const cv::Point3f& world_pos
     ) const {
         std::array<cv::Point3f, 1> objectPoints{world_pos};
         std::array<cv::Point2f, 1> image_points;
 
-        cv::Mat R, t, K, dist_coeffs;
-        if (camera_type == CameraType::LEFT) {
-            R = R_left;
-            t = t_left;
-            K = K_left;
-            dist_coeffs = dist_coeffs_left;
-        }
-        else if (camera_type == CameraType::RIGHT) {
-            R = R_right;
-            t = t_right;
-            K = K_right;
-            dist_coeffs = dist_coeffs_right;
-        }
-        else if (camera_type == CameraType::TOP) {
-            R = R_top;
-            t = t_top;
-            K = K_top;
-            dist_coeffs = dist_coeffs_top;
-        }
-        else {
-            throw std::runtime_error("Unsupported camera type in pos_3d_to_2d");
-        }
-
-        cv::projectPoints(objectPoints, R, t, K, dist_coeffs, image_points);
+        cv::projectPoints(objectPoints, camera.get_R(), camera.get_t(), camera.get_camera_matrix(), camera.get_dist_coeffs(), image_points);
         return image_points[0];
     }
 
     /**
      * @brief 현재 왼쪽과 오른쪽, 위쪽의 카메라의 2D 점을 사용하여 새로운 월드 좌표를 계산하고 저장합니다. 월드 좌표가 계산되지 않은 경우 저장하지 않습니다.
+     * @param camera_top 위쪽 카메라 객체
+     * @param camera_left 왼쪽 카메라 객체
+     * @param camera_right 오른쪽 카메라 객체
      * @param fallback_dt 이전에 저장된 월드 위치가 없을 때 사용할 시간 간격 (초 단위)
+     * @param use_top 위쪽 카메라의 2D 점을 사용할지 여부 (기본값: true)
      * @return 계산된 3D 월드 좌표 (cm 단위)
      */
-    [[nodiscard]] std::optional<cv::Point3f> get_new_world_pos(const float fallback_dt) {
+    [[nodiscard]] std::optional<cv::Point3f> get_new_world_pos(const Camera& camera_top, const Camera& camera_left,
+                                                               const Camera& camera_right, const float fallback_dt,
+                                                               const bool use_top = true) {
         const auto now = std::chrono::steady_clock::now();
         const auto ret = pos_2d_to_3d(
+            camera_left,
             now_pt_left,
+            camera_right,
             now_pt_right,
-            now_pt_top,
+            camera_top,
+            use_top ? now_pt_top : std::nullopt,
             world_positions.empty()
                 ? fallback_dt
                 : std::chrono::duration<float>(now - world_positions.back().time).count()
@@ -445,6 +398,34 @@ public:
         if (ret.has_value()) {
             add_world_pos(ret.value());
         }
+
+        return ret;
+    }
+
+    /**
+     * @brief 현재 왼쪽과 오른쪽, 위쪽의 카메라의 2D 점을 사용하여 새로운 월드 좌표를 계산하지만 저장하지 않습니다.
+     * @param camera_top 위쪽 카메라 객체
+     * @param camera_left 왼쪽 카메라 객체
+     * @param camera_right 오른쪽 카메라 객체
+     * @param fallback_dt 이전에 저장된 월드 위치가 없을 때 사용할 시간 간격 (초 단위)
+     * @param use_top 위쪽 카메라의 2D 점을 사용할지 여부 (기본값: true)
+     * @return 계산된 3D 월드 좌표 (cm 단위)
+     */
+    [[nodiscard]] std::optional<cv::Point3f> get_new_world_pos_no_save(const Camera& camera_top, const Camera& camera_left,
+                                                                       const Camera& camera_right, const float fallback_dt,
+                                                                       const bool use_top = true) const {
+        const auto now = std::chrono::steady_clock::now();
+        const auto ret = pos_2d_to_3d(
+            camera_left,
+            now_pt_left,
+            camera_right,
+            now_pt_right,
+            camera_top,
+            use_top ? now_pt_top : std::nullopt,
+            world_positions.empty()
+                ? fallback_dt
+                : std::chrono::duration<float>(now - world_positions.back().time).count()
+        );
 
         return ret;
     }
@@ -469,7 +450,7 @@ public:
         if (N >= 1) {
             std::vector<cv::Vec3f> valid_vs;
 
-            for (int i = world_positions.size() - N - 1; i < world_positions.size() - 1; ++i) {
+            for (std::size_t i = world_positions.size() - N - 1; i < world_positions.size() - 1; ++i) {
                 const auto& [p1, t1] = world_positions[i];
                 const auto& [p2, t2] = world_positions[i + 1];
                 const float dt = std::chrono::duration<float>(t2 - t1).count();
@@ -617,18 +598,19 @@ public:
         const auto t_arrive = get_arrive_time(world_pos, world_speed, ylim);
 
         if (!(world_pos.has_value() && world_speed.has_value() && t_arrive.has_value())) {
-            std::cerr << std::boolalpha << "Invalid: all optionals should to has_value(); world_pos=" << world_pos.
-                has_value() << ", world_speed=" << world_speed.has_value() << ", t_arrive=" << t_arrive.has_value() <<
-                std::endl;
+            Log::error(std::format(
+                "[Predictor::get_arrive_pos] all optionals should to has_value(). world_pos={}, world_speed={}, t_arrive={}",
+                world_pos.has_value() ? "exist" : "nullopt", world_speed.has_value() ? "exist" : "nullopt",
+                t_arrive.has_value() ? "exist" : "nullopt"));
             return std::nullopt;
         }
 
         if (PREDICT_MIN_TIME <= t_arrive.value() && t_arrive.value() <= PREDICT_MAX_TIME)
             return predict_world_pos(world_pos.value(), world_speed.value(), t_arrive.value());
 
-        std::cerr << std::format("Invalid t_arrive: not satisfies {} <= t_arrive(={}) <= {} when speed: [{}, {}, {}]",
-                                 PREDICT_MIN_TIME, t_arrive.value(), PREDICT_MAX_TIME, world_speed.value()[0],
-                                 world_speed.value()[1], world_speed.value()[2]) << std::endl;
+        Log::error(std::format(
+            "[Predictor::get_arrive_pos] invalid t_arrive: not satisfies {} <= t_arrive(={}) <= {} when speed: [{}, {}, {}]",
+            PREDICT_MIN_TIME, t_arrive.value(), PREDICT_MAX_TIME, world_speed.value()[0], world_speed.value()[1], world_speed.value()[2]));
         return std::nullopt;
     }
 };

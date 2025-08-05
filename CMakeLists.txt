@@ -14,7 +14,11 @@ add_executable(hinguri_pingpong
         src/vision/tracker.hpp
         src/vision/bridge.hpp
         src/vision/visualizer.hpp
+        src/utils/random.hpp
+        src/utils/constants.hpp
+        src/utils/sleep.hpp
         src/utils/draw.hpp
+        src/utils/log.hpp
 
         #### preprocessing
         # 1. 탁구대 위의 World 좌표를 생성하는 코드
@@ -30,14 +34,10 @@ add_executable(hinguri_pingpong
                 src/vision/pre/calibrate.cpp
 
         #### processing
-        #        src/main.cpp
-        #        src/vision.cpp
-        #        src/main.cpp
-        #        test/matplot++/visualize_pingpong.cpp
-        #        test/opencv/top_camera_test.cpp
-        #        test/opencv/get_world_pos.cpp
-        #        test/opencv/triple_camera.cpp
-        #        test/matplot++/predict_world_pos_test.cpp
+        src/version_left_right_pnp.cpp
+        src/version_top_stereo.cpp
+        src/vision/vision_end.cpp
+        src/control/control_end.cpp
 )
 
 #set(OpenCV_DIR "C:/OpenCV/x64/mingw/lib")

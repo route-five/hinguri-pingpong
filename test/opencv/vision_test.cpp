@@ -14,8 +14,6 @@
 #include "../../src/vision/tracker.hpp"
 #include "../../src/vision/visualizer.hpp"
 
-// TODO: 모두 통합하기
-
 void callback(
     cv::Mat& frame,
     Camera& camera,
@@ -42,7 +40,6 @@ void callback(
 
 int main() {
     // (2) 3대의 카메라 타임라인 동기화
-    // TODO: 카메라 동기화 로직 구현 필요 - 구현 거의 완료 at PONG#60
 
     Camera cam_top(CameraType::TOP, {0, 1200}, 120);
     Camera cam_left(CameraType::LEFT, {1, 1200}, 120);
@@ -66,7 +63,6 @@ int main() {
     Tracker tracker_top(ORANGE_MIN, ORANGE_MAX);
 
     // (3) 탁구공 센터 검출 (예: blob)
-    // TODO: 공 검출 로직 구현 필요 - 배경 제거, blob?
     cam_top.set_frame_callback([&predictor, &cam_top, &tracker_top, &calibrator_top](cv::Mat& frame) {
         callback(frame, cam_top, tracker_top, [&predictor](const cv::Point2f& pt) {
             predictor.set_point_top(pt);
@@ -87,7 +83,6 @@ int main() {
     cam_left.start();
     cam_right.start();
 
-    // TODO: 카메라에 공이 적어도 한 대라도 안 보일 경우 위치가 겁나 튀는 문제 해결 필요 - 이 때 kalman filter 같은 걸로 예측?
     cv::Point3f world_pos;
     cv::Point3f predict_pos;
     cv::Point3f real_arrive_pos;
@@ -127,7 +122,6 @@ int main() {
             auto world_speed = predictor.get_world_speed();
 
             // (6) Kalman filter 등의 후처리로 결과 보정
-            // TODO: Kalman filter 적용 로직 구현 필요
 
             Draw::put_text(
                 frame_left,
@@ -221,7 +215,6 @@ int main() {
     cv::destroyAllWindows();
 
     // (8) 예상 도착 위치 및 각도 정보를 토대로 하드웨어에 전송할 인자 계산
-    // TODO: 하드웨어 제어 인자 계산 로직 구현 필요
     /**
      * h0 = 탁구 로봇 축 자체 높이
      * r = 탁구 로봇 구동 반지름
@@ -238,7 +231,6 @@ int main() {
      */
 
     // (9) 하드웨어에 제어 인자 + 명령 전송
-    // TODO: 하드웨어 제어 명령 전송 로직 구현 필요
 
     return 0;
 }

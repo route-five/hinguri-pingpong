@@ -23,7 +23,7 @@ void callback(
     cv::Mat& frame,
     const std::function<void(const cv::Point2f&)>& set_pt,
     const Camera& camera,
-    Calibrator& calibrator
+    Single& calibrator
 ) {
     if (frame.empty()) return;
 
@@ -55,8 +55,8 @@ int main() {
     }
 
     Predictor predictor;
-    Calibrator calibrator_left(cam_left.get_camera_type(), cam_left.get_image_size());
-    Calibrator calibrator_right(cam_right.get_camera_type(), cam_right.get_image_size());
+    Single calibrator_left(cam_left.get_camera_type(), cam_left.get_image_size());
+    Single calibrator_right(cam_right.get_camera_type(), cam_right.get_image_size());
 
     cam_left.set_frame_callback([&predictor, &cam_left, &calibrator_left](cv::Mat& frame) {
         callback(frame, [&predictor](const cv::Point2f& pt) {

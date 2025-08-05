@@ -43,7 +43,7 @@ int main() {
         .marker_face_color("g")
         .marker_color("g");
 
-    const auto payload = Bridge::convert(predicted_pos);
+    const auto payload = Bridge::convert(predicted_pos, {0, 0, 0}, 35.0f);
 
     std::vector<double> target_x = {
         payload.x, payload.x + AXIS_RADIUS * std::cos(payload.theta * std::numbers::pi_v<float> / 180.0f)
