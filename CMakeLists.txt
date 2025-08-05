@@ -31,7 +31,7 @@ add_executable(hinguri_pingpong
         #        src/vision/pre/camera_points.cpp
 
         # 4. 모든 generate된 데이터를 이용하여 카메라를 보정하는 코드
-        #        src/vision/pre/calibrate.cpp
+                src/vision/pre/calibrate.cpp
 
         #### processing
         src/version_left_right_pnp.cpp
