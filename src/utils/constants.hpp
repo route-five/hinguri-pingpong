@@ -31,7 +31,7 @@
 
 // Path
 const std::string PATH_WORLD_POINTS = "data/points/world.yml";
-const std::string PATH_ORBIT = "data/orbit.yml";
+const std::string PATH_ORBIT = "data/orbit";
 
 // Table Size
 constexpr float TABLE_WIDTH = 152.5; // cm
@@ -45,7 +45,7 @@ constexpr float TABLE_GRID_SIZE = 15.0; // cm
 constexpr float PREDICT_MAX_TIME = 10.0; // 최대 예측 시간 (초)
 constexpr float PREDICT_MIN_TIME = 0.05; // 최소 예측 시간 (초)
 constexpr float PREDICT_MAX_ITERATIONS = 20; // 최대 반복 횟수
-constexpr float PREDICT_MIN_Y = TABLE_HEIGHT * 1 / 4; // cm
+constexpr float PREDICT_MIN_Y = TABLE_HEIGHT * 1 / 2; // cm
 constexpr float PREDICT_MAX_Y = TABLE_HEIGHT; // cm
 
 constexpr int TOP_HISTORY_N = 5; // 탑 가메라 기준 최근 N개의 좌표를 저장함
@@ -88,7 +88,7 @@ constexpr double CONTOUR_AREA_MIN = 100;
 // constexpr double CIRCULARITY_MIN = 0.5;
 constexpr double CIRCULARITY_PERFECT = 0.89;
 constexpr double CIRCULARITY_THRESHOLD = 0.4;
-constexpr double RADIUS_MIN = 3;
+constexpr double RADIUS_MIN = 1;
 constexpr double TOUCHED_MIN = 225;
 constexpr double TOUCHED_MAX = 243;
 constexpr int TRAILS_SIZE = 30;

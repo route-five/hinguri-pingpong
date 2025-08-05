@@ -3,16 +3,54 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import cm
 
+import cv2
+import numpy as np
 
 def load_orbit_3d_from_yml(path):
     fs = cv2.FileStorage(path, cv2.FILE_STORAGE_READ)
     if not fs.isOpened():
         raise IOError(f"Failed to open file: {path}")
+
     node = fs.getNode("orbit_3d")
-    data = node.mat()
+    if node.empty():
+        fs.release()
+        raise ValueError(f"'orbit_3d' node not found in {path}")
+
+    # 1) opencv-matrix (map) 형태
+    if node.isMap():
+        mat = node.mat()
+        if mat is None:
+            fs.release()
+            raise ValueError(f"Failed to read 'orbit_3d' as matrix from {path}")
+        data = np.array(mat, dtype=np.float32)
+        if data.ndim == 1:
+            data = data.reshape(-1, 3)
+
+    # 2) nested sequence ([[x,y,z], …]) 형태
+    elif node.isSeq() and node.at(0).isSeq():
+        pts = []
+        for i in range(node.size()):
+            pt = node.at(i)
+            x = pt.at(0).real()
+            y = pt.at(1).real()
+            z = pt.at(2).real()
+            pts.append([x, y, z])
+        data = np.array(pts, dtype=np.float32)
+
+    # 3) flat sequence ([x,y,z, x,y,z, …]) 형태
+    elif node.isSeq():
+        vals = [node.at(i).real() for i in range(node.size())]
+        if len(vals) % 3 != 0:
+            fs.release()
+            raise ValueError(f"Expected length divisible by 3, got {len(vals)}")
+        data = np.array(vals, dtype=np.float32).reshape(-1, 3)
+
+    else:
+        fs.release()
+        raise ValueError(f"Unsupported format for 'orbit_3d' in {path}")
+
     fs.release()
     return data
-
 
 # 테이블, 네트 크기 (단위: cm)
 TABLE_WIDTH = 152.5
@@ -30,10 +68,10 @@ net_y = [TABLE_HEIGHT / 2] * 5
 net_z = [0, 0, TABLE_NET_HEIGHT, TABLE_NET_HEIGHT, 0]
 
 # 예시 target points (추적된 공 위치들)
-orbit_path = "data/orbit.yml"
+orbit_path = "data/orbit/5.yml"
 orbit_data = load_orbit_3d_from_yml(orbit_path)
 target_x = orbit_data[:, 0]
-target_y = orbit_data[:, 1]
+target_y = orbit_data[:, 1] 
 target_z = orbit_data[:, 2]
 
 # 시각화 시작

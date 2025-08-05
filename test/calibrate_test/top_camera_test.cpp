@@ -2,23 +2,21 @@
 // Created by Hyunseung Ryu on 2025. 7. 29..
 //
 
-#include "../../src/utils/draw.hpp"
-#include "../../src/vision/calibrator.hpp"
-#include "../../src/vision/camera.hpp"
-#include "../../src/vision/camera_type.hpp"
-#include "../../src/vision/predictor.hpp"
-#include "../../src/vision/tracker.hpp"
+#include "utils/draw.hpp"
+#include "vision/camera.hpp"
+#include "vision/camera_type.hpp"
+#include "vision/predictor.hpp"
+#include "vision/tracker.hpp"
 
 int main() {
-    Camera cam(CameraType::TOP, {0, 1200}, 120);
+    Camera cam(CameraType::TOP, { 0, cv::CAP_MSMF }, 120);
     if (!cam.is_opened()) {
         std::cerr << "Failed to open camera: " << cam.get_camera_type().name() << std::endl;
         return -1;
     }
 
-    Calibrator calibrator(cam);
     Predictor predictor;
-    Tracker tracker{ORANGE_MIN, ORANGE_MAX};
+    Tracker tracker{ ORANGE_MIN, ORANGE_MAX };
 
     std::vector<cv::Point2f> camera_points;
     std::vector<cv::Point3f> world_points;
@@ -42,7 +40,7 @@ int main() {
         }
 
         for (auto& pt : world_points) {
-            cv::Point2f camera_pos = predictor.pos_3d_to_2d(pt, cam.get_camera_type());
+            cv::Point2f camera_pos = predictor.pos_3d_to_2d(cam, pt);
             cv::circle(frame, camera_pos, 3, COLOR_BLUE, -1, cv::LINE_AA);
         }
 

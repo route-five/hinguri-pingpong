@@ -1,34 +1,36 @@
 #include <vector>
 #include <opencv2/opencv.hpp>
-#include "../utils/draw.hpp"
-#include "camera.hpp"
-#include "tracker.hpp"
-#include "predictor.hpp"
-#include "bridge.hpp"
+#include "utils/draw.hpp"
+#include "vision/camera.hpp"
+#include "vision/tracker.hpp"
+#include "vision/predictor.hpp"
+#include "vision/bridge.hpp"
 
 // TODO: 카메라에 공이 적어도 한 대라도 안 보일 경우 위치가 겁나 튀는 문제 해결 필요 - 이 때 kalman filter 같은 걸로 예측?
 // TODO: Kalman filter 적용 로직 구현 필요
 // TODO: 카메라 동기화 로직 구현 필요
 
+int i = 0;
+
 class VisionEndPnP {
     // TODO: top을 쓰는 것과 안 쓰는 것의 정확도 비교하기
 
 private:
-    Camera cam_top{CameraType::TOP, {0, cv::CAP_MSMF}, 90};
-    Camera cam_left{CameraType::LEFT, {1, cv::CAP_MSMF}, 90};
-    Camera cam_right{CameraType::RIGHT, {2, cv::CAP_MSMF}, 90};
-    Tracker tracker_top{ORANGE_MIN, ORANGE_MAX};
-    Tracker tracker_left{ORANGE_MIN, ORANGE_MAX};
-    Tracker tracker_right{ORANGE_MIN, ORANGE_MAX};
+    Camera cam_top{ CameraType::TOP, {0, cv::CAP_MSMF}, 90 };
+    Camera cam_left{ CameraType::LEFT, {1, cv::CAP_MSMF}, 90 };
+    Camera cam_right{ CameraType::RIGHT, {2, cv::CAP_MSMF}, 90 };
+    Tracker tracker_top{ ORANGE_MIN, ORANGE_MAX };
+    Tracker tracker_left{ ORANGE_MIN, ORANGE_MAX };
+    Tracker tracker_right{ ORANGE_MIN, ORANGE_MAX };
     Predictor predictor;
 
     cv::Mat latest_top_frame, latest_left_frame, latest_right_frame;
     std::mutex frame_mutex;
 
-    std::atomic<bool> use_top_camera{true};
+    std::atomic<bool> use_top_camera{ true };
 
 public:
-    explicit VisionEndPnP(const bool use_top_camera) : use_top_camera{use_top_camera} {
+    explicit VisionEndPnP(const bool use_top_camera) : use_top_camera{ use_top_camera } {
         cam_top.set_frame_callback([this](cv::Mat& frame) {
             if (frame.empty()) return;
 
@@ -41,10 +43,10 @@ public:
             Draw::put_text_border(
                 frame,
                 std::format("FPS: {:.2f}/{:.2f}", cam_top.get_fps(), cam_top.get_prop(cv::CAP_PROP_FPS)),
-                {10, 20}
+                { 10, 20 }
             );
             frame.copyTo(latest_top_frame);
-        });
+            });
 
         cam_left.set_frame_callback([this](cv::Mat& frame) {
             if (frame.empty()) return;
@@ -53,15 +55,16 @@ public:
             tracker_left << frame;
             if (const auto pos = tracker_left.get_camera_pos()) {
                 predictor.set_point_left(pos.value().first);
+                // Log::debug(std::format("left found {}, {}", pos.value().first.x, pos.value().first.y));
             }
 
             Draw::put_text_border(
                 frame,
                 std::format("FPS: {:.2f}/{:.2f}", cam_left.get_fps(), cam_left.get_prop(cv::CAP_PROP_FPS)),
-                {10, 20}
+                { 10, 20 }
             );
             frame.copyTo(latest_left_frame);
-        });
+            });
 
         cam_right.set_frame_callback([this](cv::Mat& frame) {
             if (frame.empty()) return;
@@ -70,15 +73,16 @@ public:
             tracker_right << frame;
             if (const auto pos = tracker_right.get_camera_pos()) {
                 predictor.set_point_right(pos.value().first);
+                // Log::debug(std::format("right found {}, {}", pos.value().first.x, pos.value().first.y));
             }
 
             Draw::put_text_border(
                 frame,
                 std::format("FPS: {:.2f}/{:.2f}", cam_right.get_fps(), cam_right.get_prop(cv::CAP_PROP_FPS)),
-                {10, 20}
+                { 10, 20 }
             );
             frame.copyTo(latest_right_frame);
-        });
+            });
     }
 
     ~VisionEndPnP() {
@@ -90,8 +94,6 @@ public:
 
     void read_frame(cv::Mat& frame_top, cv::Mat& frame_left, cv::Mat& frame_right) {
         std::lock_guard lock(frame_mutex);
-        if (latest_top_frame.empty() || latest_left_frame.empty() || latest_right_frame.empty())
-            return;
 
         latest_top_frame.copyTo(frame_top);
         latest_left_frame.copyTo(frame_left);
@@ -106,27 +108,20 @@ public:
         cv::Vec3f& world_speed,
         cv::Point3f& predict_arrive_pos,
         cv::Point3f& real_arrive_pos,
-        std::vector<cv::Point3f> orbit_3d,
-        std::vector<cv::Point2f> orbit_2d_top,
-        std::vector<cv::Point2f> orbit_2d_left,
-        std::vector<cv::Point2f> orbit_2d_right
+        std::vector<cv::Point3f>& orbit_3d,
+        std::vector<cv::Point2f>& orbit_2d_top,
+        std::vector<cv::Point2f>& orbit_2d_left,
+        std::vector<cv::Point2f>& orbit_2d_right
     ) {
-        const double fallback_dt = 1.0 / std::min({cam_top.get_fps(), cam_left.get_fps(), cam_right.get_fps()});
+        const double fallback_dt = 1.0 / std::min({ cam_top.get_fps(), cam_left.get_fps(), cam_right.get_fps() });
         if (const auto find_world_pos = predictor.get_new_world_pos(cam_top, cam_left, cam_right, static_cast<float>(fallback_dt),
-                                                                    use_top_camera)) {
+            use_top_camera)) {
             world_pos = find_world_pos.value();
 
             orbit_3d.push_back(world_pos);
             orbit_2d_top.push_back(Predictor::pos_3d_to_2d(cam_top, world_pos));
             orbit_2d_left.push_back(Predictor::pos_3d_to_2d(cam_left, world_pos));
             orbit_2d_right.push_back(Predictor::pos_3d_to_2d(cam_right, world_pos));
-
-            if (orbit_3d.size() > 100) {
-                orbit_3d.erase(orbit_3d.begin());
-                orbit_2d_top.erase(orbit_2d_top.begin());
-                orbit_2d_left.erase(orbit_2d_left.begin());
-                orbit_2d_right.erase(orbit_2d_right.begin());
-            }
         }
 
         if (const auto find_world_speed = predictor.get_world_speed()) {
@@ -141,7 +136,7 @@ public:
         else if (0 <= world_pos.x && world_pos.x <= TABLE_WIDTH &&
             0 <= world_pos.y && world_pos.y < PREDICT_MIN_Y &&
             0 <= world_pos.z
-        ) {
+            ) {
             std::lock_guard lock(queue_mutex);
             if (queue.empty()) {
                 // TODO: 마지막 도착 직전 속도 예측해서 넣기 - 회귀 식에서 같이 리턴하기
@@ -213,10 +208,10 @@ public:
         const cv::Point3f& predict_arrive_pos,
         const cv::Point3f& real_arrive_pos
     ) const {
-        Draw::put_text_border(frame, Draw::to_string("World Pos", world_pos, "cm"), {10, 50}, COLOR_GREEN);
-        Draw::put_text_border(frame, Draw::to_string("World Speed", world_speed, "cm/s"), {10, 80}, COLOR_CYAN);
-        Draw::put_text_border(frame, Draw::to_string("Predict Pos", predict_arrive_pos, "cm"), {10, 110}, COLOR_BLUE);
-        Draw::put_text_border(frame, Draw::to_string("Real Arrive Pos", real_arrive_pos, "cm"), {10, 140}, COLOR_RED);
+        Draw::put_text_border(frame, Draw::to_string("World Pos", world_pos, "cm"), { 10, 50 }, COLOR_GREEN);
+        Draw::put_text_border(frame, Draw::to_string("World Speed", world_speed, "cm/s"), { 10, 80 }, COLOR_CYAN);
+        Draw::put_text_border(frame, Draw::to_string("Predict Pos", predict_arrive_pos, "cm"), { 10, 110 }, COLOR_BLUE);
+        Draw::put_text_border(frame, Draw::to_string("Real Arrive Pos", real_arrive_pos, "cm"), { 10, 140 }, COLOR_RED);
     }
 
     cv::Mat combine_frame(const cv::Mat& frame_top, const cv::Mat& frame_left, const cv::Mat& frame_right) {
@@ -233,7 +228,7 @@ public:
         frame_top_resized.copyTo(final_frame(cv::Rect(top_x_offset, 0, frame_top_resized.cols, frame_top_resized.rows)));
         frame_left_resized.copyTo(final_frame(cv::Rect(0, frame_top_resized.rows, frame_left_resized.cols, frame_left_resized.rows)));
         frame_right_resized.copyTo(final_frame(cv::Rect(frame_left_resized.cols, frame_top_resized.rows, frame_right_resized.cols,
-                                                        frame_right_resized.rows)));
+            frame_right_resized.rows)));
 
         return final_frame;
     }
@@ -258,10 +253,10 @@ public:
         cam_left.start();
         cam_right.start();
 
-        cv::Point3f world_pos{-1, -1, -1};
-        cv::Vec3f world_speed{0, 0, 0};
-        cv::Point3f predict_arrive_pos{-1, -1, -1};
-        cv::Point3f real_arrive_pos{-1, -1, -1};
+        cv::Point3f world_pos{ -1, -1, -1 };
+        cv::Vec3f world_speed{ 0, 0, 0 };
+        cv::Point3f predict_arrive_pos{ -1, -1, -1 };
+        cv::Point3f real_arrive_pos{ -1, -1, -1 };
         std::vector<cv::Point3f> orbit_3d;
         std::vector<cv::Point2f> orbit_2d_top;
         std::vector<cv::Point2f> orbit_2d_left;
@@ -299,7 +294,7 @@ public:
                 break;
             }
             else if (key == 's') {
-                cv::FileStorage fs(PATH_ORBIT, cv::FileStorage::WRITE);
+                cv::FileStorage fs(std::format("{}/{}.yml", PATH_ORBIT, i++), cv::FileStorage::WRITE);
                 if (!fs.isOpened()) {
                     Log::error("[VisionEnd::run] Failed to open file for saving orbit.");
                 }
@@ -309,6 +304,13 @@ public:
                 fs << "orbit_2d_left" << orbit_2d_left;
                 fs << "orbit_2d_right" << orbit_2d_right;
                 fs.release();
+
+                Log::info(std::format("[VisionEnd::run] Saving orbit ({} items) as 's' key pressed.", orbit_3d.size()));
+
+                orbit_3d.clear();
+                orbit_2d_top.clear();
+                orbit_2d_left.clear();
+                orbit_2d_right.clear();
             }
         }
     }
@@ -746,7 +748,7 @@ int main() {
     // VisionEndIgnoreZ vision_end_ignore_z;
 
     auto vision_thread_pnp = std::thread(&VisionEndPnP::run, &vision_end_pnp, std::ref(queue), std::ref(queue_mutex), std::ref(flag),
-                                         std::ref(stop));
+        std::ref(stop));
     // auto vision_thread_stereo = std::thread(&VisionEndStereo::run, &vision_end_stereo, std::ref(queue), std::ref(queue_mutex), std::ref(flag), std::ref(stop));
     // auto vision_thread_ignore_z = std::thread(&VisionEndIgnoreZ::run, &vision_end_ignore_z, std::ref(queue), std::ref(queue_mutex), std::ref(flag), std::ref(stop));
 
