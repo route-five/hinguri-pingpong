@@ -18,7 +18,6 @@
 #include "vision/tracker.hpp"
 
 
-
 class ControlEnd {
 private:
     BulkDynamixelActuator actuators;
@@ -108,13 +107,13 @@ private:
     // Tracker tracker_top_2{ORANGE_MIN, ORANGE_MAX};
     Predictor predictor;
 
-    cv::UMat latest_top_frame;
-    // cv::UMat latest_top_frame_2;
+    cv::Mat latest_top_frame;
+    // cv::Mat latest_top_frame_2;
     std::mutex frame_mutex;
 
 public:
     VisionEnd() {
-        cam_top.set_frame_callback([this](cv::UMat& frame) {
+        cam_top.set_frame_callback([this](cv::Mat& frame) {
             if (frame.empty()) return;
 
             std::lock_guard lock(frame_mutex);
@@ -137,7 +136,7 @@ public:
         cv::destroyAllWindows();
     }
 
-    void read_frame(cv::UMat& frame_top) {
+    void read_frame(cv::Mat& frame_top) {
         std::lock_guard lock(frame_mutex);
         if (latest_top_frame.empty())
             return;
@@ -201,7 +200,7 @@ public:
     }
 
     void visualize_data(
-        cv::UMat& frame_top,
+        cv::Mat& frame_top,
         const cv::Point3f& world_pos,
         const cv::Vec3f& world_speed,
         const cv::Point3f& predict_arrive_pos,
@@ -227,7 +226,7 @@ public:
     }
 
     void legend(
-        cv::UMat& frame,
+        cv::Mat& frame,
         const cv::Point3f& world_pos,
         const cv::Vec3f& world_speed,
         const cv::Point3f& predict_arrive_pos,
@@ -239,8 +238,8 @@ public:
         Draw::put_text_border(frame, Draw::to_string("Real Arrive Pos", real_arrive_pos, "cm"), {10, 140}, COLOR_RED);
     }
 
-    cv::UMat& resize_frame(const cv::UMat& frame_top) {
-        cv::UMat frame_resized;
+    cv::Mat& resize_frame(const cv::Mat& frame_top) {
+        cv::Mat frame_resized;
         cv::resize(frame_top, frame_resized, {}, 0.7, 0.7);
 
         return frame_resized;
@@ -275,11 +274,11 @@ public:
                 orbit_3d, orbit_2d_top
             );
 
-            cv::UMat frame_top;
+            cv::Mat frame_top;
             this->read_frame(frame_top);
             this->visualize_data(frame_top, world_pos, world_speed, predict_arrive_pos, real_arrive_pos, orbit_3d, orbit_2d_top);
 
-            cv::UMat frame = this->resize_frame(frame_top);
+            cv::Mat frame = this->resize_frame(frame_top);
             this->legend(frame, world_pos, world_speed, predict_arrive_pos, real_arrive_pos);
 
             cv::imshow("Pingpong Robot / Press 'Q' to quit, 'S' to save orbit.", frame);

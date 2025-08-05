@@ -11,7 +11,7 @@
 
 namespace Draw {
     inline void put_text(
-        cv::UMat& frame,
+        cv::Mat& frame,
         const std::string& text,
         const cv::Point& position,
         const cv::Scalar& color = COLOR_BLACK,
@@ -22,7 +22,7 @@ namespace Draw {
     }
 
     inline void put_text_border(
-        cv::UMat& frame,
+        cv::Mat& frame,
         const std::string& text,
         const cv::Point& position,
         const cv::Scalar& color = COLOR_WHITE,
@@ -35,7 +35,7 @@ namespace Draw {
     }
 
     inline void put_circle(
-        cv::UMat& frame,
+        cv::Mat& frame,
         const cv::Point2f& center,
         const int radius,
         const cv::Scalar& color = COLOR_MAGENTA,
@@ -45,7 +45,7 @@ namespace Draw {
     }
 
     inline void put_arrow(
-        cv::UMat& frame,
+        cv::Mat& frame,
         const cv::Point2f& start,
         const cv::Point2f& end,
         const cv::Scalar& color = COLOR_GREEN,

@@ -18,7 +18,6 @@
 #include "vision/tracker.hpp"
 
 
-
 class ControlEnd {
 private:
     BulkDynamixelActuator actuators;
@@ -108,13 +107,13 @@ private:
     // Tracker tracker_top_2{ORANGE_MIN, ORANGE_MAX};
     Predictor predictor;
 
-    cv::UMat latest_top_frame;
-    // cv::UMat latest_top_frame_2;
+    cv::Mat latest_top_frame;
+    // cv::Mat latest_top_frame_2;
     std::mutex frame_mutex;
 
 public:
     VisionEnd() {
-        cam_top.set_frame_callback([this](cv::UMat& frame) {
+        cam_top.set_frame_callback([this](cv::Mat& frame) {
             if (frame.empty()) return;
 
             std::lock_guard lock(frame_mutex);
@@ -137,7 +136,7 @@ public:
         cv::destroyAllWindows();
     }
 
-    void read_frame(cv::UMat& frame_top) {
+    void read_frame(cv::Mat& frame_top) {
         std::lock_guard lock(frame_mutex);
         if (latest_top_frame.empty())
             return;
@@ -201,9 +200,9 @@ public:
     }
 
     void visualize_data(
-        cv::UMat& frame_top,
-        cv::UMat& frame_left,
-        cv::UMat& frame_right,
+        cv::Mat& frame_top,
+        cv::Mat& frame_left,
+        cv::Mat& frame_right,
         const cv::Point3f& world_pos,
         const cv::Vec3f& world_speed,
         const cv::Point3f& predict_arrive_pos,
@@ -229,7 +228,7 @@ public:
     }
 
     void legend(
-        cv::UMat& frame,
+        cv::Mat& frame,
         const cv::Point3f& world_pos,
         const cv::Vec3f& world_speed,
         const cv::Point3f& predict_arrive_pos,
@@ -241,8 +240,8 @@ public:
         Draw::put_text_border(frame, Draw::to_string("Real Arrive Pos", real_arrive_pos, "cm"), {10, 140}, COLOR_RED);
     }
 
-    cv::UMat& combine_frame(const cv::UMat& frame_top_1, const cv::UMat& frame_top_2) {
-        cv::UMat concatenated_frame;
+    cv::Mat& combine_frame(const cv::Mat& frame_top_1, const cv::Mat& frame_top_2) {
+        cv::Mat concatenated_frame;
         cv::hconcat(frame_top_1, frame_top_2, concatenated_frame);
         cv::resize(concatenated_frame, concatenated_frame, {}, 0.7, 0.7);
 
@@ -278,14 +277,14 @@ public:
                 orbit_3d, orbit_2d_top
             );
 
-            cv::UMat frame_top, frame_left, frame_right;
+            cv::Mat frame_top, frame_left, frame_right;
             this->read_frame(frame_top);
             this->visualize_data(
                 frame_top, frame_left, frame_right, world_pos, world_speed, predict_arrive_pos, real_arrive_pos,
                 orbit_3d, orbit_2d_top
             );
 
-            cv::UMat frame_combined = frame_top; // this->combine_frame(frame_top, frame_top_2);
+            cv::Mat frame_combined = frame_top; // this->combine_frame(frame_top, frame_top_2);
             this->legend(frame_combined, world_pos, world_speed, predict_arrive_pos, real_arrive_pos);
 
             cv::imshow("Pingpong Robot / Press 'Q' to quit, 'S' to save orbit.", frame_combined);

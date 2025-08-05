@@ -22,16 +22,16 @@ class Camera {
   Device device;
   cv::Size frame_size;
 
-  cv::UMat buffer_[2]; // double buffer
+  cv::Mat buffer_[2]; // double buffer
   std::atomic<int> active_idx{0}; // 현재 버퍼 index (lock-free)
 
   std::thread thread;
   std::atomic<bool> stopped{false};
   std::atomic<double> capture_fps{0.0};
 
-  std::function<void(cv::UMat&)> frame_callback;
+  std::function<void(cv::Mat&)> frame_callback;
 
-  cv::UMat camera_matrix, dist_coeffs, map1, map2, projection_matrix, R, t;
+  cv::Mat camera_matrix, dist_coeffs, map1, map2, projection_matrix, R, t;
   cv::Rect roi;
 
 public:
@@ -70,7 +70,7 @@ public:
     stream.release();
   }
 
-  void set_frame_callback(const std::function<void(cv::UMat&)>& callback) {
+  void set_frame_callback(const std::function<void(cv::Mat&)>& callback) {
     frame_callback = callback;
   }
 
@@ -109,7 +109,7 @@ public:
   }
 
   // 얕은 복사 반환 -> 0 비용
-  cv::UMat read() const {
+  cv::Mat read() const {
     return buffer_[active_idx.load(std::memory_order_acquire)];
   }
 
@@ -133,31 +133,31 @@ public:
     return frame_size;
   }
 
-  [[nodiscard]] const cv::UMat& get_camera_matrix() const {
+  [[nodiscard]] const cv::Mat& get_camera_matrix() const {
     return camera_matrix;
   }
 
-  [[nodiscard]] const cv::UMat& get_dist_coeffs() const {
+  [[nodiscard]] const cv::Mat& get_dist_coeffs() const {
     return dist_coeffs;
   }
 
-  [[nodiscard]] const cv::UMat& get_map1() const {
+  [[nodiscard]] const cv::Mat& get_map1() const {
     return map1;
   }
 
-  [[nodiscard]] const cv::UMat& get_map2() const {
+  [[nodiscard]] const cv::Mat& get_map2() const {
     return map2;
   }
 
-  [[nodiscard]] const cv::UMat& get_projection_matrix() const {
+  [[nodiscard]] const cv::Mat& get_projection_matrix() const {
     return projection_matrix;
   }
 
-  [[nodiscard]] const cv::UMat& get_R() const {
+  [[nodiscard]] const cv::Mat& get_R() const {
     return R;
   }
 
-  [[nodiscard]] const cv::UMat& get_t() const {
+  [[nodiscard]] const cv::Mat& get_t() const {
     return t;
   }
 
@@ -165,7 +165,7 @@ public:
     return roi;
   }
 
-  friend Camera& operator>>(Camera& cam, cv::UMat& frame) {
+  friend Camera& operator>>(Camera& cam, cv::Mat& frame) {
     frame = cam.read(); // 얕은 복사
     return cam;
   }
@@ -174,13 +174,13 @@ public:
 class StereoCamera {
 private:
   const StereoCameraType stereo_camera_type;
-  const Camera& left_camera;
-  const Camera& right_camera;
+  Camera& left_camera;
+  Camera& right_camera;
 
-  cv::UMat R, T, E, F, map1x, map1y, map2x, map2y, R1, R2, P1, P2, Q;
+  cv::Mat R, T, E, F, map1x, map1y, map2x, map2y, R1, R2, P1, P2, Q;
 
 public:
-  StereoCamera(const Camera& left_camera, const Camera& right_camera)
+  StereoCamera(Camera& left_camera, Camera& right_camera)
     : stereo_camera_type{left_camera.get_camera_type(), right_camera.get_camera_type()},
       left_camera{left_camera},
       right_camera{right_camera} {
@@ -200,6 +200,16 @@ public:
     }
   }
 
+  void start() const {
+    left_camera.start();
+    right_camera.start();
+  }
+
+  void stop() const {
+    left_camera.stop();
+    right_camera.stop();
+  }
+
   [[nodiscard]] const Camera& get_left_camera() const {
     return left_camera;
   }
@@ -216,55 +226,55 @@ public:
     return left_camera.get_frame_size();
   }
 
-  [[nodiscard]] const cv::UMat& get_R() const {
+  [[nodiscard]] const cv::Mat& get_R() const {
     return R;
   }
 
-  [[nodiscard]] const cv::UMat& get_T() const {
+  [[nodiscard]] const cv::Mat& get_T() const {
     return T;
   }
 
-  [[nodiscard]] const cv::UMat& get_E() const {
+  [[nodiscard]] const cv::Mat& get_E() const {
     return E;
   }
 
-  [[nodiscard]] const cv::UMat& get_F() const {
+  [[nodiscard]] const cv::Mat& get_F() const {
     return F;
   }
 
-  [[nodiscard]] const cv::UMat& get_map1x() const {
+  [[nodiscard]] const cv::Mat& get_map1x() const {
     return map1x;
   }
 
-  [[nodiscard]] const cv::UMat& get_map1y() const {
+  [[nodiscard]] const cv::Mat& get_map1y() const {
     return map1y;
   }
 
-  [[nodiscard]] const cv::UMat& get_map2x() const {
+  [[nodiscard]] const cv::Mat& get_map2x() const {
     return map2x;
   }
 
-  [[nodiscard]] const cv::UMat& get_map2y() const {
+  [[nodiscard]] const cv::Mat& get_map2y() const {
     return map2y;
   }
 
-  [[nodiscard]] const cv::UMat& get_R1() const {
+  [[nodiscard]] const cv::Mat& get_R1() const {
     return R1;
   }
 
-  [[nodiscard]] const cv::UMat& get_R2() const {
+  [[nodiscard]] const cv::Mat& get_R2() const {
     return R2;
   }
 
-  [[nodiscard]] const cv::UMat& get_P1() const {
+  [[nodiscard]] const cv::Mat& get_P1() const {
     return P1;
   }
 
-  [[nodiscard]] const cv::UMat& get_P2() const {
+  [[nodiscard]] const cv::Mat& get_P2() const {
     return P2;
   }
 
-  [[nodiscard]] const cv::UMat& get_Q() const {
+  [[nodiscard]] const cv::Mat& get_Q() const {
     return Q;
   }
 };

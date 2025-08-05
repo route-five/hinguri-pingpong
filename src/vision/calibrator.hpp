@@ -25,8 +25,8 @@ namespace Calibrator {
 
         std::vector<cv::Point3f> object_corners_;
         std::vector<std::string> chessboard_image_paths_;
-        cv::UMat camera_matrix_, dist_coeffs_, rvecs_, tvecs_;
-        cv::UMat map1_, map2_;
+        cv::Mat camera_matrix_, dist_coeffs_, rvecs_, tvecs_;
+        cv::Mat map1_, map2_;
         cv::Rect roi_;
 
         void create_object_corners() {
@@ -171,7 +171,7 @@ namespace Calibrator {
 
             cv::initUndistortRectifyMap(
                 camera_matrix_, dist_coeffs_,
-                cv::UMat(), new_camera_matrix,
+                cv::Mat(), new_camera_matrix,
                 image_size_, CV_32FC1, map1_, map2_
             );
 
@@ -190,7 +190,7 @@ namespace Calibrator {
          * @param output 출력 이미지 (왜곡 제거된 이미지)
          * @param crop_by_roi 유효 영역으로 output을 crop함 - nullptr이면 crop하지 않고 전체 이미지 사용
          */
-        void undistort(const cv::UMat& input, cv::UMat& output, const bool crop_by_roi = true) {
+        void undistort(const cv::Mat& input, cv::Mat& output, const bool crop_by_roi = true) {
             if (map1_.empty() || map2_.empty()) { // 왜곡 제거 맵이 비어있다면 불러오기
                 camera_type_.read_calibration_matrix(nullptr, nullptr, nullptr, nullptr, nullptr, &map1_, &map2_);
             }
@@ -210,8 +210,8 @@ namespace Calibrator {
          * @param save_data 보정 데이터를 저장할지 여부
          */
         void compute_camera_pose(
-            cv::UMat& R,
-            cv::UMat& t,
+            cv::Mat& R,
+            cv::Mat& t,
             const bool save_data = true
         ) const {
             std::vector<cv::Point3f> world_pts;
@@ -223,7 +223,7 @@ namespace Calibrator {
             std::vector<cv::Point2f> camera_pts;
             camera_type_.read_camera_points(camera_pts);
 
-            cv::UMat rvec, tvec, inliers;
+            cv::Mat rvec, tvec, inliers;
             cv::solvePnPRansac(
                 world_pts,
                 camera_pts,
@@ -255,15 +255,15 @@ namespace Calibrator {
          * @param save_data 보정 데이터를 저장할지 여부
          */
         void compute_projection_matrix(
-            const cv::UMat& R,
-            const cv::UMat& t,
-            cv::UMat& projection_matrix,
+            const cv::Mat& R,
+            const cv::Mat& t,
+            cv::Mat& projection_matrix,
             const bool save_data = true
         ) const {
-            cv::UMat Rt;
+            cv::Mat Rt;
             cv::hconcat(R, t, Rt); // [R | t]
-            cv::gemm(camera_matrix_, Rt, 1.0, cv::UMat(), 0.0, projection_matrix); // P = K * [R | t]
-            // projection_matrix = camera_matrix_ * Rt; // P = K * [R | t]
+            // cv::gemm(camera_matrix_, Rt, 1.0, cv::Mat(), 0.0, projection_matrix); // P = K * [R | t]
+            projection_matrix = camera_matrix_ * Rt; // P = K * [R | t]
 
             if (save_data) {
                 const bool success = camera_type_.write_projection_matrix(&projection_matrix, &R, &t);
@@ -277,20 +277,20 @@ namespace Calibrator {
          * @param save_data 보정 데이터를 저장할지 여부
          */
         void compute_projection_matrix(
-            cv::UMat& projection_matrix,
+            cv::Mat& projection_matrix,
             const bool save_data = true
         ) const {
-            cv::UMat R, t;
+            cv::Mat R, t;
             const bool success = camera_type_.read_projection_matrix(nullptr, &R, &t);
             assert(success && "카메라의 projection 행렬(P)을 읽는 데 실패했습니다.");
 
             assert(!R.empty() && "카메라의 회전 행렬(R)이 비어 있습니다. 먼저 compute_camera_pose(save_data=true)를 호출하세요.");
             assert(!t.empty() && "카메라의 이동 벡터(t)가 비어 있습니다. 먼저 compute_camera_pose(save_data=true)를 호출하세요.");
 
-            cv::UMat Rt;
+            cv::Mat Rt;
             cv::hconcat(R, t, Rt); // [R | t]
-            cv::gemm(camera_matrix_, Rt, 1.0, cv::UMat(), 0.0, projection_matrix); // P = K * [R | t]
-            // projection_matrix = camera_matrix_ * Rt; // P = K * [R | t]
+            // cv::gemm(camera_matrix_, Rt, 1.0, cv::Mat(), 0.0, projection_matrix); // P = K * [R | t]
+            projection_matrix = camera_matrix_ * Rt; // P = K * [R | t]
 
             if (save_data) {
                 const bool success2 = camera_type_.write_projection_matrix(&projection_matrix, &R, &t);
@@ -322,19 +322,19 @@ namespace Calibrator {
             return chessboard_image_paths_;
         }
 
-        [[nodiscard]] const cv::UMat& get_camera_matrix() const {
+        [[nodiscard]] const cv::Mat& get_camera_matrix() const {
             return camera_matrix_;
         }
 
-        [[nodiscard]] const cv::UMat& get_dist_coeffs() const {
+        [[nodiscard]] const cv::Mat& get_dist_coeffs() const {
             return dist_coeffs_;
         }
 
-        [[nodiscard]] const cv::UMat& get_map1() const {
+        [[nodiscard]] const cv::Mat& get_map1() const {
             return map1_;
         }
 
-        [[nodiscard]] const cv::UMat& get_map2() const {
+        [[nodiscard]] const cv::Mat& get_map2() const {
             return map2_;
         }
     };
@@ -352,7 +352,7 @@ namespace Calibrator {
          * <code>E</code>: 카메라 내정(intrinsic)이 보정된 상태에서의 에피폴라 기하 정보를 담고 있는 행렬 <br>
          * <code>F</code>: 실제 픽셀 단위로 에피폴라 기하 관계를 표현하는 3×3 행렬
          */
-        cv::UMat R, T, E, F;
+        cv::Mat R, T, E, F;
 
         /**
          * <code>R1</code>: 첫 번째 카메라의 정렬 회전 행렬 <br>
@@ -361,13 +361,13 @@ namespace Calibrator {
          * <code>P2</code>: 두 번째 카메라의 정렬 투영 행렬 <br>
          * <code>Q</code>: 재투영 행렬
          */
-        cv::UMat R1, R2, P1, P2, Q;
+        cv::Mat R1, R2, P1, P2, Q;
 
         /**
          * <code>map1x</code>, <code>map1y</code>: 첫 번째 카메라의 왜곡 제거 맵 <br>
          * <code>map2x</code>, <code>map2y</code>: 두 번째 카메라의 왜곡 제거 맵 <br>
          */
-        cv::UMat map1x, map1y, map2x, map2y;
+        cv::Mat map1x, map1y, map2x, map2y;
 
         void load() {
             stereo_camera_type_.read_calibration_matrix(&R, &T, &E, &F, &map1x, &map1y, &map2x, &map2y);
@@ -486,10 +486,10 @@ namespace Calibrator {
          * @brief 스테레오 정렬 맵을 초기화합니다.
          */
         void init_rectification_maps(
-            cv::UMat& map1x,
-            cv::UMat& map1y,
-            cv::UMat& map2x,
-            cv::UMat& map2y
+            cv::Mat& map1x,
+            cv::Mat& map1y,
+            cv::Mat& map2x,
+            cv::Mat& map2y
         ) const {
             assert(
                 (!R1.empty() && !R2.empty() && !P1.empty() && !P2.empty()) &&
@@ -530,10 +530,10 @@ namespace Calibrator {
          * @param rectified2 (출력) 우측 정렬 이미지
          */
         void rectify_image_pair(
-            const cv::UMat& frame1,
-            const cv::UMat& frame2,
-            cv::UMat& rectified1,
-            cv::UMat& rectified2
+            const cv::Mat& frame1,
+            const cv::Mat& frame2,
+            cv::Mat& rectified1,
+            cv::Mat& rectified2
         ) const {
             assert((!map1x.empty() && !map1y.empty() && !map2x.empty() && !map2y.empty()) &&
                 "왜곡 제거 맵이 비어있습니다. 스테레오 정렬 맵을 초기화하기 전에 먼저 init_stereo_rectification_maps()를 호출해야 합니다."

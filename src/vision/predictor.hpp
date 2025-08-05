@@ -169,8 +169,8 @@ public:
      * @note pt_left와 pt_right는 동일한 물체에 대응되는 2D 좌표여야 합니다.
      */
     [[nodiscard]] static cv::Point3f triangulate(const Camera& camera_left, const cv::Point2f& pt_left, const Camera& camera_right,
-                                          const cv::Point2f& pt_right) noexcept {
-        // Avoid unnecessary cv::UMat allocations and use cv::Vec4f directly
+                                                 const cv::Point2f& pt_right) noexcept {
+        // Avoid unnecessary cv::Mat allocations and use cv::Vec4f directly
         float pts1_data[2] = {pt_left.x, pt_left.y};
         float pts2_data[2] = {pt_right.x, pt_right.y};
         const cv::Mat pts1(1, 1, CV_32FC2, pts1_data);
@@ -336,13 +336,13 @@ public:
         //         0, 0, 0, 0, 0, 1);
         //
         //     // predict with gravity correction
-        //     cv::UMat prediction = kalman_filter.predict();
+        //     cv::Mat prediction = kalman_filter.predict();
         //     prediction.at<float>(2) -= 0.5f * GRAVITY * dt * dt; // z -= 0.5 * g * dt^2
         //     prediction.at<float>(5) -= GRAVITY * dt; // v_z -= g * dt
         //
         //     // correct with measurement
-        //     const cv::UMat measurement = (cv::Mat_<float>(3, 1) << world_pos_lr.x, world_pos_lr.y, world_pos_lr.z);
-        //     cv::UMat estimated = kalman_filter.correct(measurement);
+        //     const cv::Mat measurement = (cv::Mat_<float>(3, 1) << world_pos_lr.x, world_pos_lr.y, world_pos_lr.z);
+        //     cv::Mat estimated = kalman_filter.correct(measurement);
         //
         //     return {
         //         estimated.at<float>(0),

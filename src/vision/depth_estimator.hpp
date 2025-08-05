@@ -12,10 +12,10 @@
 class DepthEsmimator {
 private:
     cv::Size image_size;
-    cv::UMat map1x, map1y, map2x, map2y;
-    cv::UMat Q, disparity;
-    cv::UMat rectified_left, rectified_right;
-    cv::UMat gray_left, gray_right;
+    cv::Mat map1x, map1y, map2x, map2y;
+    cv::Mat Q, disparity;
+    cv::Mat rectified_left, rectified_right;
+    cv::Mat gray_left, gray_right;
 
     cv::Ptr<cv::StereoSGBM> stereo_matcher;
     const int min_disparity = 0;
@@ -40,7 +40,7 @@ public:
         block_size{block_size} {
     }
 
-    void update(const cv::UMat& new_rectified_left, const cv::UMat& new_rectified_right) {
+    void update(const cv::Mat& new_rectified_left, const cv::Mat& new_rectified_right) {
         assert((new_rectified_left.rows == image_size.height && new_rectified_left.cols == image_size.width &&
                 new_rectified_right.rows == image_size.height && new_rectified_right.cols == image_size.width) &&
             "[DepthEstimator::update] 입력된 이미지 크기가 초기화된 이미지 크기와 일치하지 않습니다.");
@@ -57,12 +57,12 @@ public:
         }
 
         // Scale disparity to float
-        cv::UMat disparity_temp;
+        cv::Mat disparity_temp;
         stereo_matcher->compute(gray_left, gray_right, disparity_temp);
         disparity_temp.convertTo(disparity, CV_32F, 1.0 / 16.0);
     }
 
-    [[nodiscard]] const cv::UMat& get_disparity() const {
+    [[nodiscard]] const cv::Mat& get_disparity() const {
         return disparity;
     }
 
@@ -96,39 +96,39 @@ public:
         return cv::Point3f(result[0] / w, result[1] / w, result[2] / w);
     }
 
-    [[nodiscard]] const cv::UMat& get_rectified_left() const {
+    [[nodiscard]] const cv::Mat& get_rectified_left() const {
         return rectified_left;
     }
 
-    [[nodiscard]] const cv::UMat& get_rectified_right() const {
+    [[nodiscard]] const cv::Mat& get_rectified_right() const {
         return rectified_right;
     }
 
-    [[nodiscard]] const cv::UMat& get_gray_left() const {
+    [[nodiscard]] const cv::Mat& get_gray_left() const {
         return gray_left;
     }
 
-    [[nodiscard]] const cv::UMat& get_gray_right() const {
+    [[nodiscard]] const cv::Mat& get_gray_right() const {
         return gray_right;
     }
 
-    [[nodiscard]] const cv::UMat& get_map1x() const {
+    [[nodiscard]] const cv::Mat& get_map1x() const {
         return map1x;
     }
 
-    [[nodiscard]] const cv::UMat& get_map1y() const {
+    [[nodiscard]] const cv::Mat& get_map1y() const {
         return map1y;
     }
 
-    [[nodiscard]] const cv::UMat& get_map2x() const {
+    [[nodiscard]] const cv::Mat& get_map2x() const {
         return map2x;
     }
 
-    [[nodiscard]] const cv::UMat& get_map2y() const {
+    [[nodiscard]] const cv::Mat& get_map2y() const {
         return map2y;
     }
 
-    [[nodiscard]] const cv::UMat& get_Q() const {
+    [[nodiscard]] const cv::Mat& get_Q() const {
         return Q;
     }
 };

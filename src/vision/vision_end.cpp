@@ -22,14 +22,14 @@ private:
     Tracker tracker_right{ORANGE_MIN, ORANGE_MAX};
     Predictor predictor;
 
-    cv::UMat latest_top_frame, latest_left_frame, latest_right_frame;
+    cv::Mat latest_top_frame, latest_left_frame, latest_right_frame;
     std::mutex frame_mutex;
 
     std::atomic<bool> use_top_camera{true};
 
 public:
     explicit VisionEndPnP(const bool use_top_camera) : use_top_camera{use_top_camera} {
-        cam_top.set_frame_callback([this](cv::UMat& frame) {
+        cam_top.set_frame_callback([this](cv::Mat& frame) {
             if (frame.empty()) return;
 
             std::lock_guard lock(frame_mutex);
@@ -46,7 +46,7 @@ public:
             frame.copyTo(latest_top_frame);
         });
 
-        cam_left.set_frame_callback([this](cv::UMat& frame) {
+        cam_left.set_frame_callback([this](cv::Mat& frame) {
             if (frame.empty()) return;
 
             std::lock_guard lock(frame_mutex);
@@ -63,7 +63,7 @@ public:
             frame.copyTo(latest_left_frame);
         });
 
-        cam_right.set_frame_callback([this](cv::UMat& frame) {
+        cam_right.set_frame_callback([this](cv::Mat& frame) {
             if (frame.empty()) return;
 
             std::lock_guard lock(frame_mutex);
@@ -88,7 +88,7 @@ public:
         cv::destroyAllWindows();
     }
 
-    void read_frame(cv::UMat& frame_top, cv::UMat& frame_left, cv::UMat& frame_right) {
+    void read_frame(cv::Mat& frame_top, cv::Mat& frame_left, cv::Mat& frame_right) {
         std::lock_guard lock(frame_mutex);
         if (latest_top_frame.empty() || latest_left_frame.empty() || latest_right_frame.empty())
             return;
@@ -163,9 +163,9 @@ public:
     }
 
     void visualize_data(
-        cv::UMat& frame_top,
-        cv::UMat& frame_left,
-        cv::UMat& frame_right,
+        cv::Mat& frame_top,
+        cv::Mat& frame_left,
+        cv::Mat& frame_right,
         const cv::Point3f& world_pos,
         const cv::Vec3f& world_speed,
         const cv::Point3f& predict_arrive_pos,
@@ -207,7 +207,7 @@ public:
     }
 
     void legend(
-        cv::UMat& frame,
+        cv::Mat& frame,
         const cv::Point3f& world_pos,
         const cv::Vec3f& world_speed,
         const cv::Point3f& predict_arrive_pos,
@@ -219,8 +219,8 @@ public:
         Draw::put_text_border(frame, Draw::to_string("Real Arrive Pos", real_arrive_pos, "cm"), {10, 140}, COLOR_RED);
     }
 
-    cv::UMat combine_frame(const cv::UMat& frame_top, const cv::UMat& frame_left, const cv::UMat& frame_right) {
-        cv::UMat frame_top_resized, frame_left_resized, frame_right_resized;
+    cv::Mat combine_frame(const cv::Mat& frame_top, const cv::Mat& frame_left, const cv::Mat& frame_right) {
+        cv::Mat frame_top_resized, frame_left_resized, frame_right_resized;
         cv::resize(frame_top, frame_top_resized, {}, 0.7, 0.7);
         cv::resize(frame_left, frame_left_resized, {}, 0.8, 0.8);
         cv::resize(frame_right, frame_right_resized, {}, 0.8, 0.8);
@@ -229,7 +229,7 @@ public:
         const int total_height = frame_top_resized.rows + std::max(frame_left_resized.rows, frame_right_resized.rows);
         const int top_x_offset = (max_width - frame_top_resized.cols) / 2;
 
-        cv::UMat final_frame = cv::UMat::zeros(total_height, max_width, frame_left_resized.type());
+        cv::Mat final_frame = cv::Mat::zeros(total_height, max_width, frame_left_resized.type());
         frame_top_resized.copyTo(final_frame(cv::Rect(top_x_offset, 0, frame_top_resized.cols, frame_top_resized.rows)));
         frame_left_resized.copyTo(final_frame(cv::Rect(0, frame_top_resized.rows, frame_left_resized.cols, frame_left_resized.rows)));
         frame_right_resized.copyTo(final_frame(cv::Rect(frame_left_resized.cols, frame_top_resized.rows, frame_right_resized.cols,
@@ -268,19 +268,24 @@ public:
         std::vector<cv::Point2f> orbit_2d_right;
 
         while (true) {
+            cv::Mat frame_top, frame_left, frame_right;
+            this->read_frame(frame_top, frame_left, frame_right);
+            if (frame_top.empty() || frame_left.empty() || frame_right.empty()) {
+                Log::warn("[VisionEnd::run] One or more frames are empty, skipping visualization.");
+                continue;
+            }
+
             this->process_data(
                 queue, queue_mutex, flag, world_pos, world_speed, predict_arrive_pos, real_arrive_pos,
                 orbit_3d, orbit_2d_top, orbit_2d_left, orbit_2d_right
             );
 
-            cv::UMat frame_top, frame_left, frame_right;
-            this->read_frame(frame_top, frame_left, frame_right);
             this->visualize_data(
                 frame_top, frame_left, frame_right, world_pos, world_speed, predict_arrive_pos, real_arrive_pos,
                 orbit_3d, orbit_2d_top, orbit_2d_left, orbit_2d_right
             );
 
-            cv::UMat frame_combined = this->combine_frame(frame_top, frame_left, frame_right);
+            cv::Mat frame_combined = this->combine_frame(frame_top, frame_left, frame_right);
             this->legend(frame_combined, world_pos, world_speed, predict_arrive_pos, real_arrive_pos);
 
             cv::imshow("Pingpong Robot / Press 'Q' to quit, 'S' to save orbit.", frame_combined);
@@ -319,13 +324,13 @@ public:
 //     // Tracker tracker_top_2{ORANGE_MIN, ORANGE_MAX};
 //     Predictor predictor;
 //
-//     cv::UMat latest_top_frame;
-//     // cv::UMat latest_top_frame_2;
+//     cv::Mat latest_top_frame;
+//     // cv::Mat latest_top_frame_2;
 //     std::mutex frame_mutex;
 //
 // public:
 //     VisionEndStereo() {
-//         cam_top.set_frame_callback([this](cv::UMat& frame) {
+//         cam_top.set_frame_callback([this](cv::Mat& frame) {
 //             if (frame.empty()) return;
 //
 //             std::lock_guard lock(frame_mutex);
@@ -348,7 +353,7 @@ public:
 //         cv::destroyAllWindows();
 //     }
 //
-//     void read_frame(cv::UMat& frame_top) {
+//     void read_frame(cv::Mat& frame_top) {
 //         std::lock_guard lock(frame_mutex);
 //         if (latest_top_frame.empty())
 //             return;
@@ -415,7 +420,7 @@ public:
 //     }
 //
 //     void visualize_data(
-//         cv::UMat& frame_top,
+//         cv::Mat& frame_top,
 //         const cv::Point3f& world_pos,
 //         const cv::Vec3f& world_speed,
 //         const cv::Point3f& predict_arrive_pos,
@@ -441,7 +446,7 @@ public:
 //     }
 //
 //     void legend(
-//         cv::UMat& frame,
+//         cv::Mat& frame,
 //         const cv::Point3f& world_pos,
 //         const cv::Vec3f& world_speed,
 //         const cv::Point3f& predict_arrive_pos,
@@ -453,8 +458,8 @@ public:
 //         Draw::put_text_border(frame, Draw::to_string("Real Arrive Pos", real_arrive_pos, "cm"), {10, 140}, COLOR_RED);
 //     }
 //
-//     cv::UMat combine_frame(const cv::UMat& frame_top_1, const cv::UMat& frame_top_2) {
-//         cv::UMat concatenated_frame;
+//     cv::Mat combine_frame(const cv::Mat& frame_top_1, const cv::Mat& frame_top_2) {
+//         cv::Mat concatenated_frame;
 //         cv::hconcat(frame_top_1, frame_top_2, concatenated_frame);
 //         cv::resize(concatenated_frame, concatenated_frame, {}, 0.7, 0.7);
 //
@@ -490,11 +495,11 @@ public:
 //                 orbit_3d, orbit_2d_top
 //             );
 //
-//             cv::UMat frame_top;
+//             cv::Mat frame_top;
 //             this->read_frame(frame_top);
 //             this->visualize_data(frame_top, world_pos, world_speed, predict_arrive_pos, real_arrive_pos, orbit_3d, orbit_2d_top);
 //
-//             cv::UMat frame_combined = frame_top; // this->combine_frame(frame_top, frame_top_2);
+//             cv::Mat frame_combined = frame_top; // this->combine_frame(frame_top, frame_top_2);
 //             this->legend(frame_combined, world_pos, world_speed, predict_arrive_pos, real_arrive_pos);
 //
 //             cv::imshow("Pingpong Robot / Press 'Q' to quit, 'S' to save orbit.", frame_combined);
@@ -529,13 +534,13 @@ public:
 //     // Tracker tracker_top_2{ORANGE_MIN, ORANGE_MAX};
 //     Predictor predictor;
 //
-//     cv::UMat latest_top_frame;
-//     // cv::UMat latest_top_frame_2;
+//     cv::Mat latest_top_frame;
+//     // cv::Mat latest_top_frame_2;
 //     std::mutex frame_mutex;
 //
 // public:
 //     VisionEndIgnoreZ() {
-//         cam_top.set_frame_callback([this](cv::UMat& frame) {
+//         cam_top.set_frame_callback([this](cv::Mat& frame) {
 //             if (frame.empty()) return;
 //
 //             std::lock_guard lock(frame_mutex);
@@ -558,7 +563,7 @@ public:
 //         cv::destroyAllWindows();
 //     }
 //
-//     void read_frame(cv::UMat& frame_top) {
+//     void read_frame(cv::Mat& frame_top) {
 //         std::lock_guard lock(frame_mutex);
 //         if (latest_top_frame.empty())
 //             return;
@@ -625,7 +630,7 @@ public:
 //     }
 //
 //     void visualize_data(
-//         cv::UMat& frame_top,
+//         cv::Mat& frame_top,
 //         const cv::Point3f& world_pos,
 //         const cv::Vec3f& world_speed,
 //         const cv::Point3f& predict_arrive_pos,
@@ -651,7 +656,7 @@ public:
 //     }
 //
 //     void legend(
-//         cv::UMat& frame,
+//         cv::Mat& frame,
 //         const cv::Point3f& world_pos,
 //         const cv::Vec3f& world_speed,
 //         const cv::Point3f& predict_arrive_pos,
@@ -663,8 +668,8 @@ public:
 //         Draw::put_text_border(frame, Draw::to_string("Real Arrive Pos", real_arrive_pos, "cm"), {10, 140}, COLOR_RED);
 //     }
 //
-//     cv::UMat resize_frame(const cv::UMat& frame_top) {
-//         cv::UMat frame_resized;
+//     cv::Mat resize_frame(const cv::Mat& frame_top) {
+//         cv::Mat frame_resized;
 //         cv::resize(frame_top, frame_resized, {}, 0.7, 0.7);
 //
 //         return frame_resized;
@@ -699,11 +704,11 @@ public:
 //                 orbit_3d, orbit_2d_top
 //             );
 //
-//             cv::UMat frame_top;
+//             cv::Mat frame_top;
 //             this->read_frame(frame_top);
 //             this->visualize_data(frame_top, world_pos, world_speed, predict_arrive_pos, real_arrive_pos, orbit_3d, orbit_2d_top);
 //
-//             cv::UMat frame = this->resize_frame(frame_top);
+//             cv::Mat frame = this->resize_frame(frame_top);
 //             this->legend(frame, world_pos, world_speed, predict_arrive_pos, real_arrive_pos);
 //
 //             cv::imshow("Pingpong Robot / Press 'Q' to quit, 'S' to save orbit.", frame);
