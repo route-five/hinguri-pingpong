@@ -43,19 +43,27 @@ public:
       return false;
 
     if (camera_matrix != nullptr) {
-      fs["camera_matrix"] >> *camera_matrix;
+      cv::Mat tmp;
+      fs["camera_matrix"] >> tmp;
+      *camera_matrix = tmp.getUMat(cv::ACCESS_READ);
       assert(!camera_matrix->empty() && "[CameraType::read_calibration_matrix] K 행렬이 비어 있습니다.");
     }
     if (dist_coeffs != nullptr) {
-      fs["dist_coeffs"] >> *dist_coeffs;
+      cv::Mat tmp;
+      fs["dist_coeffs"] >> tmp;
+      *dist_coeffs = tmp.getUMat(cv::ACCESS_READ);
       assert(!dist_coeffs->empty() && "[CameraType::read_calibration_matrix] dist_coeffs가 비어 있습니다.");
     }
     if (rvecs != nullptr) {
-      fs["rvecs"] >> *rvecs;
+      cv::Mat tmp;
+      fs["rvecs"] >> tmp;
+      *rvecs = tmp.getUMat(cv::ACCESS_READ);
       assert(!rvecs->empty() && "[CameraType::read_calibration_matrix] rvecs가 비어 있습니다.");
     }
     if (tvecs != nullptr) {
-      fs["tvecs"] >> *tvecs;
+      cv::Mat tmp;
+      fs["tvecs"] >> tmp;
+      *tvecs = tmp.getUMat(cv::ACCESS_READ);
       assert(!tvecs->empty() && "[CameraType::read_calibration_matrix] tvecs가 비어 있습니다.");
     }
     if (image_size != nullptr) {
@@ -63,11 +71,15 @@ public:
       assert(!image_size->empty() && "[CameraType::read_calibration_matrix] image_size가 비어 있습니다.");
     }
     if (map1 != nullptr) {
-      fs["map1"] >> *map1;
+      cv::Mat tmp;
+      fs["map1"] >> tmp;
+      *map1 = tmp.getUMat(cv::ACCESS_READ);
       assert(!map1->empty() && "[CameraType::read_calibration_matrix] map1가 비어 있습니다.");
     }
     if (map2 != nullptr) {
-      fs["map2"] >> *map2;
+      cv::Mat tmp;
+      fs["map2"] >> tmp;
+      *map2 = tmp.getUMat(cv::ACCESS_READ);
       assert(!map2->empty() && "[CameraType::read_calibration_matrix] map2가 비어 있습니다.");
     }
     if (roi != nullptr) {
@@ -138,19 +150,27 @@ public:
 
     if (camera_matrix != nullptr) {
       assert(!camera_matrix->empty() && "[CameraType::write_calibration_matrix(U)] K 행렬이 비어 있습니다.");
-      fs << "camera_matrix" << *camera_matrix;
+      cv::Mat tmp;
+      cv::copyTo(*camera_matrix, tmp, cv::noArray());
+      fs << "camera_matrix" << tmp;
     }
     if (dist_coeffs != nullptr) {
       assert(!dist_coeffs->empty() && "[CameraType::write_calibration_matrix(U)] dist_coeffs가 비어 있습니다.");
-      fs << "dist_coeffs" << *dist_coeffs;
+      cv::Mat tmp;
+      cv::copyTo(*dist_coeffs, tmp, cv::noArray());
+      fs << "dist_coeffs" << tmp;
     }
     if (rvecs != nullptr) {
       assert(!rvecs->empty() && "[CameraType::write_calibration_matrix(U)] rvecs가 비어 있습니다.");
-      fs << "rvecs" << *rvecs;
+      cv::Mat tmp;
+      cv::copyTo(*rvecs, tmp, cv::noArray());
+      fs << "rvecs" << tmp;
     }
     if (tvecs != nullptr) {
       assert(!tvecs->empty() && "[CameraType::write_calibration_matrix(U)] tvecs가 비어 있습니다.");
-      fs << "tvecs" << *tvecs;
+      cv::Mat tmp;
+      cv::copyTo(*tvecs, tmp, cv::noArray());
+      fs << "tvecs" << tmp;
     }
     if (image_size != nullptr) {
       assert(!image_size->empty() && "[CameraType::write_calibration_matrix(U)] image_size가 비어 있습니다.");
@@ -162,11 +182,15 @@ public:
     }
     if (map1 != nullptr) {
       assert(!map1->empty() && "[CameraType::write_calibration_matrix(U)] map1가 비어 있습니다.");
-      fs << "map1" << *map1;
+      cv::Mat tmp;
+      cv::copyTo(*map1, tmp, cv::noArray());
+      fs << "map1" << tmp;
     }
     if (map2 != nullptr) {
       assert(!map2->empty() && "[CameraType::write_calibration_matrix(U)] map2가 비어 있습니다.");
-      fs << "map2" << *map2;
+      cv::Mat tmp;
+      cv::copyTo(*map2, tmp, cv::noArray());
+      fs << "map2" << tmp;
     }
     if (roi != nullptr) {
       assert(!roi->empty() && "[CameraType::write_calibration_matrix(U)] roi가 비어 있습니다.");
@@ -207,15 +231,21 @@ public:
       return false;
 
     if (P != nullptr) {
-      fs["projection_matrix"] >> *P;
+      cv::Mat tmp;
+      fs["projection_matrix"] >> tmp;
+      *P = tmp.getUMat(cv::ACCESS_READ);
       assert(!P->empty() && "[CameraType::read_projection_matrix] P 행렬이 비어 있습니다.");
     }
     if (R != nullptr) {
-      fs["R"] >> *R;
+      cv::Mat tmp;
+      fs["R"] >> tmp;
+      *R = tmp.getUMat(cv::ACCESS_READ);
       assert(!R->empty() && "[CameraType::read_projection_matrix] R 행렬이 비어 있습니다.");
     }
     if (t != nullptr) {
-      fs["t"] >> *t;
+      cv::Mat tmp;
+      fs["t"] >> tmp;
+      *t = tmp.getUMat(cv::ACCESS_READ);
       assert(!t->empty() && "[CameraType::read_projection_matrix] t 행렬이 비어 있습니다.");
     }
     fs.release();
@@ -252,17 +282,21 @@ public:
 
     if (P != nullptr) {
       assert(!P->empty() && "[CameraType::write_projection_matrix(U)] P 행렬이 비어 있습니다.");
-      fs << "projection_matrix" << *P;
+      cv::Mat tmp;
+      cv::copyTo(*P, tmp, cv::noArray());
+      fs << "projection_matrix" << tmp;
     }
-
     if (R != nullptr) {
       assert(!R->empty() && "[CameraType::write_projection_matrix(U)] R 행렬이 비어 있습니다.");
-      fs << "R" << *R;
+      cv::Mat tmp;
+      cv::copyTo(*R, tmp, cv::noArray());
+      fs << "R" << tmp;
     }
-
     if (t != nullptr) {
       assert(!t->empty() && "[CameraType::write_projection_matrix(U)] t 행렬이 비어 있습니다.");
-      fs << "t" << *t;
+      cv::Mat tmp;
+      cv::copyTo(*t, tmp, cv::noArray());
+      fs << "t" << tmp;
     }
 
     fs.release();
@@ -307,6 +341,11 @@ public:
     : camera_type1{type1}, camera_type2{type2} {
   }
 
+  StereoCameraType(const StereoCameraType&) = default;
+  StereoCameraType& operator=(const StereoCameraType&) = delete;
+
+  ~StereoCameraType() = default;
+
   [[nodiscard]] std::string name() const {
     return camera_type1.name() + "_" + camera_type2.name();
   }
@@ -319,7 +358,8 @@ public:
     return "data/stereo_projection/" + name() + ".yml";
   }
 
-  bool read_calibration_matrix(cv::UMat* R = nullptr, cv::UMat* T = nullptr, cv::UMat* E = nullptr, cv::UMat* F = nullptr, cv::UMat* map1x = nullptr,
+  bool read_calibration_matrix(cv::UMat* R = nullptr, cv::UMat* T = nullptr, cv::UMat* E = nullptr, cv::UMat* F = nullptr,
+                               cv::UMat* map1x = nullptr,
                                cv::UMat* map1y = nullptr,
                                cv::UMat* map2x = nullptr, cv::UMat* map2y = nullptr) const {
     cv::FileStorage fs(calibration_matrix_path(), cv::FileStorage::READ);
@@ -327,37 +367,51 @@ public:
       return false;
 
     if (R != nullptr) {
-      fs["R"] >> *R;
+      cv::Mat tmp;
+      fs["R"] >> tmp;
+      *R = tmp.getUMat(cv::ACCESS_READ);
       assert(!R->empty() && "[StereoCameraType::read_calibration_matrix] R 행렬이 비어 있습니다.");
     }
-
     if (T != nullptr) {
-      fs["T"] >> *T;
+      cv::Mat tmp;
+      fs["T"] >> tmp;
+      *T = tmp.getUMat(cv::ACCESS_READ);
       assert(!T->empty() && "[StereoCameraType::read_calibration_matrix] T 행렬이 비어 있습니다.");
     }
-
     if (E != nullptr) {
-      fs["E"] >> *E;
+      cv::Mat tmp;
+      fs["E"] >> tmp;
+      *E = tmp.getUMat(cv::ACCESS_READ);
       assert(!E->empty() && "[StereoCameraType::read_calibration_matrix] E 행렬이 비어 있습니다.");
     }
     if (F != nullptr) {
-      fs["F"] >> *F;
+      cv::Mat tmp;
+      fs["F"] >> tmp;
+      *F = tmp.getUMat(cv::ACCESS_READ);
       assert(!F->empty() && "[StereoCameraType::read_calibration_matrix] F 행렬이 비어 있습니다.");
     }
     if (map1x != nullptr) {
-      fs["map1x"] >> *map1x;
+      cv::Mat tmp;
+      fs["map1x"] >> tmp;
+      *map1x = tmp.getUMat(cv::ACCESS_READ);
       assert(!map1x->empty() && "[StereoCameraType::read_calibration_matrix] map1x 행렬이 비어 있습니다.");
     }
     if (map1y != nullptr) {
-      fs["map1y"] >> *map1y;
+      cv::Mat tmp;
+      fs["map1y"] >> tmp;
+      *map1y = tmp.getUMat(cv::ACCESS_READ);
       assert(!map1y->empty() && "[StereoCameraType::read_calibration_matrix] map1y 행렬이 비어 있습니다.");
     }
     if (map2x != nullptr) {
-      fs["map2x"] >> *map2x;
+      cv::Mat tmp;
+      fs["map2x"] >> tmp;
+      *map2x = tmp.getUMat(cv::ACCESS_READ);
       assert(!map2x->empty() && "[StereoCameraType::read_calibration_matrix] map2x 행렬이 비어 있습니다.");
     }
     if (map2y != nullptr) {
-      fs["map2y"] >> *map2y;
+      cv::Mat tmp;
+      fs["map2y"] >> tmp;
+      *map2y = tmp.getUMat(cv::ACCESS_READ);
       assert(!map2y->empty() && "[StereoCameraType::read_calibration_matrix] map2y 행렬이 비어 있습니다.");
     }
     fs.release();
@@ -424,38 +478,51 @@ public:
 
     if (R != nullptr) {
       assert(!R->empty() && "[StereoCameraType::write_calibration_matrix(U)] R 행렬이 비어 있습니다.");
-      fs << "R" << *R;
+      cv::Mat tmp;
+      cv::copyTo(*R, tmp, cv::noArray());
+      fs << "R" << tmp;
     }
     if (T != nullptr) {
       assert(!T->empty() && "[StereoCameraType::write_calibration_matrix(U)] T 행렬이 비어 있습니다.");
-      fs << "T" << *T;
+      cv::Mat tmp;
+      cv::copyTo(*T, tmp, cv::noArray());
+      fs << "T" << tmp;
     }
     if (E != nullptr) {
       assert(!E->empty() && "[StereoCameraType::write_calibration_matrix(U)] E 행렬이 비어 있습니다.");
-      fs << "E" << *E;
+      cv::Mat tmp;
+      cv::copyTo(*E, tmp, cv::noArray());
+      fs << "E" << tmp;
     }
     if (F != nullptr) {
       assert(!F->empty() && "[StereoCameraType::write_calibration_matrix(U)] F 행렬이 비어 있습니다.");
-      fs << "F" << *F;
+      cv::Mat tmp;
+      cv::copyTo(*F, tmp, cv::noArray());
+      fs << "F" << tmp;
     }
     if (map1x != nullptr) {
       assert(!map1x->empty() && "[StereoCameraType::write_calibration_matrix(U)] map1x 행렬이 비어 있습니다.");
-      fs << "map1x" << *map1x;
+      cv::Mat tmp;
+      cv::copyTo(*map1x, tmp, cv::noArray());
+      fs << "map1x" << tmp;
     }
-
     if (map1y != nullptr) {
       assert(!map1y->empty() && "[StereoCameraType::write_calibration_matrix(U)] map1y 행렬이 비어 있습니다.");
-      fs << "map1y" << *map1y;
+      cv::Mat tmp;
+      cv::copyTo(*map1y, tmp, cv::noArray());
+      fs << "map1y" << tmp;
     }
-
     if (map2x != nullptr) {
       assert(!map2x->empty() && "[StereoCameraType::write_calibration_matrix(U)] map2x 행렬이 비어 있습니다.");
-      fs << "map2x" << *map2x;
+      cv::Mat tmp;
+      cv::copyTo(*map2x, tmp, cv::noArray());
+      fs << "map2x" << tmp;
     }
-
     if (map2y != nullptr) {
       assert(!map2y->empty() && "[StereoCameraType::write_calibration_matrix(U)] map2y 행렬이 비어 있습니다.");
-      fs << "map2y" << *map2y;
+      cv::Mat tmp;
+      cv::copyTo(*map2y, tmp, cv::noArray());
+      fs << "map2y" << tmp;
     }
 
     fs.release();
@@ -470,26 +537,33 @@ public:
       return false;
 
     if (R1 != nullptr) {
-      fs["R1"] >> *R1;
+      cv::Mat tmp;
+      fs["R1"] >> tmp;
+      *R1 = tmp.getUMat(cv::ACCESS_READ);
       assert(!R1->empty() && "[StereoCameraType::read_projection_matrix] R1 행렬이 비어 있습니다.");
     }
-
     if (R2 != nullptr) {
-      fs["R2"] >> *R2;
+      cv::Mat tmp;
+      fs["R2"] >> tmp;
+      *R2 = tmp.getUMat(cv::ACCESS_READ);
       assert(!R2->empty() && "[StereoCameraType::read_projection_matrix] R2 행렬이 비어 있습니다.");
     }
-
     if (P1 != nullptr) {
-      fs["P1"] >> *P1;
+      cv::Mat tmp;
+      fs["P1"] >> tmp;
+      *P1 = tmp.getUMat(cv::ACCESS_READ);
       assert(!P1->empty() && "[StereoCameraType::read_projection_matrix] P1 행렬이 비어 있습니다.");
     }
-
     if (P2 != nullptr) {
-      fs["P2"] >> *P2;
+      cv::Mat tmp;
+      fs["P2"] >> tmp;
+      *P2 = tmp.getUMat(cv::ACCESS_READ);
       assert(!P2->empty() && "[StereoCameraType::read_projection_matrix] P2 행렬이 비어 있습니다.");
     }
     if (Q != nullptr) {
-      fs["Q"] >> *Q;
+      cv::Mat tmp;
+      fs["Q"] >> tmp;
+      *Q = tmp.getUMat(cv::ACCESS_READ);
       assert(!Q->empty() && "[StereoCameraType::read_projection_matrix] Q 행렬이 비어 있습니다.");
     }
     fs.release();
@@ -543,27 +617,33 @@ public:
 
     if (R1 != nullptr) {
       assert(!R1->empty() && "[StereoCameraType::write_projection_matrix(U)] R1 행렬이 비어 있습니다.");
-      fs << "R1" << *R1;
+      cv::Mat tmp;
+      cv::copyTo(*R1, tmp, cv::noArray());
+      fs << "R1" << tmp;
     }
-
     if (R2 != nullptr) {
       assert(!R2->empty() && "[StereoCameraType::write_projection_matrix(U)] R2 행렬이 비어 있습니다.");
-      fs << "R2" << *R2;
+      cv::Mat tmp;
+      cv::copyTo(*R2, tmp, cv::noArray());
+      fs << "R2" << tmp;
     }
-
     if (P1 != nullptr) {
       assert(!P1->empty() && "[StereoCameraType::write_projection_matrix(U)] P1 행렬이 비어 있습니다.");
-      fs << "P1" << *P1;
+      cv::Mat tmp;
+      cv::copyTo(*P1, tmp, cv::noArray());
+      fs << "P1" << tmp;
     }
-
     if (P2 != nullptr) {
       assert(!P2->empty() && "[StereoCameraType::write_projection_matrix(U)] P2 행렬이 비어 있습니다.");
-      fs << "P2" << *P2;
+      cv::Mat tmp;
+      cv::copyTo(*P2, tmp, cv::noArray());
+      fs << "P2" << tmp;
     }
-
     if (Q != nullptr) {
       assert(!Q->empty() && "[StereoCameraType::write_projection_matrix(U)] Q 행렬이 비어 있습니다.");
-      fs << "Q" << *Q;
+      cv::Mat tmp;
+      cv::copyTo(*Q, tmp, cv::noArray());
+      fs << "Q" << tmp;
     }
 
     fs.release();

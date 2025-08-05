@@ -173,7 +173,7 @@ public:
 
 class StereoCamera {
 private:
-  const StereoCameraType& stereo_camera_type;
+  const StereoCameraType stereo_camera_type;
   const Camera& left_camera;
   const Camera& right_camera;
 
