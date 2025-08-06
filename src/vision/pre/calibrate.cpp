@@ -13,7 +13,7 @@
 #define IMSHOW
 
 int main() {
-    Calibrator calibrator(CameraType::TOP);
+    Calibrator::Single calibrator(CameraType::LEFT);
 
     std::cout << "🔁 finding chessboard corners..." << std::endl;
     std::vector<std::vector<cv::Point2f>> image_points;
@@ -24,7 +24,7 @@ int main() {
 
     std::cout << "🔁 calibrating..." << std::endl;
     cv::Rect roi;
-    calibrator.calibrate(image_points, object_points, &roi);
+    calibrator.calibrate(image_points, object_points, roi);
     std::cout << "✅ calibration done." << std::endl << std::endl;
 
     std::cout << "🔁 computing camera pose..." << std::endl;

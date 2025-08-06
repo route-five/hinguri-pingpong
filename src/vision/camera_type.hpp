@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "../utils/constants.hpp"
+
 class CameraType {
 public:
   static const CameraType TOP;
@@ -198,6 +200,18 @@ public:
     assert(!points.empty() && "[CameraType::read_camera_points] points가 비어 있습니다.");
     fs.release();
 
+    return true;
+  }
+
+  static bool read_world_points(std::vector<cv::Point3f>& points) {
+    cv::FileStorage fs_world(PATH_WORLD_POINTS, cv::FileStorage::READ);
+    if (!fs_world.isOpened())
+      return false;
+
+    fs_world["points"] >> points;
+    assert(!points.empty() && "[CameraType::read_world_points] points가 비어 있습니다.");
+
+    fs_world.release();
     return true;
   }
 

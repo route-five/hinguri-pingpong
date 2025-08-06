@@ -15,8 +15,8 @@ namespace Draw {
         const std::string& text,
         const cv::Point& position,
         const cv::Scalar& color = COLOR_BLACK,
-        const int thickness = 2,
-        const double font_scale = 0.7
+        const int thickness = 1,
+        const double font_scale = 0.5
     ) {
         cv::putText(frame, text, position, cv::FONT_HERSHEY_SIMPLEX, font_scale, color, thickness, cv::LINE_AA);
     }
@@ -26,8 +26,8 @@ namespace Draw {
         const std::string& text,
         const cv::Point& position,
         const cv::Scalar& color = COLOR_WHITE,
-        const int thickness = 2,
-        const double font_scale = 0.7
+        const int thickness = 1,
+        const double font_scale = 0.5
     ) {
         cv::putText(frame, text, position, cv::FONT_HERSHEY_SIMPLEX, font_scale, COLOR_BLACK, thickness + 2,
                     cv::LINE_AA);

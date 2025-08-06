@@ -23,7 +23,7 @@ int count_files_in_directory(const fs::path& dir_path) {
 }
 
 int main() {
-  Camera stream(CameraType::TOP, {1});
+  Camera stream(CameraType::TOP, {0});
   if (!stream.is_opened()) {
     std::cerr << "카메라를 열 수 없습니다." << std::endl;
     return 1;
@@ -54,7 +54,9 @@ int main() {
     //     cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX, 1.0, cv::Scalar(0, 255, 0),
     //     2);
 
-    cv::imshow("Calibration Image Capture", gray);
+    cv::Mat resized_frame;
+    cv::resize(gray, resized_frame, {}, 2, 2);
+    cv::imshow("Calibration Image Capture", resized_frame);
 
     const int key = cv::waitKey(1);
     if (key == 'q') break;

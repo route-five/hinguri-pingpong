@@ -21,6 +21,10 @@ namespace Log {
         std::print("{}{}{}\n", ANSI_BRIGHT_WHITE, message, ANSI_RESET);
     }
 
+    inline void error_throw(const std::string& message) {
+        throw std::runtime_error(std::format("{}{}{}\n", ANSI_BRIGHT_WHITE, message, ANSI_RESET));
+    }
+
     inline void debug(const std::string& message) {
         std::print("{}{}{}\n", ANSI_WHITE, message, ANSI_RESET);
     }

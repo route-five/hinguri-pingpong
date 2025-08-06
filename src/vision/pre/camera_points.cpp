@@ -4,7 +4,6 @@
 
 #include <opencv2/opencv.hpp>
 
-#include "../calibrator.hpp"
 #include "../camera.hpp"
 #include "../camera_type.hpp"
 
@@ -29,7 +28,7 @@
 int main() {
     std::vector<cv::Point2f> camera_points;
 
-    Camera cam(CameraType::LEFT, {1, 1200}, 120);
+    Camera cam(CameraType::LEFT, {0});
     if (!cam.is_opened()) {
         std::cerr << "Failed to open camera" << std::endl;
         return -1;
@@ -56,10 +55,16 @@ int main() {
         if (!frozen) {
             frame = cam.read();
             if (frame.empty()) break;
+
             cv::imshow(window_name, frame);
         }
         else {
-            cv::imshow(window_name, frozen_frame);
+            // Draw circles on the frozen_frame before showing
+            cv::Mat display_frame = frozen_frame.clone();
+            for (const auto& pt : camera_points) {
+                cv::circle(display_frame, pt, 2, COLOR_GREEN, -1);
+            }
+            cv::imshow(window_name, display_frame);
         }
 
         const int key = cv::waitKey(30);

@@ -52,8 +52,8 @@ namespace Calibrator {
     public:
         explicit Single(
             const Camera& camera,
-            const cv::Size& chessboard_grid = {8, 6},
-            const float chessboard_square_size = 2.50f, // cm
+            const cv::Size& chessboard_grid = {9, 7},
+            const float chessboard_square_size = 9.80f, // cm
             const cv::TermCriteria& criteria = cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 30, 0.1)
         ) : Single(
             camera.get_camera_type(),
@@ -66,8 +66,8 @@ namespace Calibrator {
 
         explicit Single(
             const CameraType& camera_type,
-            const cv::Size& chessboard_grid = {8, 6},
-            const float chessboard_square_size = 2.50f, // cm
+            const cv::Size& chessboard_grid = {9, 7},
+            const float chessboard_square_size = 9.80f, // cm
             const cv::TermCriteria& criteria = cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 30, 0.1)
         ) : Single(
             camera_type,
@@ -81,8 +81,8 @@ namespace Calibrator {
         explicit Single(
             const CameraType& camera_type,
             const cv::Size& image_size,
-            const cv::Size& chessboard_grid = {8, 6},
-            const float chessboard_square_size = 2.50f, // cm
+            const cv::Size& chessboard_grid = {9, 7},
+            const float chessboard_square_size = 9.80f, // cm
             const cv::TermCriteria& criteria = cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 30, 0.1)
         ) : camera_type_{camera_type},
             image_size_{image_size},
@@ -135,8 +135,10 @@ namespace Calibrator {
 
                     if (show_debug_image) {
                         cv::drawChessboardCorners(frame, chessboard_grid_, corners, true);
-                        cv::imshow("Find Chessboard Corners Debug", frame);
-                        cv::waitKey(500);
+                        cv::imshow(std::format("Find Chessboard Corners Debug - {}", image_path), frame);
+                        while (cv::waitKey(1) != ' ') {
+                        } // 스페이스바가 눌릴 때까지 대기
+                        cv::destroyAllWindows();
                     }
                 }
             }
@@ -162,7 +164,12 @@ namespace Calibrator {
                 camera_matrix_, dist_coeffs_, rvecs_, tvecs_
             );
 
-            assert(rms < 0.4 && "카메라 보정 RMS 오차가 너무 높습니다. (rms >= 0.4)");
+            if (rms >= 0.6) {
+                Log::error_throw(std::format("카메라 보정 RMS 오차({:.4f} >= 0.6)가 너무 높습니다.", rms));
+            }
+            else {
+                Log::info(std::format("카메라 보정 RMS 오차({:.4f} < 0.6)가 적당합니다.", rms));
+            }
 
             const cv::Mat new_camera_matrix = cv::getOptimalNewCameraMatrix(
                 camera_matrix_, dist_coeffs_, image_size_,

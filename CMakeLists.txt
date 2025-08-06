@@ -34,15 +34,18 @@ add_executable(hinguri_pingpong
         # 4. 모든 generate된 데이터를 이용하여 카메라를 보정하는 코드
         #        src/vision/pre/calibrate.cpp
 
+        #### test
+        #        test/calibrate_test/camera_point_world_point_test.cpp
+
         #### processing
         #        src/version_left_right_pnp.cpp
         #        src/version_top_stereo.cpp
         #        src/version_top_ignore_z.cpp
 
-        #        src/vision/vision_end.cpp
+        src/vision/vision_end.cpp
         #        src/control/control_end.cpp
 
-        test/matplot++/visualize_pingpong.cpp
+        #        test/matplot++/visualize_pingpong.cpp
 )
 
 #set(OpenCV_DIR "C:/OpenCV/x64/mingw/lib")
