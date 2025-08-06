@@ -7,12 +7,22 @@
 
 #include <opencv2/opencv.hpp>
 #include <array>
+
+#include "camera.hpp"
 #include "../utils/constants.hpp"
 #include "../utils/log.hpp"
 
-using PositionWithTime = struct PositionWithTime {
+struct PositionWithTime {
     cv::Point3f position;
     std::chrono::time_point<std::chrono::steady_clock> time;
+};
+
+struct Prediction {
+    cv::Point3f initial_position;
+    cv::Vec3f initial_speed;
+    cv::Point3f predicted_position;
+    cv::Vec3f predicted_speed;
+    float duration;
 };
 
 class Predictor {
@@ -502,10 +512,10 @@ public:
      * @param init_pos 현재의 3D 위치 (cm 단위).
      * @param init_speed 현재의 3D 속도 (cm/s 단위).
      * @param t_after 현재로부터 예측할 시간 (초 단위).
-     * @return 현재로부터 t_after 초 후의 예측된 3D 위치 (cm 단위).
+     * @return 현재로부터 t_after 초 후의 예측된 위치와 속도.
      * @note 예측 시간 t_after는 PREDICT_MIN_TIME 이상 PREDICT_MAX_TIME 이하이어야 합니다.
      */
-    [[nodiscard]] static std::optional<cv::Point3f> predict_world_pos(
+    [[nodiscard]] static std::optional<Prediction> predict(
         const cv::Point3f& init_pos,
         const cv::Vec3f& init_speed,
         const float t_after
@@ -513,6 +523,11 @@ public:
         assert(
             PREDICT_MIN_TIME <= t_after && t_after <= PREDICT_MAX_TIME &&
             "예측 시간 dt는 PREDICT_MIN_TIME 이상 PREDICT_MAX_TIME 이하이어야 합니다.");
+
+        Prediction prediction{};
+        prediction.initial_position = init_pos;
+        prediction.initial_speed = init_speed;
+        prediction.duration = t_after;
 
         const auto vx = init_speed[0];
         const auto vy = init_speed[1];
@@ -541,11 +556,15 @@ public:
             }
             else if (t_bounce >= t_remaining) { // 남은 계산 내에 바닥에서 튕길 일이 없는 경우
                 z = z + vz_local * t_remaining - 0.5f * GRAVITY * t_remaining * t_remaining;
-                return cv::Point3f{x, y, z};
+                prediction.predicted_position = {x, y, z};
+                prediction.predicted_speed = {vx, vy, vz_local - GRAVITY * t_remaining};
+                return prediction;
             }
-            else if (t_bounce == 0) { // 바닥에서 튕기지 않는 경우 (너무 작은 시간)
+            else if (t_bounce == 0) { // 바닥에서 튕기지 않는 경우 (너무 작은 시간) = 그냥 굴러가는 것
                 z = z + vz_local * t_remaining; // 바닥에서 튕기지 않고 그냥 지나감
-                return cv::Point3f{x, y, z};
+                prediction.predicted_position = {x, y, z};
+                prediction.predicted_speed = {vx, vy, vz_local};
+                return prediction;
             }
             else {
                 t_remaining -= t_bounce;
@@ -592,29 +611,31 @@ public:
     /**
      * @brief 현재 위치와 속도를 기반으로, y=0 혹은 y=ylim에 도달하는 위치를 예측합니다.
      * @param ylim y축의 끝 값
-     * @return 예측된 3D 위치 (cm 단위).
+     * @return 예측된 3D 위치 (cm 단위)와 속도 (cm/s 단위)
      * @note get_world_positions_size() 으로 2개 이상의 위치가 있는지 확인해야 합니다.
      */
-    [[nodiscard]] std::optional<cv::Point3f> get_arrive_pos(const float ylim = TABLE_HEIGHT) const {
+    [[nodiscard]] std::optional<Prediction> predict(const float ylim = TABLE_HEIGHT) const {
         const auto world_pos = get_world_pos();
         const auto world_speed = get_world_speed();
         const auto t_arrive = get_arrive_time(world_pos, world_speed, ylim);
 
         if (!(world_pos.has_value() && world_speed.has_value() && t_arrive.has_value())) {
-            Log::error(std::format(
+            Log::warn(std::format(
                 "[Predictor::get_arrive_pos] all optionals should to has_value(). world_pos={}, world_speed={}, t_arrive={}",
                 world_pos.has_value() ? "exist" : "nullopt", world_speed.has_value() ? "exist" : "nullopt",
                 t_arrive.has_value() ? "exist" : "nullopt"));
             return std::nullopt;
         }
 
-        if (PREDICT_MIN_TIME <= t_arrive.value() && t_arrive.value() <= PREDICT_MAX_TIME)
-            return predict_world_pos(world_pos.value(), world_speed.value(), t_arrive.value());
+        if (!(PREDICT_MIN_TIME <= t_arrive.value() && t_arrive.value() <= PREDICT_MAX_TIME)) {
+            Log::error(std::format(
+                "[Predictor::get_arrive_pos] invalid t_arrive: not satisfies {} <= t_arrive(={}) <= {} when speed: [{}, {}, {}]",
+                PREDICT_MIN_TIME, t_arrive.value(), PREDICT_MAX_TIME, world_speed.value()[0], world_speed.value()[1],
+                world_speed.value()[2]));
+            return std::nullopt;
+        }
 
-        Log::error(std::format(
-            "[Predictor::get_arrive_pos] invalid t_arrive: not satisfies {} <= t_arrive(={}) <= {} when speed: [{}, {}, {}]",
-            PREDICT_MIN_TIME, t_arrive.value(), PREDICT_MAX_TIME, world_speed.value()[0], world_speed.value()[1], world_speed.value()[2]));
-        return std::nullopt;
+        return Predictor::predict(world_pos.value(), world_speed.value(), t_arrive.value());
     }
 };
 

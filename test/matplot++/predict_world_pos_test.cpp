@@ -19,11 +19,11 @@ int main() {
 
     int i = 0;
     for (float t = t_step; t <= total_t; i++, t += t_step) {
-        auto result = Predictor::predict_world_pos(init_pos, init_speed, t);
+        auto result = Predictor::predict(init_pos, init_speed, t);
         if (!result.has_value()) break;
         const auto& pos = result.value();
-        ys.push_back(pos.y);
-        zs.push_back(pos.z);
+        ys.push_back(pos.predicted_position.y);
+        zs.push_back(pos.predicted_position.z);
     }
 
     // 2D 투영 (y-z 평면)
