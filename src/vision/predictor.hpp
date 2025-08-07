@@ -370,7 +370,7 @@ public:
         const Camera& camera,
         const cv::Point3f& world_pos
     ) {
-        std::array<cv::Point3f, 1> objectPoints{world_pos};
+        const std::array<cv::Point3f, 1> objectPoints{world_pos};
         std::array<cv::Point2f, 1> image_points;
 
         cv::projectPoints(objectPoints, camera.get_R(), camera.get_t(), camera.get_camera_matrix(), camera.get_dist_coeffs(), image_points);
