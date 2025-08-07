@@ -8,7 +8,7 @@
 #include "../../src/vision/predictor.hpp"
 
 int main() {
-    Camera cam(CameraType::TOP, {0});
+    Camera cam(CameraType::RIGHT, {0});
     if (!cam.is_opened()) {
         std::cerr << "Failed to open camera: " << cam.get_camera_type().get_name() << std::endl;
         return -1;
