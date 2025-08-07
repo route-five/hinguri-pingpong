@@ -290,45 +290,47 @@ public:
             const auto world_pos_lr = triangulate(camera_left, pt_left.value(), camera_right, pt_right.value());
 
             // 탁구공이 탁구대 범위 내에 있는 경우 = 공을 던진 것, z는 삼각측량의 값을 사용하고, x, y는 선형 회귀로 보정 (등속 운동이므로)
-            static std::deque<std::pair<float, float>> top_xy_history;
+            //static std::deque<std::pair<float, float>> top_xy_history;
 
             if (pt_top.has_value()) {
                 const auto world_pos_top = birds_eye_view(camera_top, pt_top.value(), world_pos_lr.z);
 
+                return world_pos_top;
+
                 // Add new point to history
-                top_xy_history.emplace_back(world_pos_top.x, world_pos_top.y);
-                if (static_cast<int>(top_xy_history.size()) > TOP_HISTORY_N)
-                    top_xy_history.pop_front();
+                //top_xy_history.emplace_back(world_pos_top.x, world_pos_top.y);
+                //if (static_cast<int>(top_xy_history.size()) > TOP_HISTORY_N)
+                //    top_xy_history.pop_front();
 
-                // On-the-fly regression without allocations
-                const size_t N = top_xy_history.size();
-                float sum_i = 0.f, sum_i2 = 0.f;
-                float sum_x = 0.f, sum_ix = 0.f;
-                float sum_y = 0.f, sum_iy = 0.f;
-                for (size_t i = 0; i < N; ++i) {
-                    const float x_i = top_xy_history[i].first;
-                    const float y_i = top_xy_history[i].second;
-                    sum_i += static_cast<float>(i);
-                    sum_i2 += static_cast<float>(i * i);
-                    sum_x += x_i;
-                    sum_ix += x_i * static_cast<float>(i);
-                    sum_y += y_i;
-                    sum_iy += y_i * static_cast<float>(i);
-                }
+                //// On-the-fly regression without allocations
+                //const size_t N = top_xy_history.size();
+                //float sum_i = 0.f, sum_i2 = 0.f;
+                //float sum_x = 0.f, sum_ix = 0.f;
+                //float sum_y = 0.f, sum_iy = 0.f;
+                //for (size_t i = 0; i < N; ++i) {
+                //    const float x_i = top_xy_history[i].first;
+                //    const float y_i = top_xy_history[i].second;
+                //    sum_i += static_cast<float>(i);
+                //    sum_i2 += static_cast<float>(i * i);
+                //    sum_x += x_i;
+                //    sum_ix += x_i * static_cast<float>(i);
+                //    sum_y += y_i;
+                //    sum_iy += y_i * static_cast<float>(i);
+                //}
 
-                const auto n = static_cast<float>(N);
-                const float denom = n * sum_i2 - sum_i * sum_i;
-                const float slope_x = (denom != 0.f) ? (n * sum_ix - sum_i * sum_x) / denom : 0.f;
-                const float intercept_x = (denom != 0.f) ? (sum_x * sum_i2 - sum_i * sum_ix) / denom : sum_x / n;
-                const float slope_y = (denom != 0.f) ? (n * sum_iy - sum_i * sum_y) / denom : 0.f;
-                const float intercept_y = (denom != 0.f) ? (sum_y * sum_i2 - sum_i * sum_iy) / denom : sum_y / n;
-                const float t = n - 1.f;
+                //const auto n = static_cast<float>(N);
+                //const float denom = n * sum_i2 - sum_i * sum_i;
+                //const float slope_x = (denom != 0.f) ? (n * sum_ix - sum_i * sum_x) / denom : 0.f;
+                //const float intercept_x = (denom != 0.f) ? (sum_x * sum_i2 - sum_i * sum_ix) / denom : sum_x / n;
+                //const float slope_y = (denom != 0.f) ? (n * sum_iy - sum_i * sum_y) / denom : 0.f;
+                //const float intercept_y = (denom != 0.f) ? (sum_y * sum_i2 - sum_i * sum_iy) / denom : sum_y / n;
+                //const float t = n - 1.f;
 
-                return cv::Point3f{
-                    slope_x * t + intercept_x,
-                    slope_y * t + intercept_y,
-                    world_pos_lr.z
-                };
+                //return cv::Point3f{
+                //    slope_x * t + intercept_x,
+                //    slope_y * t + intercept_y,
+                //    world_pos_lr.z
+                //};
             }
 
             // 탁구공이 탁구대 범위 밖에 있는 경우, 공을 던진게 아니라 들고 있거나 의미 없는 경우이므로 보정 없이 그대로 반환

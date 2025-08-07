@@ -4,8 +4,8 @@
 #include "dynamixel_actuator.hpp"
 #include "linear_actuator.hpp"
 #include "robot_arm_controller.hpp"
-#include "../vision/bridge.hpp"
-#include "../utils/constants.hpp"
+#include "vision/bridge.hpp"
+#include "utils/constants.hpp"
 
 class ControlEnd {
 public:
@@ -31,7 +31,7 @@ public:
 
     void shutdown() {
         linear_actuator_.move_actu(TABLE_WIDTH / 2);
-        arm_controller_.execute_each({90, 120, -80, 50});
+        arm_controller_.execute_each({ 90, 120, -80, 50 });
         if (sharedPortInitialized)
             sharedPortHandler->closePort();
     }
@@ -51,7 +51,7 @@ int main() {
         std::printf("Enter x: ");
         std::scanf("%f", &x);
 
-        const auto payload = Bridge::actions({x == -1 ? TABLE_WIDTH / 2 : x, 0, 0});
+        const auto payload = Bridge::actions({ x == -1 ? TABLE_WIDTH / 2 : x, 0, 0 });
         control_end.execute(payload);
 
         if (x == -1) {

@@ -33,7 +33,7 @@ namespace Bridge {
 
     struct Payload {
         float x;
-        std::array<Step, 5> steps; // 각 액션에 대한 동작 정보
+        std::array<Step, STEP_LENGTH> steps; // 각 액션에 대한 동작 정보
     };
 
     /**
@@ -48,10 +48,14 @@ namespace Bridge {
         // TODO: bot angle은 어떻게 할지 고민
         payload.x = arrive_pos.x;
         payload.steps[0] = Step{90, 120, -80, 50};
-        payload.steps[1] = Step{90, 90, -80, 90};
-        payload.steps[2] = Step{90, 60, 0, 90};
-        payload.steps[3] = Step{90, 120, -80, 90};
-        payload.steps[4] = Step{90, 120, -80, 50};
+        payload.steps[1] = Step{90, 105, -80, 70};
+        payload.steps[2] = Step{90, 90, -80, 90};
+        payload.steps[3] = Step{90, 75, -40, 90};
+        payload.steps[4] = Step{90, 60, 0, 90};
+        payload.steps[5] = Step{90, 90, -40, 90};
+        payload.steps[6] = Step{90, 120, -80, 90};
+        payload.steps[7] = Step{90, 120, -80, 70};
+        payload.steps[8 ] = Step{90, 120, -80, 50};
 
         return payload;
     }

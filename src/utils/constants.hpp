@@ -7,6 +7,9 @@
 
 #include <opencv2/opencv.hpp>
 
+// Robot Arm Steps
+constexpr int STEP_LENGTH = 9;
+
 // Console Color
 #define ANSI_BLACK       "\x1B[30m"
 #define ANSI_RED         "\x1B[31m"
