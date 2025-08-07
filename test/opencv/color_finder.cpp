@@ -55,20 +55,20 @@ int main() {
         cv::erode(mask, mask, kernel);
         cv::dilate(mask, mask, kernel);
 
-        // std::vector<std::vector<cv::Point>> contours;
-        // cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-        //
-        // // min enclosing circle
-        // for (const auto& contour : contours) {
-        //     cv::Point2f center;
-        //     float radius;
-        //     cv::minEnclosingCircle(contour, center, radius);
-        //     if (radius > RADIUS_MIN) {
-        //         // 최소 반지름 조건
-        //         cv::circle(frame, center, static_cast<int>(radius), cv::Scalar(0, 255, 0), 1);
-        //         cv::circle(frame, center, 2, cv::Scalar(0, 0, 255), -1); // 중심점 표시
-        //     }
-        // }
+        std::vector<std::vector<cv::Point>> contours;
+        cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+        // min enclosing circle
+        for (const auto& contour : contours) {
+            cv::Point2f center;
+            float radius;
+            cv::minEnclosingCircle(contour, center, radius);
+            if (radius > RADIUS_MIN) {
+                // 최소 반지름 조건
+                cv::circle(frame, center, static_cast<int>(radius), cv::Scalar(0, 255, 0), 1);
+                cv::circle(frame, center, 2, cv::Scalar(0, 0, 255), -1); // 중심점 표시
+            }
+        }
 
         cv::imshow("Camera", frame);
 

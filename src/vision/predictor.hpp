@@ -206,22 +206,33 @@ public:
      * @param z_plane 교차할 평면의 z 값 (기본값: 0.0f)
      * @return 탁구대 기준 평면(z=z_plane)에서의 3D 월드 좌표
      */
-    [[nodiscard]] static cv::Point3f birds_eye_view(const Camera& camera_top, const cv::Point2f& pt, const float z_plane = 0.0f) noexcept {
-        // Use cv::Vec3d for ray vector
-        const cv::Vec3d ray_cam{pt.x, pt.y, 1.0};
+    [[nodiscard]] static cv::Point3f birds_eye_view(
+        const Camera& camera_top,
+        const cv::Point2f& pt,
+        const float z_plane = 0.0f
+    ) noexcept {
+        // 1) 카메라 내부 파라미터 K를 Matx33d로 변환
+        cv::Matx33d K;
+        camera_top.get_camera_matrix().convertTo(K, CV_64F);
 
-        // Use cv::Matx33d and cv::Vec3d for R_top and t_top for performance (if possible, preconvert at load time)
-        cv::Matx33d R_topx;
-        camera_top.get_R().convertTo(R_topx, CV_64F);
-        cv::Vec3d t_topx;
-        camera_top.get_t().convertTo(t_topx, CV_64F);
+        // 2) 픽셀 좌표(pt.x, pt.y)를 정규화된 카메라 좌표로 변환
+        //    ray_cam = K^{-1} * [u, v, 1]^T
+        cv::Vec3d ray_cam = K.inv() * cv::Vec3d(pt.x, pt.y, 1.0);
 
-        // ray_world = R_top.t() * ray_cam;
-        cv::Vec3d ray_world = R_topx.t() * ray_cam;
-        cv::Vec3d origin_world = -R_topx.t() * t_topx;
+        // 3) R, t 도 Matx/Vec 형태로 변환 (성능 최적화를 위해 미리 해 놓으면 좋습니다)
+        cv::Matx33d R_top;
+        camera_top.get_R().convertTo(R_top, CV_64F);
+        cv::Vec3d   t_top;
+        camera_top.get_t().convertTo(t_top, CV_64F);
 
-        // z=z_plane 평면과의 교차점 계산
-        const double s = (z_plane - origin_world[2]) / ray_world[2];
+        // 4) 카메라 좌표계에서 월드 좌표계로의 광선(ray)과 광선의 원점(origin) 계산
+        cv::Vec3d ray_world = R_top.t() * ray_cam;
+        cv::Vec3d origin_world = -R_top.t() * t_top;
+
+        // 5) z_plane 평면과의 교차점 스케일 s 계산
+        double s = (z_plane - origin_world[2]) / ray_world[2];
+
+        // 6) 교차점 좌표
         cv::Vec3d world_pos = origin_world + s * ray_world;
 
         return {
@@ -370,7 +381,7 @@ public:
         const Camera& camera,
         const cv::Point3f& world_pos
     ) {
-        std::array<cv::Point3f, 1> objectPoints{world_pos};
+        const std::array<cv::Point3f, 1> objectPoints{world_pos};
         std::array<cv::Point2f, 1> image_points;
 
         cv::projectPoints(objectPoints, camera.get_R(), camera.get_t(), camera.get_camera_matrix(), camera.get_dist_coeffs(), image_points);

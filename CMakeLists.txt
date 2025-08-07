@@ -28,11 +28,11 @@ add_executable(hinguri_pingpong
         # 2. 체커보드 이미지를 수집하는 코드
         #        src/vision/pre/chessboard_images.cpp
 
-#         3. 탁구대 위의 Camera 좌표를 수집하는 코드
-#                src/vision/pre/camera_points.cpp
+        #         3. 탁구대 위의 Camera 좌표를 수집하는 코드
+        #                src/vision/pre/camera_points.cpp
 
         # 4. 모든 generate된 데이터를 이용하여 카메라를 보정하는 코드
-#                src/vision/pre/calibrate.cpp
+        #                src/vision/pre/calibrate.cpp
 
         #### test
 #                test/calibrate_test/camera_point_world_point_test.cpp
