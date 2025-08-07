@@ -8,8 +8,8 @@
 #include <filesystem>
 #include <opencv2/opencv.hpp>
 
-#include "camera.hpp"
 #include "camera_type.hpp"
+#include "../vision/camera.hpp"
 #include "../utils/constants.hpp"
 
 namespace fs = std::filesystem;
@@ -39,7 +39,7 @@ namespace Calibrator {
         }
 
         void glob_chessboard_images() {
-            for (const auto& entry : fs::directory_iterator(camera_type_.calibration_image_dir())) {
+            for (const auto& entry : fs::directory_iterator(camera_type_.get_calibration_image_dir())) {
                 const auto& path = entry.path();
                 if (path.extension() == ".png") {
                     chessboard_image_paths_.push_back(path.string());
@@ -71,7 +71,7 @@ namespace Calibrator {
             const cv::TermCriteria& criteria = cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 30, 0.1)
         ) : Single(
             camera_type,
-            camera_type.resolution(),
+            camera_type.get_resolution(),
             chessboard_grid,
             chessboard_square_size,
             criteria
@@ -390,7 +390,7 @@ namespace Calibrator {
 
         Stereo(const CameraType& left_type, const CameraType& right_type)
             : calibrator_left{left_type}, calibrator_right{right_type}, stereo_camera_type_{left_type, right_type} {
-            assert("[Calibrator::Stereo::Stereo] 왼쪽과 오른쪽 카메라의 해상도가 동일해야 합니다." && left_type.resolution() == right_type.resolution());
+            assert("[Calibrator::Stereo::Stereo] 왼쪽과 오른쪽 카메라의 해상도가 동일해야 합니다." && left_type.get_resolution() == right_type.get_resolution());
             load();
         }
 
@@ -492,12 +492,7 @@ namespace Calibrator {
         /**
          * @brief 스테레오 정렬 맵을 초기화합니다.
          */
-        void init_rectification_maps(
-            cv::Mat& map1x,
-            cv::Mat& map1y,
-            cv::Mat& map2x,
-            cv::Mat& map2y
-        ) const {
+        void init_rectification_maps() const {
             assert(
                 (!R1.empty() && !R2.empty() && !P1.empty() && !P2.empty()) &&
                 "R1, R2, P1, P2 행렬이 비어있습니다. 스테레오 정렬 맵을 초기화하기 전에 먼저 stereo_rectify()를 호출해야 합니다."
@@ -542,6 +537,37 @@ namespace Calibrator {
             cv::Mat& rectified1,
             cv::Mat& rectified2
         ) const {
+            assert((!map1x.empty() && !map1y.empty() && !map2x.empty() && !map2y.empty()) &&
+                "왜곡 제거 맵이 비어있습니다. 스테레오 정렬 맵을 초기화하기 전에 먼저 init_stereo_rectification_maps()를 호출해야 합니다."
+            );
+
+            cv::remap(frame1, rectified1, map1x, map1y, cv::INTER_LINEAR);
+            cv::remap(frame2, rectified2, map2x, map2y, cv::INTER_LINEAR);
+        }
+
+        static void rectify_image(
+            const cv::Mat& frame,
+            const cv::Mat& mapx,
+            const cv::Mat& mapy,
+            cv::Mat& rectified
+        ) {
+            assert((!mapx.empty() && !mapy.empty()) &&
+                "왜곡 제거 맵이 비어있습니다. 스테레오 정렬 맵을 초기화하기 전에 먼저 init_stereo_rectification_maps()를 호출해야 합니다."
+            );
+
+            cv::remap(frame, rectified, mapx, mapy, cv::INTER_LINEAR);
+        }
+
+        static void rectify_image_pair(
+            const cv::Mat& frame1,
+            const cv::Mat& map1x,
+            const cv::Mat& map1y,
+            const cv::Mat& frame2,
+            const cv::Mat& map2x,
+            const cv::Mat& map2y,
+            cv::Mat& rectified1,
+            cv::Mat& rectified2
+        ) {
             assert((!map1x.empty() && !map1y.empty() && !map2x.empty() && !map2y.empty()) &&
                 "왜곡 제거 맵이 비어있습니다. 스테레오 정렬 맵을 초기화하기 전에 먼저 init_stereo_rectification_maps()를 호출해야 합니다."
             );

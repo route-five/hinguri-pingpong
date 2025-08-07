@@ -14,12 +14,13 @@
 #include "../utils/log.hpp"
 
 class Tracker {
-protected:
+private:
     const cv::Scalar lower_color_bound;
     const cv::Scalar upper_color_bound;
     cv::Mat frame;
     cv::Mat hsv;
     cv::Mat color_mask;
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
 
 public:
     explicit Tracker(
@@ -41,6 +42,10 @@ public:
         // Convert BGR to HSV and apply color threshold
         cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
         cv::inRange(hsv, lower_color_bound, upper_color_bound, color_mask);
+
+        // TODO: erode + dilate to remove noise - performance test needed.
+        // cv::erode(color_mask, color_mask, kernel);
+        // cv::dilate(color_mask, color_mask, kernel);
     }
 
     friend Tracker& operator<<(Tracker& tracker, const cv::Mat& new_frame) noexcept {
@@ -123,44 +128,44 @@ public:
         return std::nullopt;
     }
 
-    ///**
-    // * @brief Computes the centroid of the largest-area contour in the current color mask
-    // * @return Optional centroid point, or nullopt if no valid contour found
-    // */
-    //[[nodiscard]] std::optional<cv::Point2f> get_camera_pos() const {
-    //    if (color_mask.empty()) {
-    //        return std::nullopt;
-    //    }
+    /**
+     * @brief Computes the centroid of the largest-area contour in the current color mask
+     * @return Optional centroid point, or nullopt if no valid contour found
+     */
+    [[nodiscard]] std::optional<cv::Point2f> _get_camera_pos() const {
+        if (color_mask.empty()) {
+            return std::nullopt;
+        }
 
-    //    std::vector<std::vector<cv::Point>> contours;
-    //    cv::findContours(color_mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-    //    if (contours.empty()) {
-    //        return std::nullopt;
-    //    }
+        std::vector<std::vector<cv::Point>> contours;
+        cv::findContours(color_mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+        if (contours.empty()) {
+            return std::nullopt;
+        }
 
-    //    // Find largest contour by area
-    //    double max_area = 0.0;
-    //    int best_idx = -1;
-    //    for (int i = 0; i < (int)contours.size(); ++i) {
-    //        double area = cv::contourArea(contours[i]);
-    //        if (area > max_area) {
-    //            max_area = area;
-    //            best_idx = i;
-    //        }
-    //    }
-    //    if (best_idx < 0) {
-    //        return std::nullopt;
-    //    }
+        // Find largest contour by area
+        double max_area = 0.0;
+        int best_idx = -1;
+        for (int i = 0; i < (int)contours.size(); ++i) {
+            double area = cv::contourArea(contours[i]);
+            if (area > max_area) {
+                max_area = area;
+                best_idx = i;
+            }
+        }
+        if (best_idx < 0) {
+            return std::nullopt;
+        }
 
-    //    // Compute centroid via moments
-    //    const auto& cnt = contours[best_idx];
-    //    cv::Moments m = cv::moments(cnt);
-    //    if (m.m00 <= 0.0) {
-    //        return std::nullopt;
-    //    }
-    //    return cv::Point2f(static_cast<float>(m.m10 / m.m00),
-    //        static_cast<float>(m.m01 / m.m00));
-    //}
+        // Compute centroid via moments
+        const auto& cnt = contours[best_idx];
+        cv::Moments m = cv::moments(cnt);
+        if (m.m00 <= 0.0) {
+            return std::nullopt;
+        }
+        return cv::Point2f(static_cast<float>(m.m10 / m.m00),
+                           static_cast<float>(m.m01 / m.m00));
+    }
 };
 
 #endif // TRACKER_HPP

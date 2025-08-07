@@ -10,7 +10,7 @@
 int main() {
     Camera cam(CameraType::LEFT, {0});
     if (!cam.is_opened()) {
-        std::cerr << "Failed to open camera: " << cam.get_camera_type().name() << std::endl;
+        std::cerr << "Failed to open camera: " << cam.get_camera_type().get_name() << std::endl;
         return -1;
     }
 
@@ -35,15 +35,15 @@ int main() {
             cv::circle(frame, camera_pos, 2, COLOR_RED, -1, cv::LINE_AA);
         }
 
-        for (float i = 0; i < TABLE_HEIGHT; i += 1.0f) {
-            cv::Point2f camera_pos = Predictor::pos_3d_to_2d(cam, cv::Point3f{15, i, 0});
+        for (float i = 0; i < 100.f; i += 1.f) {
+            cv::Point2f camera_pos = Predictor::pos_3d_to_2d(cam, cv::Point3f{100, 160, i});
             cv::circle(frame, camera_pos, 2, COLOR_CYAN, -1, cv::LINE_AA);
         }
 
         Draw::put_text(frame, "Green: Camera Points", {10, 20}, COLOR_GREEN);
         Draw::put_text(frame, "Red: World to Camera Points", {10, 40}, COLOR_RED);
 
-        cv::imshow(std::format("{} camera", cam.get_camera_type().name()), frame);
+        cv::imshow(std::format("{} camera", cam.get_camera_type().get_name()), frame);
         if (cv::waitKey(1) == 'q') break;
     }
 

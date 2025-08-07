@@ -39,7 +39,7 @@ public:
     : camera_type{camera_type},
       stream{device.source, device.backend},
       device{device},
-      frame_size{camera_type.resolution()} {
+      frame_size{camera_type.get_resolution()} {
     stream.set(cv::CAP_PROP_BUFFERSIZE, 1);
     stream.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
     stream.set(cv::CAP_PROP_FRAME_WIDTH, frame_size.width);
@@ -178,6 +178,8 @@ private:
   Camera& right_camera;
 
   cv::Mat R, T, E, F, map1x, map1y, map2x, map2y, R1, R2, P1, P2, Q;
+  mutable cv::Mat rectified_left_buffer;
+  mutable cv::Mat rectified_right_buffer;
 
 public:
   StereoCamera(Camera& left_camera, Camera& right_camera)
@@ -210,6 +212,42 @@ public:
     right_camera.stop();
   }
 
+  [[nodiscard]] cv::Mat read_left(const bool rectify = true) const {
+    if (rectify) {
+      cv::remap(left_camera.read(), rectified_left_buffer, map1x, map1y, cv::INTER_LINEAR);
+      return rectified_left_buffer;
+    }
+    return left_camera.read();
+  }
+
+  [[nodiscard]] cv::Mat read_right(const bool rectify = true) const {
+    if (rectify) {
+      cv::remap(right_camera.read(), rectified_right_buffer, map2x, map2y, cv::INTER_LINEAR);
+      return rectified_right_buffer;
+    }
+    return right_camera.read();
+  }
+
+  [[nodiscard]] std::array<cv::Mat, 2> read() const {
+    return {read_left(), read_right()};
+  }
+
+  friend StereoCamera& operator>>(StereoCamera& cam, std::array<cv::Mat, 2>& frames) {
+    frames = cam.read(); // 얕은 복사
+    return cam;
+  }
+
+  [[nodiscard]] cv::Mat read_stereo() const {
+    cv::Mat stereo_frame;
+    cv::hconcat(read_left(), read_right(), stereo_frame);
+    return stereo_frame;
+  }
+
+  friend StereoCamera& operator>>(StereoCamera& cam, cv::Mat& frame) {
+    frame = cam.read_stereo(); // 얕은 복사
+    return cam;
+  }
+
   [[nodiscard]] const Camera& get_left_camera() const {
     return left_camera;
   }
@@ -218,7 +256,15 @@ public:
     return right_camera;
   }
 
-  [[nodiscard]] const StereoCameraType& get_stereo_camera_type() const {
+  [[nodiscard]] const CameraType& get_left_camera_type() const {
+    return left_camera.get_camera_type();
+  }
+
+  [[nodiscard]] const CameraType& get_right_camera_type() const {
+    return right_camera.get_camera_type();
+  }
+
+  [[nodiscard]] const StereoCameraType& get_camera_type() const {
     return stereo_camera_type;
   }
 

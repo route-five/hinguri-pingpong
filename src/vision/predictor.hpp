@@ -207,14 +207,8 @@ public:
      * @return 탁구대 기준 평면(z=z_plane)에서의 3D 월드 좌표
      */
     [[nodiscard]] static cv::Point3f birds_eye_view(const Camera& camera_top, const cv::Point2f& pt, const float z_plane = 0.0f) noexcept {
-        // Avoid heap allocations, use cv::Vec3d and stack memory
-        const std::array src{pt};
-        std::array<cv::Point2f, 1> dst;
-        cv::undistortPoints(src, dst, camera_top.get_camera_matrix(), camera_top.get_dist_coeffs());
-        const cv::Point2f& pt_undistorted = dst[0];
-
         // Use cv::Vec3d for ray vector
-        const cv::Vec3d ray_cam{pt_undistorted.x, pt_undistorted.y, 1.0};
+        const cv::Vec3d ray_cam{pt.x, pt.y, 1.0};
 
         // Use cv::Matx33d and cv::Vec3d for R_top and t_top for performance (if possible, preconvert at load time)
         cv::Matx33d R_topx;

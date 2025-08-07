@@ -8,7 +8,6 @@
 
 int main() {
     Camera cam(CameraType::TOP, {0, 0}, 120);
-    Tracker tracker(ORANGE_MIN, ORANGE_MAX);
 
     cam.start();
 
@@ -16,11 +15,6 @@ int main() {
         cv::Mat frame;
         cam >> frame;
         if (frame.empty()) continue;
-
-        tracker << frame;
-        if (const auto find_pos = tracker.get_camera_pos()) {
-            Draw::put_circle(frame, find_pos.value().first, find_pos.value().second, COLOR_GREEN);
-        }
 
         cv::imshow("Frame", frame);
 

@@ -12,17 +12,48 @@ int main() {
     Predictor predictor;
     Visualizer visualizer;
 
-    const float init_x = random.generate(40.0f, TABLE_WIDTH - 40.0f);
-    const float init_z = random.generate(10.0f, 50.0f);
-    const cv::Point3f init_pos{10.0f, TABLE_HEIGHT, 50.0f};
-    const cv::Point3f init_speed{20.0f, -100.0f, -100.0f};
+    constexpr float pi = std::numbers::pi_v<float>;
+
+    constexpr float init_vel = 630.0f; // 305 cm/s
+    constexpr float init_launch_angle = 0.0f; // 0 degrees in radians
+    constexpr float init_min_direction_angle = pi / 2 - 0.25732; // 180 - 14.7433 degrees in radians
+    constexpr float init_max_direction_angle = pi / 2 + 0.23256; // 180 + 13.3247 degrees in radians
+    constexpr float init_y = 225.0f; // 225 cm
+
+    const cv::Point3f init_pos{TABLE_WIDTH / 2, init_y, 40.0f};
+    const float init_direction_angle = init_max_direction_angle; // random.generate(init_min_direction_angle, init_max_direction_angle);
+
+    const cv::Point3f init_speed{
+        -init_vel * std::cos(init_launch_angle) * std::cos(init_direction_angle),
+        -init_vel * std::cos(init_launch_angle) * std::sin(init_direction_angle),
+        init_vel * std::sin(init_launch_angle)
+    };
+
+    std::cout << "init_pos: " << init_pos << ", init_speed: " << init_speed << ", init_velocity: " << cv::norm(init_speed) << std::endl;
 
     for (float t = PREDICT_MIN_TIME + 0.01; t <= PREDICT_MAX_TIME - 0.01; t += 0.01) {
         const auto predicted_pos = Predictor::predict(init_pos, init_speed, t);
         if (predicted_pos.has_value()) {
             visualizer.add_point(predicted_pos.value().predicted_position);
+            if (std::abs(predicted_pos.value().predicted_position.y) < 5.0f) {
+                std::cout << "last t: " << t << ", predicted_pos: " << predicted_pos.value().predicted_position << std::endl;
+            }
         }
     }
+
+    const auto t_arrive = Predictor::get_arrive_time(init_pos, init_speed);
+    if (!t_arrive.has_value()) {
+        std::cout << "No arrive time found." << std::endl;
+        return 1;
+    }
+
+    const auto arrive = Predictor::predict(init_pos, init_speed, t_arrive.value());
+    if (!arrive.has_value()) {
+        std::cout << "No arrive position found." << std::endl;
+        return 1;
+    }
+
+    std::cout << "arrive time: " << t_arrive.value() << ", arrive pos: " << arrive.value().predicted_position << std::endl;
 
     // const auto t_arrive = Predictor::get_arrive_time(init_pos, init_speed);
     // if (!t_arrive.has_value())
