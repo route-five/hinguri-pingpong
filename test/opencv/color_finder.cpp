@@ -24,7 +24,7 @@ int main() {
     cv::createTrackbar("S Max", "Mask", &s_max, 255);
     cv::createTrackbar("V Max", "Mask", &v_max, 255);
 
-    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3));
 
     cam.start();
 
@@ -51,8 +51,8 @@ int main() {
         cv::inRange(hsv, lower_bound, upper_bound, mask);
 
         // TODO: 노이즈 제거 필요한지 성능 및 효과 테스트 필요
-        // cv::erode(mask, mask, kernel);
-        // cv::dilate(mask, mask, kernel);
+        cv::erode(mask, mask, kernel);
+        cv::dilate(mask, mask, kernel);
 
         cv::imshow("Camera", frame);
 
