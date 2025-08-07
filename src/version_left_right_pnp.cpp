@@ -226,7 +226,7 @@ public:
 
             if (world_pos.y >= PREDICT_MIN_Y) {
                 awaiting_landing_push = true;
-                Log::green("awaiting_landing_push = true;");
+                Log::debug(Log::green("awaiting_landing_push = true;"));
             }
 
             orbit_3d.push_back(world_pos);
@@ -277,7 +277,7 @@ public:
                 queue_push_flag.notify_one();
 
                 awaiting_landing_push = false;
-                Log::green("awaiting_landing_push = false;");
+                Log::debug(Log::green("awaiting_landing_push = false;"));
 
                 Log::debug(Log::magenta(std::format("[Queue] Queue has {} -> {} items. (pushed)", queue.size() - 1, queue.size())));
 
