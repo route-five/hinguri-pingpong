@@ -28,7 +28,7 @@
 int main() {
     std::vector<cv::Point2f> camera_points;
 
-    Camera cam(CameraType::LEFT, {0});
+    Camera cam(CameraType::TOP, {0});
     if (!cam.is_opened()) {
         std::cerr << "Failed to open camera" << std::endl;
         return -1;
@@ -82,7 +82,7 @@ int main() {
     cv::destroyAllWindows();
 
     if (!camera_points.empty()) {
-        cv::FileStorage fs(cam.get_camera_type().camera_points_path(), cv::FileStorage::WRITE);
+        cv::FileStorage fs(cam.get_camera_type().get_camera_points_path(), cv::FileStorage::WRITE);
         fs << "points" << camera_points;
         fs.release();
     }
