@@ -62,7 +62,7 @@ constexpr float TABLE_BOUNCE_COEFFICIENT = 0.9022811698;
 
 // Orange Ball Colors
 const cv::Scalar ORANGE_MIN(9, 195, 215); // HSV
-const cv::Scalar ORANGE_MAX(22, 255, 255); // HSV
+const cv::Scalar ORANGE_MAX(23, 255, 255); // HSV
 
 // Camera Control
 constexpr int CAMERA_WIDTH = 1920;
