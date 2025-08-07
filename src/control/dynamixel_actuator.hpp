@@ -15,7 +15,7 @@
 #define ADDR_GOAL_POSITION    116
 #define PROTOCOL_VERSION      2.0
 #define BAUDRATE              57600
-#define DEVICENAME            "COM4"
+#define DEVICENAME            "COM7"
 
 #define TORQUE_ENABLE         1
 #define POSITION_CONTROL_MODE 3
@@ -182,7 +182,9 @@ public:
         }
 
         // 4) Poll until all motors are within threshold
-        while (true) {
+        int try_count = 0;
+
+        while (try_count++ < 5) {
             int result = reader.txRxPacket();
             if (result != COMM_SUCCESS) {
                 Log::warn("[Dynamixel::move_and_wait_by_degrees] Failed to read bulk data, attempting restart.");
@@ -200,6 +202,11 @@ public:
                 }
             }
             if (all_reached) break;
+        }
+
+        if (try_count == 5) {
+            Log::warn("[Dynamixel::move_and_wait_by_degrees] Failed to read COMM_SUCCESS from packet (tried 10 times).");
+            return false;
         }
 
         *done_flag = true;

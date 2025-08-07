@@ -22,11 +22,18 @@ private:
     BulkDynamixelActuator actuators;
     LinearActuator linearActuator;
 
+    float last_x = TABLE_WIDTH / 2;
+
     void execute(const Bridge::Payload& payload) {
         const auto& [x, theta, swing_start, swing_end, use_right_hand] = payload;
 
         // 1) Move the linear actuator
         linearActuator.move_actu(x);
+        const float dt_linear_ms = std::abs(x - last_x) / LINEAR_VELOCITY * 1000;
+        last_x = x;
+
+        Log::debug(std::format("Linear Actuator dt: {}s", dt_linear_ms / 1000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(dt_linear_ms)));
 
         // 2) Move to swing_start and wait
         bool swing_start_done = false;
@@ -226,7 +233,7 @@ public:
 
             if (world_pos.y >= PREDICT_MIN_Y) {
                 awaiting_landing_push = true;
-                Log::debug(Log::green("awaiting_landing_push = true;"));
+                Log::green("awaiting_landing_push = true;");
             }
 
             orbit_3d.push_back(world_pos);
@@ -277,7 +284,7 @@ public:
                 queue_push_flag.notify_one();
 
                 awaiting_landing_push = false;
-                Log::debug(Log::green("awaiting_landing_push = false;"));
+                Log::green("awaiting_landing_push = false;");
 
                 Log::debug(Log::magenta(std::format("[Queue] Queue has {} -> {} items. (pushed)", queue.size() - 1, queue.size())));
 

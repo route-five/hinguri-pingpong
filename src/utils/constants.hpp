@@ -129,6 +129,7 @@ constexpr int BOT_SERIAL_PORT = 2; // Bot Camera Serial Port
 constexpr int LINEAR_VEL = 700; // 700
 constexpr int LINEAR_ACCEL = 200; // 200
 constexpr int LINEAR_DECEL = 200; // 200
+constexpr float LINEAR_VELOCITY = 65.625f;
 
 constexpr long LINEAR_AXIS_NO = 0;
 // constexpr DWORD LINEAR_ABS_REL_MODE = 0; //0->abs, 1->Rel
