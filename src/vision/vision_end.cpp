@@ -17,9 +17,9 @@ private:
     Camera cam_top{CameraType::TOP, {0, cv::CAP_MSMF}, 90};
     Camera cam_left{CameraType::LEFT, {1, cv::CAP_MSMF}, 90};
     Camera cam_right{CameraType::RIGHT, {2, cv::CAP_MSMF}, 90};
-    Tracker tracker_top{ORANGE_MIN, ORANGE_MAX};
-    Tracker tracker_left{ORANGE_MIN, ORANGE_MAX};
-    Tracker tracker_right{ORANGE_MIN, ORANGE_MAX};
+    Tracker tracker_top{TOP_ORANGE_MIN, TOP_ORANGE_MAX};
+    Tracker tracker_left{LEFT_ORANGE_MIN, LEFT_ORANGE_MAX};
+    Tracker tracker_right{RIGHT_ORANGE_MIN, RIGHT_ORANGE_MAX};
     Predictor predictor;
 
     cv::Mat latest_top_frame, latest_left_frame, latest_right_frame;
@@ -90,12 +90,19 @@ public:
         cv::destroyAllWindows();
     }
 
-    void read_frame(cv::Mat& frame_top, cv::Mat& frame_left, cv::Mat& frame_right) {
+    bool read_frame(cv::Mat& frame_top, cv::Mat& frame_left, cv::Mat& frame_right) {
         std::lock_guard lock(frame_mutex);
 
         latest_top_frame.copyTo(frame_top);
         latest_left_frame.copyTo(frame_left);
         latest_right_frame.copyTo(frame_right);
+
+        if (frame_top.empty() || frame_left.empty() || frame_right.empty()) {
+            Log::warn("[VisionEnd::run] One or more frames are empty, skipping visualization.");
+            return false;
+        }
+
+        return true;
     }
 
     void process_data(
@@ -176,7 +183,6 @@ public:
         cv::Mat& frame_left,
         cv::Mat& frame_right,
         const cv::Point3f& world_pos,
-        const cv::Vec3f& world_speed,
         const cv::Point3f& predict_init_pos,
         const cv::Point3f& predict_arrive_pos,
         const cv::Point3f& real_arrive_pos,
@@ -185,36 +191,29 @@ public:
         const std::vector<cv::Point2f>& orbit_2d_left,
         const std::vector<cv::Point2f>& orbit_2d_right
     ) const {
+        // orbit
         for (std::size_t i = 0; i < orbit.size(); ++i) {
             Draw::put_circle(frame_top, orbit_2d_top[i], 3, COLOR_MAGENTA);
             Draw::put_circle(frame_left, orbit_2d_left[i], 3, COLOR_MAGENTA);
             Draw::put_circle(frame_right, orbit_2d_right[i], 3, COLOR_MAGENTA);
         }
 
-        const auto world_pos_2d_top = Predictor::pos_3d_to_2d(cam_top, world_pos);
-        const auto world_pos_2d_left = Predictor::pos_3d_to_2d(cam_left, world_pos);
-        const auto world_pos_2d_right = Predictor::pos_3d_to_2d(cam_right, world_pos);
+        // current world pos
+        Draw::put_circle(frame_top, Predictor::pos_3d_to_2d(cam_top, world_pos), 8, COLOR_GREEN);
+        Draw::put_circle(frame_left, Predictor::pos_3d_to_2d(cam_left, world_pos), 8, COLOR_GREEN);
+        Draw::put_circle(frame_right, Predictor::pos_3d_to_2d(cam_right, world_pos), 8, COLOR_GREEN);
 
-        Draw::put_circle(frame_top, world_pos_2d_top, 8, COLOR_GREEN);
-        Draw::put_circle(frame_left, world_pos_2d_left, 8, COLOR_GREEN);
-        Draw::put_circle(frame_right, world_pos_2d_right, 8, COLOR_GREEN);
-
-        const auto world_speed_2d_top = Predictor::pos_3d_to_2d(cam_top, world_speed);
-        const auto world_speed_2d_left = Predictor::pos_3d_to_2d(cam_left, world_speed);
-        const auto world_speed_2d_right = Predictor::pos_3d_to_2d(cam_right, world_speed);
-
-        Draw::put_arrow(frame_top, world_pos_2d_top, world_pos_2d_top + world_speed_2d_top, COLOR_GREEN);
-        Draw::put_arrow(frame_left, world_pos_2d_left, world_pos_2d_left + world_speed_2d_left, COLOR_GREEN);
-        Draw::put_arrow(frame_right, world_pos_2d_right, world_pos_2d_right + world_speed_2d_right, COLOR_GREEN);
-
+        // predict init pos
         Draw::put_circle(frame_top, Predictor::pos_3d_to_2d(cam_top, predict_init_pos), 8, COLOR_MAGENTA);
         Draw::put_circle(frame_left, Predictor::pos_3d_to_2d(cam_left, predict_init_pos), 8, COLOR_MAGENTA);
         Draw::put_circle(frame_right, Predictor::pos_3d_to_2d(cam_right, predict_init_pos), 8, COLOR_MAGENTA);
 
+        // predict arrive pos
         Draw::put_circle(frame_top, Predictor::pos_3d_to_2d(cam_top, predict_arrive_pos), 8, COLOR_BLUE);
         Draw::put_circle(frame_left, Predictor::pos_3d_to_2d(cam_left, predict_arrive_pos), 8, COLOR_BLUE);
         Draw::put_circle(frame_right, Predictor::pos_3d_to_2d(cam_right, predict_arrive_pos), 8, COLOR_BLUE);
 
+        // real arrive pos
         Draw::put_circle(frame_top, Predictor::pos_3d_to_2d(cam_top, real_arrive_pos), 8, COLOR_RED);
         Draw::put_circle(frame_left, Predictor::pos_3d_to_2d(cam_left, real_arrive_pos), 8, COLOR_RED);
         Draw::put_circle(frame_right, Predictor::pos_3d_to_2d(cam_right, real_arrive_pos), 8, COLOR_RED);
@@ -226,7 +225,7 @@ public:
         const cv::Vec3f& world_speed,
         const cv::Point3f& predict_arrive_pos,
         const cv::Point3f& real_arrive_pos
-    ) const {
+    ) {
         Draw::put_text_border(frame, Draw::to_string("World Pos", world_pos, "cm"), {10, 50}, COLOR_GREEN);
         Draw::put_text_border(frame, Draw::to_string("World Speed", world_speed, "cm/s"), {10, 80}, COLOR_CYAN);
         Draw::put_text_border(frame, Draw::to_string("Predict Pos", predict_arrive_pos, "cm"), {10, 110}, COLOR_BLUE);
@@ -285,20 +284,17 @@ public:
 
         while (true) {
             cv::Mat frame_top, frame_left, frame_right;
-            this->read_frame(frame_top, frame_left, frame_right);
-            if (frame_top.empty() || frame_left.empty() || frame_right.empty()) {
-                Log::warn("[VisionEnd::run] One or more frames are empty, skipping visualization.");
-                continue;
-            }
+            if (!this->read_frame(frame_top, frame_left, frame_right)) continue;
 
             this->process_data(
-                queue, queue_mutex, queue_push_flag, execute_done, world_pos, world_speed, predict_init_pos, predict_arrive_pos,
-                real_arrive_pos,
+                queue, queue_mutex, queue_push_flag, execute_done,
+                world_pos, world_speed, predict_init_pos, predict_arrive_pos, real_arrive_pos,
                 orbit_3d, orbit_2d_top, orbit_2d_left, orbit_2d_right
             );
 
             this->visualize_data(
-                frame_top, frame_left, frame_right, world_pos, world_speed, predict_init_pos, predict_arrive_pos, real_arrive_pos,
+                frame_top, frame_left, frame_right,
+                world_pos, predict_init_pos, predict_arrive_pos, real_arrive_pos,
                 orbit_3d, orbit_2d_top, orbit_2d_left, orbit_2d_right
             );
 
@@ -311,8 +307,8 @@ public:
             if (key == 'q') {
                 stop = true;
                 queue_push_flag.notify_all();
-                Log::info("[VisionEnd::run] Stopping as 'q' key pressed.");
 
+                Log::info("[VisionEnd::run] Stopping as 'q' key pressed.");
                 break;
             }
             else if (key == 's') {

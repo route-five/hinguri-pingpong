@@ -65,6 +65,8 @@ const cv::Scalar TOP_ORANGE_MIN(9, 195, 215);
 const cv::Scalar TOP_ORANGE_MAX(23, 255, 255);
 const cv::Scalar LEFT_ORANGE_MIN(9, 70, 216);
 const cv::Scalar LEFT_ORANGE_MAX(23, 255, 255);
+const cv::Scalar RIGHT_ORANGE_MIN(15, 100, 210);
+const cv::Scalar RIGHT_ORANGE_MAX(23, 255, 255);
 const cv::Scalar ORANGE_MIN(9, 195, 215);
 const cv::Scalar ORANGE_MAX(23, 255, 255);
 
@@ -102,11 +104,13 @@ constexpr double AXIS_RADIUS = 12; // cm
 
 // Colors
 const cv::Scalar COLOR_RED(0, 0, 255);
-const cv::Scalar COLOR_GREEN(0, 255, 0);
-const cv::Scalar COLOR_BLUE(255, 0, 0);
+const cv::Scalar COLOR_ORANGE(0, 165, 255);
 const cv::Scalar COLOR_YELLOW(0, 255, 255);
+const cv::Scalar COLOR_GREEN(0, 255, 0);
 const cv::Scalar COLOR_CYAN(255, 255, 0);
+const cv::Scalar COLOR_BLUE(255, 0, 0);
 const cv::Scalar COLOR_MAGENTA(255, 0, 255);
+
 const cv::Scalar COLOR_WHITE(255, 255, 255);
 const cv::Scalar COLOR_BLACK(0, 0, 0);
 
