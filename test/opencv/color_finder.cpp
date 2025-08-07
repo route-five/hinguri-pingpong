@@ -3,15 +3,16 @@
 //
 
 #include "../../src/vision/camera.hpp"
+#include "../../src/vision/tracker.hpp"
 
 int main() {
-    Camera cam(CameraType::TOP, {0});
+    Camera cam(CameraType::LEFT, {0});
     if (!cam.is_opened()) {
         std::cerr << "Failed to open camera." << std::endl;
         return -1;
     }
 
-    int h_min = 9, s_min = 195, v_min = 215;
+    int h_min = 9, s_min = 70, v_min = 220;
     int h_max = 23, s_max = 255, v_max = 255;
 
     cv::namedWindow("Camera", cv::WINDOW_AUTOSIZE);
@@ -24,7 +25,7 @@ int main() {
     cv::createTrackbar("S Max", "Mask", &s_max, 255);
     cv::createTrackbar("V Max", "Mask", &v_max, 255);
 
-    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3));
 
     cam.start();
 
@@ -51,8 +52,23 @@ int main() {
         cv::inRange(hsv, lower_bound, upper_bound, mask);
 
         // TODO: 노이즈 제거 필요한지 성능 및 효과 테스트 필요
-        // cv::erode(mask, mask, kernel);
-        // cv::dilate(mask, mask, kernel);
+        cv::erode(mask, mask, kernel);
+        cv::dilate(mask, mask, kernel);
+
+        // std::vector<std::vector<cv::Point>> contours;
+        // cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+        //
+        // // min enclosing circle
+        // for (const auto& contour : contours) {
+        //     cv::Point2f center;
+        //     float radius;
+        //     cv::minEnclosingCircle(contour, center, radius);
+        //     if (radius > RADIUS_MIN) {
+        //         // 최소 반지름 조건
+        //         cv::circle(frame, center, static_cast<int>(radius), cv::Scalar(0, 255, 0), 1);
+        //         cv::circle(frame, center, 2, cv::Scalar(0, 0, 255), -1); // 중심점 표시
+        //     }
+        // }
 
         cv::imshow("Camera", frame);
 
@@ -75,6 +91,7 @@ int main() {
             cv::resize(hsv_bar, hsv_bar, cv::Size(mask.cols, hsv_bar.rows));
         }
         cv::Mat color_mask;
+        color_mask.setTo(cv::Scalar(0, 0, 0)); // prevent drawing from frame leaking into color_mask
         cv::cvtColor(mask, color_mask, cv::COLOR_GRAY2BGR);
         cv::Mat combined;
         cv::vconcat(hsv_bar, color_mask, combined);
