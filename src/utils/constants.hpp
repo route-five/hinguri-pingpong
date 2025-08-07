@@ -121,7 +121,7 @@ constexpr float MAX_POS_LIMIT = 3072;
 constexpr float DEGREES_PER_UNIT = 360.0 / 4096.0;
 
 // Dynamixel IDs
-// TODO: 시리얼 포트 알아내기
+constexpr std::array<int, 4> DYNAMIXEL_IDS = {2, 3, 4, 6}; // Bot, Mid, Top, Upper
 constexpr int MID_SERIAL_PORT = 3; // Mid Camera Serial Port
 constexpr int BOT_SERIAL_PORT = 2; // Bot Camera Serial Port
 

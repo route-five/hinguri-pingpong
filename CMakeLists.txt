@@ -35,18 +35,20 @@ add_executable(hinguri_pingpong
         #                src/vision/pre/calibrate.cpp
 
         #### test
-#                test/calibrate_test/camera_point_world_point_test.cpp
+        #                test/calibrate_test/camera_point_world_point_test.cpp
 
         #### processing
         #        src/version_left_right_pnp.cpp
         #        src/version_top_stereo.cpp
         #        src/version_top_ignore_z.cpp
+        src/version_arm.cpp
+        src/control/robot_arm_controller.hpp
 
         #        src/vision/vision_end.cpp
         #        src/control/control_end.cpp
 
-#                test/matplot++/visualize_pingpong.cpp
-        test/opencv/color_finder.cpp
+        #                test/matplot++/visualize_pingpong.cpp
+        #        test/opencv/color_finder.cpp
         #        test/opencv/single_camera_test.cpp
 )
 
