@@ -22,7 +22,7 @@ private:
     BulkDynamixelActuator actuators;
     LinearActuator linearActuator;
 
-    void execute(const Bridge::Payload& payload, std::atomic<bool>& execute_done) {
+    void execute(const Bridge::Payload& payload) {
         const auto& [x, theta, swing_start, swing_end, use_right_hand] = payload;
 
         // 1) Move the linear actuator
@@ -31,7 +31,7 @@ private:
         // 2) Move to swing_start and wait
         bool swing_start_done = false;
         actuators.move_and_wait_by_degrees(
-            {theta, swing_start},
+            { theta, swing_start },
             &swing_start_done
         );
         Log::debug(std::format("swing start done - success: {}", swing_start_done));
@@ -40,25 +40,23 @@ private:
         // 3) Only after swing_start is done, move to swing_end and wait
         bool swing_end_done = false;
         actuators.move_and_wait_by_degrees(
-            {theta, swing_end},
+            { theta, swing_end },
             &swing_end_done
         );
         Log::debug(std::format("swing end done - success: {}", swing_end_done));
         // swing_end_done == true here
-
-        execute_done = true;
     }
 
     void shutdown() {
-        Bridge::Payload init{TABLE_WIDTH / 2, 90, 90, 90};
-        actuators.bulk_move_by_degrees({init.theta, init.swing_start});
+        Bridge::Payload init{ TABLE_WIDTH / 2, 90, 90, 90 };
+        actuators.bulk_move_by_degrees({ init.theta, init.swing_start });
         linearActuator.move_actu(init.x);
         if (sharedPortInitialized)
             sharedPortHandler->closePort();
     }
 
 public:
-    ControlEnd() : actuators({MID_SERIAL_PORT, BOT_SERIAL_PORT}) {
+    ControlEnd() : actuators({ MID_SERIAL_PORT, BOT_SERIAL_PORT }) {
     }
 
     ~ControlEnd() {
@@ -87,12 +85,17 @@ public:
             if (!queue.empty()) {
                 Bridge::Payload payload = queue.front();
                 queue.pop();
-                lock.unlock();
+                Log::debug(Log::magenta(std::format("[Queue] Queue has {} -> {} items. (popped)", queue.size() + 1, queue.size())));
 
                 Log::debug(std::format(
                     "[ControlEnd::run] Received Payload with x: {}, theta: {}, swing_start: {}, swing_end: {}, use_right_hand: {}",
                     payload.x, payload.theta, payload.swing_start, payload.swing_end, payload.use_right_hand));
-                execute(payload, execute_done);
+                execute(payload);
+
+                execute_done = true;
+                Log::debug("execute_done = true;");
+
+                lock.unlock();
             }
             else if (stop) {
                 lock.unlock();
@@ -106,21 +109,22 @@ public:
 
 class VisionEndPnP {
 private:
-    Camera cam_top{CameraType::TOP, {0, cv::CAP_MSMF}, 90};
-    Camera cam_left{CameraType::LEFT, {1, cv::CAP_MSMF}, 90};
-    Camera cam_right{CameraType::RIGHT, {2, cv::CAP_MSMF}, 90};
-    Tracker tracker_top{TOP_ORANGE_MIN, TOP_ORANGE_MAX};
-    Tracker tracker_left{LEFT_ORANGE_MIN, LEFT_ORANGE_MAX};
-    Tracker tracker_right{RIGHT_ORANGE_MIN, RIGHT_ORANGE_MAX};
+    Camera cam_top{ CameraType::TOP, {0, cv::CAP_MSMF}, 90 };
+    Camera cam_left{ CameraType::LEFT, {1, cv::CAP_MSMF}, 90 };
+    Camera cam_right{ CameraType::RIGHT, {2, cv::CAP_MSMF}, 90 };
+    Tracker tracker_top{ TOP_ORANGE_MIN, TOP_ORANGE_MAX };
+    Tracker tracker_left{ LEFT_ORANGE_MIN, LEFT_ORANGE_MAX };
+    Tracker tracker_right{ RIGHT_ORANGE_MIN, RIGHT_ORANGE_MAX };
     Predictor predictor;
 
     cv::Mat latest_top_frame, latest_left_frame, latest_right_frame;
     std::mutex frame_mutex;
 
-    std::atomic<bool> use_top_camera{true};
+    std::atomic<bool> use_top_camera{ true };
+    bool awaiting_landing_push = false;
 
 public:
-    explicit VisionEndPnP(const bool use_top_camera) : use_top_camera{use_top_camera} {
+    explicit VisionEndPnP(const bool use_top_camera) : use_top_camera{ use_top_camera } {
         cam_top.set_frame_callback([this](cv::Mat& frame) {
             if (frame.empty()) return;
 
@@ -128,15 +132,16 @@ public:
             tracker_top << frame;
             if (const auto pos = tracker_top.get_camera_pos()) {
                 predictor.set_point_top(pos.value().first);
+                Draw::put_circle(frame, pos.value().first, pos.value().second, COLOR_GREEN);
             }
 
             Draw::put_text_border(
                 frame,
                 std::format("FPS: {:.2f}/{:.2f}", cam_top.get_fps(), cam_top.get_prop(cv::CAP_PROP_FPS)),
-                {10, 20}
+                { 10, 20 }
             );
             frame.copyTo(latest_top_frame);
-        });
+            });
 
         cam_left.set_frame_callback([this](cv::Mat& frame) {
             if (frame.empty()) return;
@@ -145,16 +150,17 @@ public:
             tracker_left << frame;
             if (const auto pos = tracker_left.get_camera_pos()) {
                 predictor.set_point_left(pos.value().first);
+                Draw::put_circle(frame, pos.value().first, pos.value().second, COLOR_GREEN);
                 // Log::debug(std::format("left found {}, {}", pos.value().first.x, pos.value().first.y));
             }
 
             Draw::put_text_border(
                 frame,
                 std::format("FPS: {:.2f}/{:.2f}", cam_left.get_fps(), cam_left.get_prop(cv::CAP_PROP_FPS)),
-                {10, 20}
+                { 10, 20 }
             );
             frame.copyTo(latest_left_frame);
-        });
+            });
 
         cam_right.set_frame_callback([this](cv::Mat& frame) {
             if (frame.empty()) return;
@@ -163,16 +169,17 @@ public:
             tracker_right << frame;
             if (const auto pos = tracker_right.get_camera_pos()) {
                 predictor.set_point_right(pos.value().first);
+                Draw::put_circle(frame, pos.value().first, pos.value().second, COLOR_GREEN);
                 // Log::debug(std::format("right found {}, {}", pos.value().first.x, pos.value().first.y));
             }
 
             Draw::put_text_border(
                 frame,
                 std::format("FPS: {:.2f}/{:.2f}", cam_right.get_fps(), cam_right.get_prop(cv::CAP_PROP_FPS)),
-                {10, 20}
+                { 10, 20 }
             );
             frame.copyTo(latest_right_frame);
-        });
+            });
     }
 
     ~VisionEndPnP() {
@@ -190,7 +197,7 @@ public:
         latest_right_frame.copyTo(frame_right);
 
         if (frame_top.empty() || frame_left.empty() || frame_right.empty()) {
-            Log::warn("[VisionEnd::run] One or more frames are empty, skipping visualization.");
+            // Log::warn("[VisionEnd::run] One or more frames are empty, skipping visualization.");
             return false;
         }
 
@@ -212,10 +219,15 @@ public:
         std::vector<cv::Point2f>& orbit_2d_left,
         std::vector<cv::Point2f>& orbit_2d_right
     ) {
-        const double fallback_dt = 1.0 / std::min({cam_top.get_fps(), cam_left.get_fps(), cam_right.get_fps()});
+        const double fallback_dt = 1.0 / std::min({ cam_top.get_fps(), cam_left.get_fps(), cam_right.get_fps() });
         if (const auto find_world_pos = predictor.get_new_world_pos(cam_top, cam_left, cam_right, static_cast<float>(fallback_dt),
-                                                                    use_top_camera)) {
+            use_top_camera)) {
             world_pos = find_world_pos.value();
+
+            if (world_pos.y >= PREDICT_MIN_Y) {
+                awaiting_landing_push = true;
+                Log::green("awaiting_landing_push = true;");
+            }
 
             orbit_3d.push_back(world_pos);
             orbit_2d_top.push_back(Predictor::pos_3d_to_2d(cam_top, world_pos));
@@ -241,21 +253,33 @@ public:
                 predict_arrive_pos = pred_pos;
 
                 Log::debug(std::format("[Prediction] {}, {} ==== {}s ===> {}, {}", Log::magenta(Log::to_string(init_pos)),
-                                       Log::magenta(Log::to_string(init_speed)),
-                                       duration, Log::blue(Log::to_string(pred_pos)), Log::blue(Log::to_string(pred_speed))));
+                    Log::magenta(Log::to_string(init_speed)),
+                    duration, Log::blue(Log::to_string(pred_pos)), Log::blue(Log::to_string(pred_speed))));
             }
         }
         else if (0 <= world_pos.x && world_pos.x <= TABLE_WIDTH &&
             0 <= world_pos.y && world_pos.y < PREDICT_MIN_Y &&
-            0 <= world_pos.z
-        ) {
+            0 <= world_pos.z &&
+            awaiting_landing_push) {
             std::lock_guard lock(queue_mutex);
             if (execute_done.load() && queue.empty()) {
-                // TODO: 마지막 도착 직전 속도 예측해서 넣기 - 회귀 식에서 같이 리턴하기
                 Bridge::Payload payload = Bridge::convert(predict_arrive_pos, world_speed);
+
+                execute_done = false;
+                Log::debug("execute_done = false;");
+
+                predict_arrive_pos = { -1, -1, -1 };
+                world_pos = { -1, -1, -1 };
+                world_speed = { 0, 0, 0 };
+
                 queue.push(payload);
+
                 queue_push_flag.notify_one();
-                execute_done = false; // FIXME: ControlEnd랑 합칠 때 이거 주석 제거
+
+                awaiting_landing_push = false;
+                Log::green("awaiting_landing_push = false;");
+
+                Log::debug(Log::magenta(std::format("[Queue] Queue has {} -> {} items. (pushed)", queue.size() - 1, queue.size())));
 
                 Log::debug(std::format(
                     "[VisionEnd::run]: Payload set with x: {}, theta: {}, swing_start: {}, swing_end: {}, use_right_hand: {}",
@@ -264,7 +288,7 @@ public:
         }
 
         if (0 <= world_pos.x && world_pos.x <= TABLE_WIDTH &&
-            std::abs(world_pos.y) < 5 &&
+            std::abs(world_pos.y) < 2 &&
             0 <= world_pos.z) {
             real_arrive_pos = world_pos;
         }
@@ -290,11 +314,6 @@ public:
             Draw::put_circle(frame_right, orbit_2d_right[i], 3, COLOR_MAGENTA);
         }
 
-        // current world pos
-        Draw::put_circle(frame_top, Predictor::pos_3d_to_2d(cam_top, world_pos), 8, COLOR_GREEN);
-        Draw::put_circle(frame_left, Predictor::pos_3d_to_2d(cam_left, world_pos), 8, COLOR_GREEN);
-        Draw::put_circle(frame_right, Predictor::pos_3d_to_2d(cam_right, world_pos), 8, COLOR_GREEN);
-
         // predict init pos
         Draw::put_circle(frame_top, Predictor::pos_3d_to_2d(cam_top, predict_init_pos), 8, COLOR_MAGENTA);
         Draw::put_circle(frame_left, Predictor::pos_3d_to_2d(cam_left, predict_init_pos), 8, COLOR_MAGENTA);
@@ -319,11 +338,11 @@ public:
         const cv::Point3f& predict_arrive_pos,
         const cv::Point3f& real_arrive_pos
     ) {
-        Draw::put_text_border(frame, Draw::to_string("Current Speed", world_speed, "cm/s"), {10, 40}, COLOR_CYAN);
-        Draw::put_text_border(frame, Draw::to_string("Current Pos", world_pos, "cm"), {10, 60}, COLOR_GREEN);
-        Draw::put_text_border(frame, Draw::to_string("Predict Init Pos", predict_init_pos, "cm/s"), {10, 80}, COLOR_MAGENTA);
-        Draw::put_text_border(frame, Draw::to_string("Predict Arrive Pos", predict_arrive_pos, "cm"), {10, 100}, COLOR_BLUE);
-        Draw::put_text_border(frame, Draw::to_string("Real Arrive Pos", real_arrive_pos, "cm"), {10, 120}, COLOR_RED);
+        Draw::put_text_border(frame, Draw::to_string("Current Speed", world_speed, "cm/s"), { 10, 40 }, COLOR_CYAN);
+        Draw::put_text_border(frame, Draw::to_string("Current Pos", world_pos, "cm"), { 10, 60 }, COLOR_GREEN);
+        Draw::put_text_border(frame, Draw::to_string("Predict Init Pos", predict_init_pos, "cm/s"), { 10, 80 }, COLOR_MAGENTA);
+        Draw::put_text_border(frame, Draw::to_string("Predict Arrive Pos", predict_arrive_pos, "cm"), { 10, 100 }, COLOR_BLUE);
+        Draw::put_text_border(frame, Draw::to_string("Real Arrive Pos", real_arrive_pos, "cm"), { 10, 120 }, COLOR_RED);
     }
 
     cv::Mat combine_frame(const cv::Mat& frame_top, const cv::Mat& frame_left, const cv::Mat& frame_right) {
@@ -340,7 +359,7 @@ public:
         frame_top_resized.copyTo(final_frame(cv::Rect(top_x_offset, 0, frame_top_resized.cols, frame_top_resized.rows)));
         frame_left_resized.copyTo(final_frame(cv::Rect(0, frame_top_resized.rows, frame_left_resized.cols, frame_left_resized.rows)));
         frame_right_resized.copyTo(final_frame(cv::Rect(frame_left_resized.cols, frame_top_resized.rows, frame_right_resized.cols,
-                                                        frame_right_resized.rows)));
+            frame_right_resized.rows)));
 
         return final_frame;
     }
@@ -366,15 +385,16 @@ public:
         cam_left.start();
         cam_right.start();
 
-        cv::Point3f world_pos{-1, -1, -1};
-        cv::Vec3f world_speed{0, 0, 0};
-        cv::Point3f predict_init_pos{-1, -1, -1};
-        cv::Point3f predict_arrive_pos{-1, -1, -1};
-        cv::Point3f real_arrive_pos{-1, -1, -1};
         std::vector<cv::Point3f> orbit_3d;
         std::vector<cv::Point2f> orbit_2d_top;
         std::vector<cv::Point2f> orbit_2d_left;
         std::vector<cv::Point2f> orbit_2d_right;
+
+        cv::Point3f world_pos{ -1, -1, -1 };
+        cv::Vec3f world_speed{ 0, 0, 0 };
+        cv::Point3f predict_init_pos{ -1, -1, -1 };
+        cv::Point3f predict_arrive_pos{ -1, -1, -1 };
+        cv::Point3f real_arrive_pos{ -1, -1, -1 };
 
         while (true) {
             cv::Mat frame_top, frame_left, frame_right;
