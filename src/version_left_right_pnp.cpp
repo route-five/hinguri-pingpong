@@ -33,7 +33,7 @@ private:
         last_x = x;
 
         Log::debug(std::format("Linear Actuator dt: {}s", dt_linear_ms / 1000));
-        std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(dt_linear_ms)));
+        //std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(dt_linear_ms)));
 
         // 2) Move to swing_start and wait
         bool swing_start_done = false;
@@ -41,7 +41,7 @@ private:
             { theta, swing_start },
             &swing_start_done
         );
-        Log::debug(std::format("swing start done - success: {}", swing_start_done));
+        Log::debug(std::format("swing start ({} deg) done - success: {}", swing_start, swing_start_done));
         // swing_start_done == true here
 
         // 3) Only after swing_start is done, move to swing_end and wait
@@ -50,7 +50,7 @@ private:
             { theta, swing_end },
             &swing_end_done
         );
-        Log::debug(std::format("swing end done - success: {}", swing_end_done));
+        Log::debug(std::format("swing end ({} deg) done - success: {}", swing_end, swing_end_done));
         // swing_end_done == true here
     }
 
@@ -267,6 +267,7 @@ public:
         else if (0 <= world_pos.x && world_pos.x <= TABLE_WIDTH &&
             0 <= world_pos.y && world_pos.y < PREDICT_MIN_Y &&
             0 <= world_pos.z &&
+            0 <= predict_arrive_pos.x && predict_arrive_pos.x <= TABLE_WIDTH &&
             awaiting_landing_push) {
             std::lock_guard lock(queue_mutex);
             if (execute_done.load() && queue.empty()) {
