@@ -12,7 +12,7 @@ int main() {
     }
 
     int h_min = 9, s_min = 195, v_min = 215;
-    int h_max = 22, s_max = 255, v_max = 255;
+    int h_max = 23, s_max = 255, v_max = 255;
 
     cv::namedWindow("Camera", cv::WINDOW_AUTOSIZE);
     cv::namedWindow("Mask", cv::WINDOW_AUTOSIZE);
