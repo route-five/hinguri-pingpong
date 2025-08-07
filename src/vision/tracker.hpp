@@ -20,7 +20,7 @@ private:
     cv::Mat frame;
     cv::Mat hsv;
     cv::Mat color_mask;
-    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(2, 2));
 
 public:
     explicit Tracker(
@@ -44,8 +44,8 @@ public:
         cv::inRange(hsv, lower_color_bound, upper_color_bound, color_mask);
 
         // TODO: erode + dilate to remove noise - performance test needed.
-        // cv::erode(color_mask, color_mask, kernel);
-        // cv::dilate(color_mask, color_mask, kernel);
+        cv::erode(color_mask, color_mask, kernel);
+        cv::dilate(color_mask, color_mask, kernel);
     }
 
     friend Tracker& operator<<(Tracker& tracker, const cv::Mat& new_frame) noexcept {
