@@ -25,7 +25,7 @@ int main() {
     cv::createTrackbar("S Max", "Mask", &s_max, 255);
     cv::createTrackbar("V Max", "Mask", &v_max, 255);
 
-    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3));
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(2, 2));
 
     cam.start();
 

@@ -20,7 +20,7 @@ private:
     cv::Mat frame;
     cv::Mat hsv;
     cv::Mat color_mask;
-    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3));
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(2, 2));
 
 public:
     explicit Tracker(
