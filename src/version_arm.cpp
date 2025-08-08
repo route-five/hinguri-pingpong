@@ -42,7 +42,7 @@ public:
 
     void shutdown() {
         linear_actuator_.move_actu(TABLE_WIDTH / 2);
-        arm_controller_.execute_each({ 90, 120, -80, 50 });
+        arm_controller_.execute_each({ 90, 120, -60, 60 });
         if (sharedPortInitialized)
             sharedPortHandler->closePort();
     }
@@ -212,7 +212,7 @@ public:
             use_top_camera)) {
             world_pos = find_world_pos.value();
 
-            if (world_pos.y >= PREDICT_MIN_Y) {
+            if (TABLE_HEIGHT >= world_pos.y && world_pos.y >= PREDICT_MIN_Y) {
                 awaiting_landing_push = true;
                 Log::green("awaiting_landing_push = true;");
             }
@@ -258,7 +258,7 @@ public:
                 Log::debug("execute_done = false;");
 
                 predict_arrive_pos = { -1, -1, -1 };
-                world_pos = { -1, -1, -1 };
+                world_pos = { TABLE_WIDTH / 2, TABLE_HEIGHT + 50.0f, 40.0f };
                 world_speed = { 0, 0, 0 };
 
                 queue.push(payload);
@@ -377,7 +377,7 @@ public:
         std::vector<cv::Point2f> orbit_2d_left;
         std::vector<cv::Point2f> orbit_2d_right;
 
-        cv::Point3f world_pos{ -1, -1, -1 };
+        cv::Point3f world_pos{ TABLE_WIDTH / 2, TABLE_HEIGHT + 50.0f, 40.0f };
         cv::Vec3f world_speed{ 0, 0, 0 };
         cv::Point3f predict_init_pos{ -1, -1, -1 };
         cv::Point3f predict_arrive_pos{ -1, -1, -1 };

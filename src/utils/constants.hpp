@@ -124,14 +124,14 @@ constexpr float MAX_POS_LIMIT = 3072;
 constexpr float DEGREES_PER_UNIT = 360.0 / 4096.0;
 
 // Dynamixel IDs
-constexpr std::array<int, 4> DYNAMIXEL_IDS = {2, 3, 4, 6}; // Bot, Mid, Top, Upper
+constexpr std::array<int, 4> DYNAMIXEL_IDS = {2, 3, 5, 6}; // Bot, Mid, Top, Upper
 constexpr int MID_SERIAL_PORT = 3; // Mid Camera Serial Port
 constexpr int BOT_SERIAL_PORT = 2; // Bot Camera Serial Port
 
 // Linear Motor
-constexpr int LINEAR_VEL = 700; // 700
-constexpr int LINEAR_ACCEL = 200; // 200
-constexpr int LINEAR_DECEL = 200; // 200
+constexpr int LINEAR_VEL = 800; // 700
+constexpr int LINEAR_ACCEL = 300; // 200
+constexpr int LINEAR_DECEL = 300; // 200
 constexpr float LINEAR_VELOCITY = 65.625f;
 
 constexpr long LINEAR_AXIS_NO = 0;

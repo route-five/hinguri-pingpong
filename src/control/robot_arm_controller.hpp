@@ -22,7 +22,7 @@ constexpr uint16_t LEN_PRESENT_MOVING = 1;   // Moving 플래그 길이
 constexpr uint16_t ADDR_PROFILE_ACCEL = 108; // Profile Acceleration
 constexpr uint16_t ADDR_PROFILE_VEL = 112; // Profile Velocity
 constexpr uint32_t PROFILE_ACCEL_VALUE = 200; // 100 가속도
-constexpr uint32_t PROFILE_VEL_VALUE = 850; // 750 최고속도
+constexpr uint32_t PROFILE_VEL_VALUE = 800; // 750 최고속도
 
 class RobotArmController {
 private:

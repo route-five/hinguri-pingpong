@@ -45,17 +45,17 @@ namespace Bridge {
     Payload actions(const cv::Point3f& arrive_pos) {
         Payload payload{};
 
-        // TODO: bot angle은 어떻게 할지 고민
+        const float bot_angle = (pi - std::atan2(TABLE_HEIGHT, arrive_pos.x - TABLE_WIDTH / 2)) * rad;
+
         payload.x = arrive_pos.x;
-        payload.steps[0] = Step{90, 120, -80, 50};
-        payload.steps[1] = Step{90, 105, -80, 70};
-        payload.steps[2] = Step{90, 90, -80, 90};
-        payload.steps[3] = Step{90, 75, -40, 90};
-        payload.steps[4] = Step{90, 60, 0, 90};
-        payload.steps[5] = Step{90, 90, -40, 90};
-        payload.steps[6] = Step{90, 120, -80, 90};
-        payload.steps[7] = Step{90, 120, -80, 70};
-        payload.steps[8 ] = Step{90, 120, -80, 50};
+        payload.steps[1] = Step{ bot_angle, 120, -80, 70 };
+        payload.steps[2] = Step{ bot_angle, 90, -40, 90 };
+        payload.steps[3] = Step{ bot_angle, 75, -20, 90 };
+        payload.steps[4] = Step{ bot_angle, 60, 10, 110 };
+        payload.steps[5] = Step{ bot_angle, 75, -20, 140 };
+        payload.steps[6] = Step{ bot_angle, 90, -40, 110 };
+        payload.steps[7] = Step{ bot_angle, 120, -80, 90 };
+        payload.steps[8] = Step{ bot_angle, 120, -80, 70 };
 
         return payload;
     }
