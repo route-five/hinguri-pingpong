@@ -14,14 +14,14 @@ int main() {
 
     constexpr float pi = std::numbers::pi_v<float>;
 
-    constexpr float init_vel = 630.0f; // 305 cm/s
+    constexpr float init_vel = 335.0f; // 305 cm/s
     constexpr float init_launch_angle = 0.0f; // 0 degrees in radians
     constexpr float init_min_direction_angle = pi / 2 - 0.25732; // 180 - 14.7433 degrees in radians
     constexpr float init_max_direction_angle = pi / 2 + 0.23256; // 180 + 13.3247 degrees in radians
-    constexpr float init_y = 225.0f; // 225 cm
+    constexpr float init_y = TABLE_HEIGHT + 50.0f; // 225 cm
 
     const cv::Point3f init_pos{TABLE_WIDTH / 2, init_y, 40.0f};
-    const float init_direction_angle = init_max_direction_angle; // random.generate(init_min_direction_angle, init_max_direction_angle);
+    const float init_direction_angle = pi / 2; // random.generate(init_min_direction_angle, init_max_direction_angle);
 
     const cv::Point3f init_speed{
         -init_vel * std::cos(init_launch_angle) * std::cos(init_direction_angle),

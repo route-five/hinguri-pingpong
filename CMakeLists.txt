@@ -41,13 +41,14 @@ add_executable(hinguri_pingpong
         #        src/version_left_right_pnp.cpp
         #        src/version_top_stereo.cpp
         #        src/version_top_ignore_z.cpp
-        src/version_arm.cpp
-        src/control/robot_arm_controller.hpp
+        #        src/version_arm.cpp
+        #        src/control/robot_arm_controller.hpp
+        src/version_arm_1st.cpp
 
         #        src/vision/vision_end.cpp
         #        src/control/control_end.cpp
 
-        #                test/matplot++/visualize_pingpong.cpp
+        #        test/matplot++/visualize_pingpong.cpp
         #        test/opencv/color_finder.cpp
         #        test/opencv/single_camera_test.cpp
 )
